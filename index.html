@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>九九チャレンジ</title>
+<style>
+  :root{
+    --bg:#fef9f0;
+    --main:#ff8a3d;
+    --main-dark:#e6702a;
+    --accent:#4dabf7;
+    --correct:#51cf66;
+    --wrong:#ff6b6b;
+    --text:#3a2e2a;
+    --gold:#ffca28;
+    --silver:#b0bec5;
+    --bronze:#d98757;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+    background:linear-gradient(160deg,#fff6e5,#ffe8d6);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:20px;
+    color:var(--text);
+  }
+  .app{
+    width:100%;
+    max-width:480px;
+    background:#fff;
+    border-radius:24px;
+    box-shadow:0 10px 30px rgba(200,120,50,0.18);
+    padding:20px;
+    position:relative;
+    overflow:hidden;
+  }
+  .header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  h1{
+    font-size:1.3em;
+    margin:0;
+    color:var(--main-dark);
+  }
+  .stopwatch{
+    background:var(--main);
+    color:#fff;
+    font-weight:bold;
+    font-size:1.1em;
+    padding:8px 14px;
+    border-radius:16px;
+    min-width:80px;
+    text-align:center;
+    box-shadow:0 3px 8px rgba(230,112,42,0.4);
+    letter-spacing:1px;
+    font-variant-numeric:tabular-nums;
+  }
+  .progress-wrap{
+    background:#f1e6da;
+    border-radius:20px;
+    height:14px;
+    margin:14px 0 20px;
+    overflow:hidden;
+  }
+  .progress-bar{
+    height:100%;
+    background:linear-gradient(90deg,var(--main),#ffb35c);
+    width:0%;
+    transition:width .3s ease;
+  }
+  .screen{display:none;}
+  .screen.active{display:block;}
+  .start-screen{text-align:center;padding:10px 10px 30px;}
+  .start-screen p{line-height:1.7;font-size:1.05em;}
+  .kuku-emoji{font-size:3.5em;margin-bottom:6px;}
+  .name-input-wrap{
+    margin:16px 0;
+    text-align:left;
+  }
+  .name-input-wrap label{
+    display:block;
+    font-size:0.9em;
+    font-weight:bold;
+    color:var(--main-dark);
+    margin-bottom:6px;
+  }
+  #playerName{
+    width:100%;
+    padding:12px 14px;
+    font-size:1.1em;
+    border:2px solid #ffcf9b;
+    border-radius:14px;
+    background:#fff9f0;
+    color:var(--text);
+    outline:none;
+  }
+  #playerName:focus{border-color:var(--main);}
+  .btn-row{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top:10px;
+  }
+  .question-box{
+    text-align:center;
+    background:#fff3e2;
+    border-radius:20px;
+    padding:28px 10px;
+    margin-bottom:20px;
+    border:3px dashed #ffcf9b;
+  }
+  .qnum{
+    font-size:0.95em;
+    color:var(--main-dark);
+    font-weight:bold;
+    margin-bottom:6px;
+  }
+  .question-text{
+    font-size:2.4em;
+    font-weight:bold;
+    color:var(--text);
+    letter-spacing:2px;
+  }
+  .choices{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .choice-btn{
+    font-size:1.6em;
+    font-weight:bold;
+    padding:20px 0;
+    border-radius:16px;
+    border:none;
+    background:var(--accent);
+    color:#fff;
+    cursor:pointer;
+    box-shadow:0 4px 0 #2f8fd6;
+    transition:transform .08s ease;
+  }
+  .choice-btn:active{
+    transform:translateY(3px);
+    box-shadow:0 1px 0 #2f8fd6;
+  }
+  .choice-btn.correct{
+    background:var(--correct)!important;
+    box-shadow:0 4px 0 #37a34a!important;
+  }
+  .choice-btn.wrong{
+    background:var(--wrong)!important;
+    box-shadow:0 4px 0 #d94a4a!important;
+  }
+  .choice-btn:disabled{opacity:0.6;cursor:default;}
+  .big-btn{
+    display:inline-block;
+    margin-top:20px;
+    background:var(--main);
+    color:#fff;
+    font-size:1.15em;
+    font-weight:bold;
+    padding:14px 34px;
+    border:none;
+    border-radius:30px;
+    cursor:pointer;
+    box-shadow:0 5px 0 var(--main-dark);
+  }
+  .big-btn:active{
+    transform:translateY(3px);
+    box-shadow:0 2px 0 var(--main-dark);
+  }
+  .big-btn.secondary{
+    background:var(--accent);
+    box-shadow:0 5px 0 #2f8fd6;
+  }
+  .big-btn.ghost{
+    background:#fff;
+    color:var(--main-dark);
+    border:2px solid var(--main);
+    box-shadow:none;
+    padding:12px 32px;
+  }
+  .result-screen{text-align:center;padding:20px 10px;}
+  .result-emoji{font-size:4em;}
+  .result-title{
+    font-size:1.6em;
+    font-weight:bold;
+    margin:10px 0;
+  }
+  .result-title.clear{color:var(--correct);}
+  .result-title.fail{color:var(--wrong);}
+  .time-display{
+    font-size:2em;
+    font-weight:bold;
+    color:var(--main-dark);
+    margin:10px 0 20px;
+  }
+  .new-record{
+    display:inline-block;
+    background:var(--gold);
+    color:#5a4200;
+    font-weight:bold;
+    font-size:0.9em;
+    padding:6px 14px;
+    border-radius:20px;
+    margin-bottom:10px;
+  }
+  .fail-detail{
+    background:#fff0f0;
+    border-radius:14px;
+    padding:14px;
+    margin:14px 0;
+    font-size:1.1em;
+  }
+  .fail-detail .q{font-weight:bold;font-size:1.3em;}
+
+  /* ランキング画面 */
+  .ranking-screen{padding:6px 4px 10px;}
+  .ranking-header{
+    text-align:center;
+    margin-bottom:14px;
+  }
+  .ranking-header h2{
+    margin:0;
+    color:var(--main-dark);
+    font-size:1.4em;
+  }
+  .ranking-note{
+    font-size:0.8em;
+    color:#a08a78;
+    margin-top:4px;
+  }
+  .ranking-list{
+    list-style:none;
+    margin:0 0 16px;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .ranking-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#fff8ef;
+    border-radius:14px;
+    padding:10px 14px;
+    border:2px solid #ffe6c6;
+  }
+  .ranking-item.highlight{
+    border-color:var(--gold);
+    background:#fff6db;
+  }
+  .rank-badge{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:#e9c9a3;
+    color:#fff;
+    font-weight:bold;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .rank-badge.r1{background:var(--gold);}
+  .rank-badge.r2{background:var(--silver);}
+  .rank-badge.r3{background:var(--bronze);}
+  .rank-name{
+    flex:1;
+    font-weight:bold;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .rank-time{
+    font-weight:bold;
+    color:var(--main-dark);
+  }
+  .ranking-empty{
+    text-align:center;
+    color:#a08a78;
+    padding:30px 10px;
+  }
+  .ranking-actions{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .link-btn{
+    background:none;
+    border:none;
+    color:#c0836a;
+    text-decoration:underline;
+    font-size:0.85em;
+    cursor:pointer;
+    padding:4px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>🐱 九九チャレンジ</h1>
+    <div class="stopwatch" id="stopwatch">0.0秒</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+  <!-- スタート画面 -->
+  <div class="screen active" id="startScreen">
+    <div class="start-screen">
+      <div class="kuku-emoji">✏️🔢</div>
+      <p>九九の問題が<b>ランダムで10問</b>出ます。<br>
+      1問でも間違えると終了になるよ。<br>
+      全問正解でクリア、タイムが表示されます!</p>
+      <div class="name-input-wrap">
+        <label for="playerName">なまえ（ランキングにひょうじされます）</label>
+        <input type="text" id="playerName" maxlength="10" placeholder="れい: たろう">
+      </div>
+      <div class="btn-row">
+        <button class="big-btn" id="startBtn">スタート</button>
+        <button class="big-btn secondary" id="viewRankingBtn">ランキングを見る</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 出題画面 -->
+  <div class="screen" id="quizScreen">
+    <div class="question-box">
+      <div class="qnum" id="qnum">第1問 / 10問</div>
+      <div class="question-text" id="questionText">3 × 4 = ?</div>
+    </div>
+    <div class="choices" id="choices"></div>
+  </div>
+
+  <!-- 結果画面 -->
+  <div class="screen" id="resultScreen">
+    <div class="result-screen">
+      <div class="result-emoji" id="resultEmoji"></div>
+      <div class="result-title" id="resultTitle"></div>
+      <div id="resultBody"></div>
+      <div class="btn-row">
+        <button class="big-btn" id="retryBtn">もう一度チャレンジ</button>
+        <button class="big-btn secondary" id="resultRankingBtn">ランキングを見る</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ランキング画面 -->
+  <div class="screen" id="rankingScreen">
+    <div class="ranking-screen">
+      <div class="ranking-header">
+        <h2>🏆 この端末のランキング</h2>
+        <div class="ranking-note">※この端末（ブラウザ）だけに保存された記録です</div>
+      </div>
+      <ul class="ranking-list" id="rankingList"></ul>
+      <div class="ranking-actions">
+        <button class="big-btn ghost" id="backFromRankingBtn">もどる</button>
+        <button class="link-btn" id="clearRankingBtn">記録を消す</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const startScreen = document.getElementById('startScreen');
+  const quizScreen = document.getElementById('quizScreen');
+  const resultScreen = document.getElementById('resultScreen');
+  const rankingScreen = document.getElementById('rankingScreen');
+  const startBtn = document.getElementById('startBtn');
+  const retryBtn = document.getElementById('retryBtn');
+  const viewRankingBtn = document.getElementById('viewRankingBtn');
+  const resultRankingBtn = document.getElementById('resultRankingBtn');
+  const backFromRankingBtn = document.getElementById('backFromRankingBtn');
+  const clearRankingBtn = document.getElementById('clearRankingBtn');
+  const playerNameInput = document.getElementById('playerName');
+  const rankingList = document.getElementById('rankingList');
+  const stopwatchEl = document.getElementById('stopwatch');
+  const progressBar = document.getElementById('progressBar');
+  const qnumEl = document.getElementById('qnum');
+  const questionTextEl = document.getElementById('questionText');
+  const choicesEl = document.getElementById('choices');
+  const resultEmoji = document.getElementById('resultEmoji');
+  const resultTitle = document.getElementById('resultTitle');
+  const resultBody = document.getElementById('resultBody');
+
+  const TOTAL_QUESTIONS = 10;
+  const RANKING_KEY = 'kuku_challenge_ranking_v1';
+  const MAX_RANKING_ENTRIES = 20;
+
+  let allProblems = [];
+  for(let a=1; a<=9; a++){
+    for(let b=1; b<=9; b++){
+      allProblems.push({a:a, b:b, answer:a*b});
+    }
+  }
+
+  let questions = [];
+  let currentIndex = 0;
+  let correctCount = 0;
+  let timerInterval = null;
+  let startTime = 0;
+  let finished = false;
+  let lastEntryId = null;
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  function pickQuestions(){
+    questions = shuffle(allProblems).slice(0, TOTAL_QUESTIONS);
+  }
+
+  function makeChoices(correctAnswer){
+    const choicesSet = new Set([correctAnswer]);
+    while(choicesSet.size < 4){
+      const deltaOptions = [-9,-8,-6,-4,-3,-2,-1,1,2,3,4,6,8,9];
+      const delta = deltaOptions[Math.floor(Math.random()*deltaOptions.length)];
+      let candidate = correctAnswer + delta;
+      if(candidate < 1) candidate = correctAnswer + Math.abs(delta);
+      if(candidate === correctAnswer || candidate < 1 || candidate > 90) continue;
+      choicesSet.add(candidate);
+    }
+    return shuffle(Array.from(choicesSet));
+  }
+
+  function formatTime(ms){
+    return (ms/1000).toFixed(1) + '秒';
+  }
+
+  function startTimer(){
+    startTime = Date.now();
+    stopwatchEl.textContent = '0.0秒';
+    timerInterval = setInterval(()=>{
+      const elapsed = Date.now() - startTime;
+      stopwatchEl.textContent = formatTime(elapsed);
+    }, 100);
+  }
+
+  function stopTimer(){
+    clearInterval(timerInterval);
+    return Date.now() - startTime;
+  }
+
+  function showScreen(screen){
+    [startScreen, quizScreen, resultScreen, rankingScreen].forEach(s => s.classList.remove('active'));
+    screen.classList.add('active');
+  }
+
+  function updateProgress(){
+    const pct = (currentIndex / TOTAL_QUESTIONS) * 100;
+    progressBar.style.width = pct + '%';
+  }
+
+  function renderQuestion(){
+    if(finished) return;
+    const q = questions[currentIndex];
+    qnumEl.textContent = '第' + (currentIndex+1) + '問 / ' + TOTAL_QUESTIONS + '問';
+    questionTextEl.textContent = q.a + ' × ' + q.b + ' = ?';
+    updateProgress();
+
+    const opts = makeChoices(q.answer);
+    choicesEl.innerHTML = '';
+    opts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = opt;
+      btn.addEventListener('click', () => handleAnswer(opt, q.answer, btn));
+      choicesEl.appendChild(btn);
+    });
+  }
+
+  function handleAnswer(selected, correctAnswer, btnEl){
+    if(finished) return;
+    const allBtns = choicesEl.querySelectorAll('.choice-btn');
+    allBtns.forEach(b => b.disabled = true);
+
+    if(selected === correctAnswer){
+      btnEl.classList.add('correct');
+      correctCount++;
+      currentIndex++;
+      updateProgress();
+      if(correctCount >= TOTAL_QUESTIONS){
+        finished = true;
+        const elapsed = stopTimer();
+        setTimeout(()=> showClear(elapsed), 500);
+      } else {
+        setTimeout(renderQuestion, 500);
+      }
+    } else {
+      finished = true;
+      btnEl.classList.add('wrong');
+      allBtns.forEach(b => {
+        if(parseInt(b.textContent,10) === correctAnswer){
+          b.classList.add('correct');
+        }
+      });
+      stopTimer();
+      const q = questions[currentIndex];
+      setTimeout(()=> showFail(q, selected), 900);
+    }
+  }
+
+  // ===== ランキング（この端末のlocalStorageに保存）=====
+  function loadRanking(){
+    try{
+      const raw = localStorage.getItem(RANKING_KEY);
+      if(!raw) return [];
+      const arr = JSON.parse(raw);
+      if(!Array.isArray(arr)) return [];
+      return arr;
+    }catch(e){
+      return [];
+    }
+  }
+
+  function saveRanking(list){
+    try{
+      localStorage.setItem(RANKING_KEY, JSON.stringify(list));
+    }catch(e){
+      // 保存できない環境でも進行できるようにする
+    }
+  }
+
+  function addRankingEntry(name, elapsedMs){
+    const list = loadRanking();
+    const entry = {
+      id: Date.now() + '_' + Math.random().toString(36).slice(2,7),
+      name: (name && name.trim()) ? name.trim().slice(0,10) : 'なまえなし',
+      time: elapsedMs,
+      date: new Date().toISOString()
+    };
+    list.push(entry);
+    list.sort((a,b) => a.time - b.time);
+    const trimmed = list.slice(0, MAX_RANKING_ENTRIES);
+    saveRanking(trimmed);
+    return entry.id;
+  }
+
+  function renderRanking(){
+    const list = loadRanking();
+    rankingList.innerHTML = '';
+    if(list.length === 0){
+      rankingList.innerHTML = '<li class="ranking-empty">まだきろくがありません。<br>クリアするときろくがのこるよ!</li>';
+      return;
+    }
+    list.forEach((entry, idx) => {
+      const li = document.createElement('li');
+      li.className = 'ranking-item' + (entry.id === lastEntryId ? ' highlight' : '');
+      const rank = idx + 1;
+      let badgeClass = 'rank-badge';
+      if(rank === 1) badgeClass += ' r1';
+      else if(rank === 2) badgeClass += ' r2';
+      else if(rank === 3) badgeClass += ' r3';
+      li.innerHTML =
+        '<div class="' + badgeClass + '">' + rank + '</div>' +
+        '<div class="rank-name">' + escapeHtml(entry.name) + '</div>' +
+        '<div class="rank-time">' + formatTime(entry.time) + '</div>';
+      rankingList.appendChild(li);
+    });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function showClear(elapsedMs){
+    const name = playerNameInput.value;
+    lastEntryId = addRankingEntry(name, elapsedMs);
+    const list = loadRanking();
+    const rankPos = list.findIndex(e => e.id === lastEntryId) + 1;
+    const isTop3 = rankPos > 0 && rankPos <= 3;
+
+    resultEmoji.textContent = '🎉';
+    resultTitle.textContent = 'クリア!';
+    resultTitle.className = 'result-title clear';
+    resultBody.innerHTML =
+      (isTop3 ? '<div class="new-record">🏆 ランキング ' + rankPos + '位!</div>' : '') +
+      '<div class="time-display">タイム: ' + formatTime(elapsedMs) + '</div>' +
+      '<p>10問全問正解、おめでとう!</p>';
+    showScreen(resultScreen);
+  }
+
+  function showFail(q, selected){
+    lastEntryId = null;
+    resultEmoji.textContent = '😢';
+    resultTitle.textContent = '残念、終了です';
+    resultTitle.className = 'result-title fail';
+    resultBody.innerHTML =
+      '<div class="fail-detail">' +
+        '<div class="q">' + q.a + ' × ' + q.b + ' = ' + q.answer + '</div>' +
+        'あなたの答え: ' + selected +
+      '</div>' +
+      '<p>記録は残りません。もう一度チャレンジしてみよう!</p>';
+    showScreen(resultScreen);
+  }
+
+  function startQuiz(){
+    finished = false;
+    currentIndex = 0;
+    correctCount = 0;
+    pickQuestions();
+    showScreen(quizScreen);
+    updateProgress();
+    startTimer();
+    renderQuestion();
+  }
+
+  startBtn.addEventListener('click', startQuiz);
+  retryBtn.addEventListener('click', startQuiz);
+
+  viewRankingBtn.addEventListener('click', () => {
+    renderRanking();
+    showScreen(rankingScreen);
+  });
+  resultRankingBtn.addEventListener('click', () => {
+    renderRanking();
+    showScreen(rankingScreen);
+  });
+  backFromRankingBtn.addEventListener('click', () => {
+    showScreen(startScreen);
+  });
+  clearRankingBtn.addEventListener('click', () => {
+    if(confirm('この端末のランキングをすべて消します。よろしいですか？')){
+      saveRanking([]);
+      renderRanking();
+    }
+  });
+})();
+</script>
+</body>
+</html>

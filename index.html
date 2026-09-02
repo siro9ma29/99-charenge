@@ -13,9 +13,6 @@
     --correct:#51cf66;
     --wrong:#ff6b6b;
     --text:#3a2e2a;
-    --gold:#ffca28;
-    --silver:#b0bec5;
-    --bronze:#d98757;
   }
   *{box-sizing:border-box;}
   body{
@@ -78,38 +75,9 @@
   }
   .screen{display:none;}
   .screen.active{display:block;}
-  .start-screen{text-align:center;padding:10px 10px 30px;}
+  .start-screen{text-align:center;padding:30px 10px;}
   .start-screen p{line-height:1.7;font-size:1.05em;}
   .kuku-emoji{font-size:3.5em;margin-bottom:6px;}
-  .name-input-wrap{
-    margin:16px 0;
-    text-align:left;
-  }
-  .name-input-wrap label{
-    display:block;
-    font-size:0.9em;
-    font-weight:bold;
-    color:var(--main-dark);
-    margin-bottom:6px;
-  }
-  #playerName{
-    width:100%;
-    padding:12px 14px;
-    font-size:1.1em;
-    border:2px solid #ffcf9b;
-    border-radius:14px;
-    background:#fff9f0;
-    color:var(--text);
-    outline:none;
-  }
-  #playerName:focus{border-color:var(--main);}
-  .btn-row{
-    display:flex;
-    gap:10px;
-    justify-content:center;
-    flex-wrap:wrap;
-    margin-top:10px;
-  }
   .question-box{
     text-align:center;
     background:#fff3e2;
@@ -165,9 +133,9 @@
     margin-top:20px;
     background:var(--main);
     color:#fff;
-    font-size:1.15em;
+    font-size:1.2em;
     font-weight:bold;
-    padding:14px 34px;
+    padding:14px 40px;
     border:none;
     border-radius:30px;
     cursor:pointer;
@@ -176,17 +144,6 @@
   .big-btn:active{
     transform:translateY(3px);
     box-shadow:0 2px 0 var(--main-dark);
-  }
-  .big-btn.secondary{
-    background:var(--accent);
-    box-shadow:0 5px 0 #2f8fd6;
-  }
-  .big-btn.ghost{
-    background:#fff;
-    color:var(--main-dark);
-    border:2px solid var(--main);
-    box-shadow:none;
-    padding:12px 32px;
   }
   .result-screen{text-align:center;padding:20px 10px;}
   .result-emoji{font-size:4em;}
@@ -203,16 +160,6 @@
     color:var(--main-dark);
     margin:10px 0 20px;
   }
-  .new-record{
-    display:inline-block;
-    background:var(--gold);
-    color:#5a4200;
-    font-weight:bold;
-    font-size:0.9em;
-    padding:6px 14px;
-    border-radius:20px;
-    margin-bottom:10px;
-  }
   .fail-detail{
     background:#fff0f0;
     border-radius:14px;
@@ -221,90 +168,6 @@
     font-size:1.1em;
   }
   .fail-detail .q{font-weight:bold;font-size:1.3em;}
-
-  /* ランキング画面 */
-  .ranking-screen{padding:6px 4px 10px;}
-  .ranking-header{
-    text-align:center;
-    margin-bottom:14px;
-  }
-  .ranking-header h2{
-    margin:0;
-    color:var(--main-dark);
-    font-size:1.4em;
-  }
-  .ranking-note{
-    font-size:0.8em;
-    color:#a08a78;
-    margin-top:4px;
-  }
-  .ranking-list{
-    list-style:none;
-    margin:0 0 16px;
-    padding:0;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-  }
-  .ranking-item{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    background:#fff8ef;
-    border-radius:14px;
-    padding:10px 14px;
-    border:2px solid #ffe6c6;
-  }
-  .ranking-item.highlight{
-    border-color:var(--gold);
-    background:#fff6db;
-  }
-  .rank-badge{
-    width:32px;
-    height:32px;
-    border-radius:50%;
-    background:#e9c9a3;
-    color:#fff;
-    font-weight:bold;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-shrink:0;
-  }
-  .rank-badge.r1{background:var(--gold);}
-  .rank-badge.r2{background:var(--silver);}
-  .rank-badge.r3{background:var(--bronze);}
-  .rank-name{
-    flex:1;
-    font-weight:bold;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-  .rank-time{
-    font-weight:bold;
-    color:var(--main-dark);
-  }
-  .ranking-empty{
-    text-align:center;
-    color:#a08a78;
-    padding:30px 10px;
-  }
-  .ranking-actions{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    flex-wrap:wrap;
-  }
-  .link-btn{
-    background:none;
-    border:none;
-    color:#c0836a;
-    text-decoration:underline;
-    font-size:0.85em;
-    cursor:pointer;
-    padding:4px;
-  }
 </style>
 </head>
 <body>
@@ -322,14 +185,7 @@
       <p>九九の問題が<b>ランダムで10問</b>出ます。<br>
       1問でも間違えると終了になるよ。<br>
       全問正解でクリア、タイムが表示されます!</p>
-      <div class="name-input-wrap">
-        <label for="playerName">なまえ（ランキングにひょうじされます）</label>
-        <input type="text" id="playerName" maxlength="10" placeholder="れい: たろう">
-      </div>
-      <div class="btn-row">
-        <button class="big-btn" id="startBtn">スタート</button>
-        <button class="big-btn secondary" id="viewRankingBtn">ランキングを見る</button>
-      </div>
+      <button class="big-btn" id="startBtn">スタート</button>
     </div>
   </div>
 
@@ -348,25 +204,7 @@
       <div class="result-emoji" id="resultEmoji"></div>
       <div class="result-title" id="resultTitle"></div>
       <div id="resultBody"></div>
-      <div class="btn-row">
-        <button class="big-btn" id="retryBtn">もう一度チャレンジ</button>
-        <button class="big-btn secondary" id="resultRankingBtn">ランキングを見る</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ランキング画面 -->
-  <div class="screen" id="rankingScreen">
-    <div class="ranking-screen">
-      <div class="ranking-header">
-        <h2>🏆 この端末のランキング</h2>
-        <div class="ranking-note">※この端末（ブラウザ）だけに保存された記録です</div>
-      </div>
-      <ul class="ranking-list" id="rankingList"></ul>
-      <div class="ranking-actions">
-        <button class="big-btn ghost" id="backFromRankingBtn">もどる</button>
-        <button class="link-btn" id="clearRankingBtn">記録を消す</button>
-      </div>
+      <button class="big-btn" id="retryBtn">もう一度チャレンジ</button>
     </div>
   </div>
 </div>
@@ -376,15 +214,8 @@
   const startScreen = document.getElementById('startScreen');
   const quizScreen = document.getElementById('quizScreen');
   const resultScreen = document.getElementById('resultScreen');
-  const rankingScreen = document.getElementById('rankingScreen');
   const startBtn = document.getElementById('startBtn');
   const retryBtn = document.getElementById('retryBtn');
-  const viewRankingBtn = document.getElementById('viewRankingBtn');
-  const resultRankingBtn = document.getElementById('resultRankingBtn');
-  const backFromRankingBtn = document.getElementById('backFromRankingBtn');
-  const clearRankingBtn = document.getElementById('clearRankingBtn');
-  const playerNameInput = document.getElementById('playerName');
-  const rankingList = document.getElementById('rankingList');
   const stopwatchEl = document.getElementById('stopwatch');
   const progressBar = document.getElementById('progressBar');
   const qnumEl = document.getElementById('qnum');
@@ -395,9 +226,6 @@
   const resultBody = document.getElementById('resultBody');
 
   const TOTAL_QUESTIONS = 10;
-  const RANKING_KEY = 'kuku_challenge_ranking_v1';
-  const MAX_RANKING_ENTRIES = 20;
-
   let allProblems = [];
   for(let a=1; a<=9; a++){
     for(let b=1; b<=9; b++){
@@ -411,7 +239,6 @@
   let timerInterval = null;
   let startTime = 0;
   let finished = false;
-  let lastEntryId = null;
 
   function shuffle(arr){
     const a = arr.slice();
@@ -458,7 +285,7 @@
   }
 
   function showScreen(screen){
-    [startScreen, quizScreen, resultScreen, rankingScreen].forEach(s => s.classList.remove('active'));
+    [startScreen, quizScreen, resultScreen].forEach(s => s.classList.remove('active'));
     screen.classList.add('active');
   }
 
@@ -516,90 +343,17 @@
     }
   }
 
-  // ===== ランキング（この端末のlocalStorageに保存）=====
-  function loadRanking(){
-    try{
-      const raw = localStorage.getItem(RANKING_KEY);
-      if(!raw) return [];
-      const arr = JSON.parse(raw);
-      if(!Array.isArray(arr)) return [];
-      return arr;
-    }catch(e){
-      return [];
-    }
-  }
-
-  function saveRanking(list){
-    try{
-      localStorage.setItem(RANKING_KEY, JSON.stringify(list));
-    }catch(e){
-      // 保存できない環境でも進行できるようにする
-    }
-  }
-
-  function addRankingEntry(name, elapsedMs){
-    const list = loadRanking();
-    const entry = {
-      id: Date.now() + '_' + Math.random().toString(36).slice(2,7),
-      name: (name && name.trim()) ? name.trim().slice(0,10) : 'なまえなし',
-      time: elapsedMs,
-      date: new Date().toISOString()
-    };
-    list.push(entry);
-    list.sort((a,b) => a.time - b.time);
-    const trimmed = list.slice(0, MAX_RANKING_ENTRIES);
-    saveRanking(trimmed);
-    return entry.id;
-  }
-
-  function renderRanking(){
-    const list = loadRanking();
-    rankingList.innerHTML = '';
-    if(list.length === 0){
-      rankingList.innerHTML = '<li class="ranking-empty">まだきろくがありません。<br>クリアするときろくがのこるよ!</li>';
-      return;
-    }
-    list.forEach((entry, idx) => {
-      const li = document.createElement('li');
-      li.className = 'ranking-item' + (entry.id === lastEntryId ? ' highlight' : '');
-      const rank = idx + 1;
-      let badgeClass = 'rank-badge';
-      if(rank === 1) badgeClass += ' r1';
-      else if(rank === 2) badgeClass += ' r2';
-      else if(rank === 3) badgeClass += ' r3';
-      li.innerHTML =
-        '<div class="' + badgeClass + '">' + rank + '</div>' +
-        '<div class="rank-name">' + escapeHtml(entry.name) + '</div>' +
-        '<div class="rank-time">' + formatTime(entry.time) + '</div>';
-      rankingList.appendChild(li);
-    });
-  }
-
-  function escapeHtml(str){
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  }
-
   function showClear(elapsedMs){
-    const name = playerNameInput.value;
-    lastEntryId = addRankingEntry(name, elapsedMs);
-    const list = loadRanking();
-    const rankPos = list.findIndex(e => e.id === lastEntryId) + 1;
-    const isTop3 = rankPos > 0 && rankPos <= 3;
-
     resultEmoji.textContent = '🎉';
     resultTitle.textContent = 'クリア!';
     resultTitle.className = 'result-title clear';
     resultBody.innerHTML =
-      (isTop3 ? '<div class="new-record">🏆 ランキング ' + rankPos + '位!</div>' : '') +
       '<div class="time-display">タイム: ' + formatTime(elapsedMs) + '</div>' +
       '<p>10問全問正解、おめでとう!</p>';
     showScreen(resultScreen);
   }
 
   function showFail(q, selected){
-    lastEntryId = null;
     resultEmoji.textContent = '😢';
     resultTitle.textContent = '残念、終了です';
     resultTitle.className = 'result-title fail';
@@ -625,24 +379,6 @@
 
   startBtn.addEventListener('click', startQuiz);
   retryBtn.addEventListener('click', startQuiz);
-
-  viewRankingBtn.addEventListener('click', () => {
-    renderRanking();
-    showScreen(rankingScreen);
-  });
-  resultRankingBtn.addEventListener('click', () => {
-    renderRanking();
-    showScreen(rankingScreen);
-  });
-  backFromRankingBtn.addEventListener('click', () => {
-    showScreen(startScreen);
-  });
-  clearRankingBtn.addEventListener('click', () => {
-    if(confirm('この端末のランキングをすべて消します。よろしいですか？')){
-      saveRanking([]);
-      renderRanking();
-    }
-  });
 })();
 </script>
 </body>

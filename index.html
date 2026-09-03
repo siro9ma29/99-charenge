@@ -168,6 +168,77 @@
     font-size:1.1em;
   }
   .fail-detail .q{font-weight:bold;font-size:1.3em;}
+
+  .best-box{
+    background:#fff8ef;
+    border:2px solid #ffe6c6;
+    border-radius:16px;
+    padding:14px 16px;
+    margin:18px 0 6px;
+    text-align:left;
+  }
+  .best-box h3{
+    margin:0 0 8px;
+    font-size:0.95em;
+    color:var(--main-dark);
+    text-align:center;
+  }
+  .best-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .best-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#fff;
+    border-radius:10px;
+    padding:8px 12px;
+  }
+  .best-item.new{
+    border:2px solid #ffca28;
+    background:#fff6db;
+  }
+  .best-rank{
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    background:#e9c9a3;
+    color:#fff;
+    font-weight:bold;
+    font-size:0.85em;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .best-rank.r1{background:#ffca28;}
+  .best-rank.r2{background:#b0bec5;}
+  .best-rank.r3{background:#d98757;}
+  .best-time{
+    font-weight:bold;
+    color:var(--main-dark);
+  }
+  .best-empty{
+    text-align:center;
+    color:#a08a78;
+    font-size:0.9em;
+    padding:6px 0;
+  }
+  .new-record-badge{
+    display:inline-block;
+    background:#ffca28;
+    color:#5a4200;
+    font-weight:bold;
+    font-size:0.9em;
+    padding:6px 14px;
+    border-radius:20px;
+    margin-bottom:10px;
+  }
 </style>
 </head>
 <body>
@@ -186,6 +257,10 @@
       1問でも間違えると終了になるよ。<br>
       全問正解でクリア、タイムが表示されます!</p>
       <button class="big-btn" id="startBtn">スタート</button>
+      <div class="best-box">
+        <h3>🏆 じぶんのベスト3</h3>
+        <ul class="best-list" id="startBestList"></ul>
+      </div>
     </div>
   </div>
 
@@ -204,6 +279,10 @@
       <div class="result-emoji" id="resultEmoji"></div>
       <div class="result-title" id="resultTitle"></div>
       <div id="resultBody"></div>
+      <div class="best-box" id="resultBestBox" style="display:none;">
+        <h3>🏆 じぶんのベスト3</h3>
+        <ul class="best-list" id="resultBestList"></ul>
+      </div>
       <button class="big-btn" id="retryBtn">もう一度チャレンジ</button>
     </div>
   </div>
@@ -224,8 +303,13 @@
   const resultEmoji = document.getElementById('resultEmoji');
   const resultTitle = document.getElementById('resultTitle');
   const resultBody = document.getElementById('resultBody');
+  const startBestList = document.getElementById('startBestList');
+  const resultBestBox = document.getElementById('resultBestBox');
+  const resultBestList = document.getElementById('resultBestList');
 
   const TOTAL_QUESTIONS = 10;
+  const BEST_KEY = 'kuku_challenge_best3_v1';
+  const MAX_BEST = 3;
   let allProblems = [];
   for(let a=1; a<=9; a++){
     for(let b=1; b<=9; b++){
@@ -343,17 +427,76 @@
     }
   }
 
+  // ===== 自己ベスト3（この端末のlocalStorageに保存）=====
+  function loadBest(){
+    try{
+      const raw = localStorage.getItem(BEST_KEY);
+      if(!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    }catch(e){
+      return [];
+    }
+  }
+
+  function saveBest(list){
+    try{
+      localStorage.setItem(BEST_KEY, JSON.stringify(list));
+    }catch(e){
+      // 保存できなくてもアプリの進行は止めない
+    }
+  }
+
+  // elapsedMsを記録し、ベスト3入りしたかどうかの順位(入らなければ0)を返す
+  function registerBest(elapsedMs){
+    const list = loadBest();
+    list.push(elapsedMs);
+    list.sort((a,b) => a - b);
+    const trimmed = list.slice(0, MAX_BEST);
+    saveBest(trimmed);
+    const rank = trimmed.indexOf(elapsedMs);
+    return rank === -1 ? 0 : rank + 1;
+  }
+
+  function renderBestList(ulEl, highlightTime){
+    const list = loadBest();
+    ulEl.innerHTML = '';
+    if(list.length === 0){
+      ulEl.innerHTML = '<li class="best-empty">まだ記録がありません</li>';
+      return;
+    }
+    list.forEach((time, idx) => {
+      const rank = idx + 1;
+      let rankClass = 'best-rank';
+      if(rank === 1) rankClass += ' r1';
+      else if(rank === 2) rankClass += ' r2';
+      else if(rank === 3) rankClass += ' r3';
+      const isNew = (highlightTime !== undefined && time === highlightTime);
+      const li = document.createElement('li');
+      li.className = 'best-item' + (isNew ? ' new' : '');
+      li.innerHTML =
+        '<div class="' + rankClass + '">' + rank + '</div>' +
+        '<div class="best-time">' + formatTime(time) + '</div>';
+      ulEl.appendChild(li);
+    });
+  }
+
   function showClear(elapsedMs){
+    const rank = registerBest(elapsedMs);
     resultEmoji.textContent = '🎉';
     resultTitle.textContent = 'クリア!';
     resultTitle.className = 'result-title clear';
     resultBody.innerHTML =
+      (rank > 0 ? '<div class="new-record-badge">🏅 じぶんのベスト' + rank + '位!</div>' : '') +
       '<div class="time-display">タイム: ' + formatTime(elapsedMs) + '</div>' +
       '<p>10問全問正解、おめでとう!</p>';
+    resultBestBox.style.display = 'block';
+    renderBestList(resultBestList, rank > 0 ? elapsedMs : undefined);
     showScreen(resultScreen);
   }
 
   function showFail(q, selected){
+    resultBestBox.style.display = 'none';
     resultEmoji.textContent = '😢';
     resultTitle.textContent = '残念、終了です';
     resultTitle.className = 'result-title fail';
@@ -379,6 +522,9 @@
 
   startBtn.addEventListener('click', startQuiz);
   retryBtn.addEventListener('click', startQuiz);
+
+  // 初期表示：スタート画面に自己ベスト3を表示
+  renderBestList(startBestList);
 })();
 </script>
 </body>

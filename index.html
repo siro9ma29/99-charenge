@@ -336,18 +336,120 @@
   .fail-detail .q{font-weight:bold;font-size:1.3em;}
 
   .earned-stamp-box{
+    position:relative;
     display:flex;
     flex-direction:column;
     align-items:center;
     gap:2px;
-    margin:8px 0;
+    margin:10px 0 16px;
+    padding:22px 10px 18px;
+    border-radius:26px;
+    overflow:hidden;
+    isolation:isolate;
+    animation:stampBoxIn .55s cubic-bezier(.34,1.56,.64,1) both;
   }
-  .earned-stamp-emoji{font-size:2.6em;line-height:1;}
-  .earned-stamp-name{font-weight:bold;color:var(--main-dark);}
-  .earned-stamp-new{
+  .earned-stamp-box.tier-bronze{
+    background:linear-gradient(160deg,#fdeee0,#eec49a);
+    box-shadow:0 8px 20px rgba(180,110,50,0.3), inset 0 0 0 2px rgba(255,255,255,0.5);
+  }
+  .earned-stamp-box.tier-silver{
+    background:linear-gradient(160deg,#f6f8fa,#cfd8dc);
+    box-shadow:0 8px 20px rgba(110,130,140,0.3), inset 0 0 0 2px rgba(255,255,255,0.6);
+  }
+  .earned-stamp-box.tier-gold{
+    background:linear-gradient(160deg,#fff6d6,#ffce3a);
+    box-shadow:0 10px 26px rgba(255,180,20,0.45), inset 0 0 0 2px rgba(255,255,255,0.6);
+  }
+  .earned-stamp-box.tier-platinum{
+    background:linear-gradient(160deg,#f0f9ff,#bfe6ff,#dcc4ff);
+    box-shadow:0 12px 30px rgba(130,150,255,0.5), inset 0 0 0 2px rgba(255,255,255,0.7);
+  }
+  .earned-stamp-box::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,0.75) 45%,transparent 60%);
+    background-size:220% 100%;
+    background-position:-40% 0;
+    animation:stampShine 1.8s .5s ease-out;
+    pointer-events:none;
+    z-index:1;
+  }
+  @keyframes stampBoxIn{
+    0%{transform:scale(0.35) rotate(-10deg);opacity:0;}
+    55%{transform:scale(1.18) rotate(4deg);opacity:1;}
+    75%{transform:scale(0.95) rotate(-2deg);}
+    100%{transform:scale(1) rotate(0);}
+  }
+  @keyframes stampShine{
+    0%{background-position:-60% 0;}
+    100%{background-position:160% 0;}
+  }
+  .earned-stamp-sparkle{
+    position:absolute;
+    font-size:1.3em;
+    line-height:1;
+    animation:stampSparkle 1.5s ease-in-out infinite;
+    pointer-events:none;
+    z-index:2;
+  }
+  @keyframes stampSparkle{
+    0%,100%{opacity:0.25;transform:scale(0.7) rotate(0deg);}
+    50%{opacity:1;transform:scale(1.2) rotate(15deg);}
+  }
+  .earned-stamp-label{
+    position:relative;
+    z-index:2;
     font-size:0.85em;
-    color:#e6a800;
     font-weight:bold;
+    color:#9a7245;
+    letter-spacing:2px;
+    opacity:0.85;
+  }
+  .earned-stamp-emoji{
+    position:relative;
+    z-index:2;
+    font-size:5em;
+    line-height:1;
+    margin-top:2px;
+    filter:drop-shadow(0 5px 8px rgba(0,0,0,0.25));
+    animation:stampEmojiPop .6s .18s cubic-bezier(.34,1.7,.64,1) both;
+  }
+  @keyframes stampEmojiPop{
+    0%{transform:scale(0) rotate(-25deg);}
+    70%{transform:scale(1.3) rotate(8deg);}
+    100%{transform:scale(1) rotate(0);}
+  }
+  .earned-stamp-name{
+    position:relative;
+    z-index:2;
+    font-size:1.9em;
+    font-weight:900;
+    letter-spacing:1px;
+    margin-top:4px;
+    animation:stampNameIn .5s .32s ease both;
+  }
+  @keyframes stampNameIn{
+    0%{opacity:0;transform:translateY(10px);}
+    100%{opacity:1;transform:translateY(0);}
+  }
+  .tier-bronze .earned-stamp-name{color:#8a4b19;text-shadow:0 1px 0 rgba(255,255,255,0.7);}
+  .tier-silver .earned-stamp-name{color:#4b6069;text-shadow:0 1px 0 rgba(255,255,255,0.8);}
+  .tier-gold .earned-stamp-name{color:#a3690a;text-shadow:0 1px 0 rgba(255,255,255,0.7);}
+  .tier-platinum .earned-stamp-name{color:#6a3fb5;text-shadow:0 1px 0 rgba(255,255,255,0.8);}
+  .earned-stamp-new{
+    position:relative;
+    z-index:2;
+    display:inline-block;
+    font-size:0.95em;
+    color:#5a3d00;
+    font-weight:bold;
+    background:linear-gradient(160deg,#fff3c2,#ffca28);
+    padding:5px 16px;
+    border-radius:16px;
+    margin-top:8px;
+    box-shadow:0 4px 10px rgba(255,170,0,0.4);
+    animation:stampNameIn .5s .5s ease both;
   }
 
   .best-box{
@@ -427,7 +529,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v1.6</span>
+      <span class="version-badge">v1.7</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -882,7 +984,12 @@
     resultTitle.className = 'result-title clear';
     resultBody.innerHTML =
       '<p style="color:#a87a4a;font-weight:bold;margin:0 0 4px;">' + modeTitleFor(currentMode) + '</p>' +
-      '<div class="earned-stamp-box">' +
+      '<div class="earned-stamp-box tier-' + stampResult.tier + '">' +
+        '<span class="earned-stamp-sparkle" style="top:8px;left:12px;animation-delay:0s;">✨</span>' +
+        '<span class="earned-stamp-sparkle" style="top:12px;right:14px;animation-delay:.5s;">⭐</span>' +
+        '<span class="earned-stamp-sparkle" style="bottom:10px;left:22px;animation-delay:.9s;">✨</span>' +
+        '<span class="earned-stamp-sparkle" style="bottom:14px;right:24px;animation-delay:.3s;">⭐</span>' +
+        '<div class="earned-stamp-label">STAMP GET</div>' +
         '<div class="earned-stamp-emoji">' + STAMP_EMOJI[stampResult.tier] + '</div>' +
         '<div class="earned-stamp-name">' + STAMP_NAME[stampResult.tier] + 'スタンプ獲得!</div>' +
         (stampResult.updated ? '<div class="earned-stamp-new">✨ 自己ベストスタンプ更新!</div>' : '') +

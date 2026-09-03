@@ -42,10 +42,27 @@
     align-items:center;
     margin-bottom:10px;
   }
+  .title-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
   h1{
     font-size:1.3em;
     margin:0;
     color:var(--main-dark);
+  }
+  .version-badge{
+    display:inline-block;
+    background:#fff;
+    color:var(--main-dark);
+    border:1.5px solid var(--main);
+    font-size:0.68em;
+    font-weight:bold;
+    padding:2px 8px;
+    border-radius:10px;
+    letter-spacing:0.5px;
+    white-space:nowrap;
   }
   .stopwatch{
     background:var(--main);
@@ -75,9 +92,131 @@
   }
   .screen{display:none;}
   .screen.active{display:block;}
-  .start-screen{text-align:center;padding:30px 10px;}
-  .start-screen p{line-height:1.7;font-size:1.05em;}
-  .kuku-emoji{font-size:3.5em;margin-bottom:6px;}
+  .start-screen{text-align:center;padding:20px 6px;}
+  .start-screen p{line-height:1.7;font-size:1.0em;}
+  .kuku-emoji{font-size:3em;margin-bottom:4px;}
+
+  /* モード切り替えタブ */
+  .mode-tabs{
+    display:flex;
+    gap:8px;
+    margin:14px 0 10px;
+  }
+  .mode-tab{
+    flex:1;
+    padding:12px 6px;
+    border-radius:14px;
+    border:2px solid #ffd8ae;
+    background:#fff;
+    color:var(--main-dark);
+    font-weight:bold;
+    font-size:0.95em;
+    cursor:pointer;
+  }
+  .mode-tab.active{
+    background:var(--main);
+    color:#fff;
+    border-color:var(--main-dark);
+  }
+  .mode-panel{margin-top:6px;}
+
+  /* 段えらび */
+  .dan-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin:14px 0;
+  }
+  .dan-btn{
+    position:relative;
+    padding:14px 0;
+    border-radius:14px;
+    border:2px solid #ffd8ae;
+    background:#fff8ef;
+    color:var(--text);
+    font-weight:bold;
+    font-size:1.1em;
+    cursor:pointer;
+  }
+  .dan-btn.selected{
+    background:var(--accent);
+    color:#fff;
+    border-color:#2f8fd6;
+  }
+  .order-buttons{
+    display:flex;
+    gap:8px;
+    margin:6px 0 4px;
+  }
+  .order-btn{
+    position:relative;
+    flex:1;
+    padding:12px 4px;
+    border-radius:14px;
+    border:2px solid #ffd8ae;
+    background:#fff;
+    color:var(--main-dark);
+    font-weight:bold;
+    font-size:0.9em;
+    cursor:pointer;
+  }
+  .order-btn.selected{
+    background:var(--main);
+    color:#fff;
+    border-color:var(--main-dark);
+  }
+  .stamp-badge{
+    position:absolute;
+    top:-8px;
+    right:-6px;
+    font-size:1.1em;
+    line-height:1;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,0.25));
+  }
+
+  .stamp-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    background:#fff3e2;
+    border-radius:12px;
+    padding:10px 10px;
+    margin:10px 0;
+    font-size:0.95em;
+    font-weight:bold;
+    color:var(--main-dark);
+  }
+  .stamp-row .stamp-icon{font-size:1.3em;}
+  .stamp-empty{color:#a08a78;font-weight:normal;font-size:0.9em;}
+
+  .hidden{display:none!important;}
+
+  .countdown-box{
+    text-align:center;
+    background:#fff3e2;
+    border-radius:20px;
+    padding:50px 10px;
+    margin-bottom:20px;
+    border:3px dashed #ffcf9b;
+  }
+  .countdown-number{
+    font-size:4.5em;
+    font-weight:bold;
+    color:var(--main-dark);
+    animation:pop .3s ease;
+  }
+  .countdown-label{
+    font-size:1em;
+    color:#a87a4a;
+    font-weight:bold;
+    margin-top:6px;
+  }
+  @keyframes pop{
+    0%{transform:scale(0.6);opacity:0;}
+    100%{transform:scale(1);opacity:1;}
+  }
+
   .question-box{
     text-align:center;
     background:#fff3e2;
@@ -85,6 +224,12 @@
     padding:28px 10px;
     margin-bottom:20px;
     border:3px dashed #ffcf9b;
+  }
+  .mode-label{
+    font-size:0.85em;
+    color:#a87a4a;
+    font-weight:bold;
+    margin-bottom:2px;
   }
   .qnum{
     font-size:0.95em;
@@ -130,7 +275,7 @@
   .choice-btn:disabled{opacity:0.6;cursor:default;}
   .big-btn{
     display:inline-block;
-    margin-top:20px;
+    margin-top:16px;
     background:var(--main);
     color:#fff;
     font-size:1.2em;
@@ -144,6 +289,27 @@
   .big-btn:active{
     transform:translateY(3px);
     box-shadow:0 2px 0 var(--main-dark);
+  }
+  .secondary-btn{
+    display:inline-block;
+    margin-top:12px;
+    background:#fff;
+    color:var(--main-dark);
+    font-size:1.05em;
+    font-weight:bold;
+    padding:12px 32px;
+    border:2px solid var(--main);
+    border-radius:30px;
+    cursor:pointer;
+  }
+  .secondary-btn:active{
+    transform:translateY(2px);
+  }
+  .result-buttons{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
   }
   .result-screen{text-align:center;padding:20px 10px;}
   .result-emoji{font-size:4em;}
@@ -168,6 +334,21 @@
     font-size:1.1em;
   }
   .fail-detail .q{font-weight:bold;font-size:1.3em;}
+
+  .earned-stamp-box{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    margin:8px 0;
+  }
+  .earned-stamp-emoji{font-size:2.6em;line-height:1;}
+  .earned-stamp-name{font-weight:bold;color:var(--main-dark);}
+  .earned-stamp-new{
+    font-size:0.85em;
+    color:#e6a800;
+    font-weight:bold;
+  }
 
   .best-box{
     background:#fff8ef;
@@ -244,7 +425,10 @@
 <body>
 <div class="app">
   <div class="header">
-    <h1>🐱 九九チャレンジ</h1>
+    <div class="title-row">
+      <h1>🐱 九九チャレンジ</h1>
+      <span class="version-badge">v1.3</span>
+    </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
   <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
@@ -253,20 +437,51 @@
   <div class="screen active" id="startScreen">
     <div class="start-screen">
       <div class="kuku-emoji">✏️🔢</div>
-      <p>九九の問題が<b>ランダムで10問</b>出ます。<br>
-      1問でも間違えると終了になるよ。<br>
-      全問正解でクリア、タイムが表示されます!</p>
-      <button class="big-btn" id="startBtn">スタート</button>
-      <div class="best-box">
-        <h3>🏆 じぶんのベスト3</h3>
-        <ul class="best-list" id="startBestList"></ul>
+      <p>問題に答えて九九をマスターしよう!<br>1問でも間違えると終了になるよ。</p>
+
+      <div class="mode-tabs">
+        <button class="mode-tab active" id="tabRandom">🎲 ランダム10問</button>
+        <button class="mode-tab" id="tabDan">🔢 段をえらぶ</button>
+      </div>
+
+      <!-- ランダム10問モード -->
+      <div class="mode-panel" id="randomPanel">
+        <p>1の段〜9の段、ぜんぶ(81問)の中からランダムに10問出るよ。<br>全問正解でクリア!</p>
+        <div class="stamp-row" id="randomStampRow"></div>
+        <button class="big-btn" id="startRandomBtn">スタート</button>
+        <div class="best-box">
+          <h3>🏆 じぶんのベスト3</h3>
+          <ul class="best-list" id="startBestList"></ul>
+        </div>
+      </div>
+
+      <!-- 段をえらぶモード -->
+      <div class="mode-panel" id="danPanel" style="display:none;">
+        <p>れんしゅうしたい段と、といかたをえらんでね(9問)</p>
+        <div class="dan-grid" id="danGrid"></div>
+        <div class="order-buttons" id="orderButtons">
+          <button class="order-btn" data-order="up"><span class="stamp-badge"></span>⬆️ 上り</button>
+          <button class="order-btn" data-order="down"><span class="stamp-badge"></span>⬇️ 下り</button>
+          <button class="order-btn" data-order="random"><span class="stamp-badge"></span>🔀 ランダム</button>
+        </div>
+        <div class="stamp-row" id="danStampRow"></div>
+        <button class="big-btn" id="startDanBtn">この段でスタート</button>
+        <div class="best-box">
+          <h3 id="danBestTitle">🏆 ベスト3</h3>
+          <ul class="best-list" id="danBestList"></ul>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- 出題画面 -->
   <div class="screen" id="quizScreen">
-    <div class="question-box">
+    <div class="countdown-box hidden" id="countdownBox">
+      <div class="countdown-number" id="countdownNumber">3</div>
+      <div class="countdown-label">よういはいい?</div>
+    </div>
+    <div class="question-box" id="questionBox">
+      <div class="mode-label" id="modeLabel" style="display:none;"></div>
       <div class="qnum" id="qnum">第1問 / 10問</div>
       <div class="question-text" id="questionText">3 × 4 = ?</div>
     </div>
@@ -280,10 +495,13 @@
       <div class="result-title" id="resultTitle"></div>
       <div id="resultBody"></div>
       <div class="best-box" id="resultBestBox" style="display:none;">
-        <h3>🏆 じぶんのベスト3</h3>
+        <h3 id="resultBestTitle">🏆 じぶんのベスト3</h3>
         <ul class="best-list" id="resultBestList"></ul>
       </div>
-      <button class="big-btn" id="retryBtn">もう一度チャレンジ</button>
+      <div class="result-buttons">
+        <button class="big-btn" id="retryBtn">もう一度チャレンジ</button>
+        <button class="secondary-btn" id="backToMenuBtn">🏠 メニューへ戻る</button>
+      </div>
     </div>
   </div>
 </div>
@@ -293,33 +511,128 @@
   const startScreen = document.getElementById('startScreen');
   const quizScreen = document.getElementById('quizScreen');
   const resultScreen = document.getElementById('resultScreen');
-  const startBtn = document.getElementById('startBtn');
   const retryBtn = document.getElementById('retryBtn');
+  const backToMenuBtn = document.getElementById('backToMenuBtn');
   const stopwatchEl = document.getElementById('stopwatch');
   const progressBar = document.getElementById('progressBar');
   const qnumEl = document.getElementById('qnum');
+  const modeLabelEl = document.getElementById('modeLabel');
+  const questionBoxEl = document.getElementById('questionBox');
   const questionTextEl = document.getElementById('questionText');
   const choicesEl = document.getElementById('choices');
+  const countdownBox = document.getElementById('countdownBox');
+  const countdownNumber = document.getElementById('countdownNumber');
   const resultEmoji = document.getElementById('resultEmoji');
   const resultTitle = document.getElementById('resultTitle');
   const resultBody = document.getElementById('resultBody');
   const startBestList = document.getElementById('startBestList');
+  const randomStampRow = document.getElementById('randomStampRow');
   const resultBestBox = document.getElementById('resultBestBox');
+  const resultBestTitle = document.getElementById('resultBestTitle');
   const resultBestList = document.getElementById('resultBestList');
 
-  const TOTAL_QUESTIONS = 10;
-  const BEST_KEY = 'kuku_challenge_best3_v1';
+  // モード切り替えタブ
+  const tabRandom = document.getElementById('tabRandom');
+  const tabDan = document.getElementById('tabDan');
+  const randomPanel = document.getElementById('randomPanel');
+  const danPanel = document.getElementById('danPanel');
+  const startRandomBtn = document.getElementById('startRandomBtn');
+  const startDanBtn = document.getElementById('startDanBtn');
+  const danGrid = document.getElementById('danGrid');
+  const orderButtons = document.getElementById('orderButtons');
+  const danBestTitle = document.getElementById('danBestTitle');
+  const danBestList = document.getElementById('danBestList');
+  const danStampRow = document.getElementById('danStampRow');
+
+  const RANDOM_TOTAL = 10;
   const MAX_BEST = 3;
+  const RANDOM_BEST_KEY = 'kuku_challenge_best3_v1'; // 既存データとの互換性を維持
+
   let allProblems = [];
   for(let a=1; a<=9; a++){
     for(let b=1; b<=9; b++){
       allProblems.push({a:a, b:b, answer:a*b});
     }
   }
+  // ランダム10問モードでは1の段(1×N)は出題しない
+  const randomProblems = allProblems.filter(q => q.a !== 1);
 
+  const ORDER_LABEL = {up:'上り', down:'下り', random:'ランダム'};
+
+  // ===== スタンプ関連の定義 =====
+  const STAMP_RANK = {bronze:1, silver:2, gold:3};
+  const STAMP_EMOJI = {bronze:'🥉', silver:'🥈', gold:'🥇'};
+  const STAMP_NAME = {bronze:'ブロンズ', silver:'シルバー', gold:'ゴールド'};
+
+  function getThresholds(mode){
+    // ミリ秒単位のしきい値。このタイム以下ならそのスタンプを獲得
+    if(mode.type === 'random'){
+      return {gold:17000, silver:20000};
+    }
+    if(mode.order === 'random'){
+      return {gold:13000, silver:22000};
+    }
+    return {gold:10000, silver:18000}; // 上り・下り(順番通りで覚えやすい)
+  }
+
+  function getStampTier(mode, elapsedMs){
+    const th = getThresholds(mode);
+    if(elapsedMs <= th.gold) return 'gold';
+    if(elapsedMs <= th.silver) return 'silver';
+    return 'bronze';
+  }
+
+  function stampKeyFor(mode){
+    if(mode.type === 'random') return 'kuku_challenge_stamp_v1_random';
+    return 'kuku_challenge_stamp_v1_dan' + mode.dan + '_' + mode.order;
+  }
+
+  function getStoredStamp(mode){
+    try{
+      return localStorage.getItem(stampKeyFor(mode));
+    }catch(e){
+      return null;
+    }
+  }
+
+  function saveStamp(mode, tier){
+    try{
+      localStorage.setItem(stampKeyFor(mode), tier);
+    }catch(e){
+      // 保存できなくてもアプリの進行は止めない
+    }
+  }
+
+  // 今回のタイムからスタンプを判定し、既存のベストスタンプより上位なら更新する
+  function registerStamp(mode, elapsedMs){
+    const tier = getStampTier(mode, elapsedMs);
+    const prev = getStoredStamp(mode);
+    const updated = !prev || STAMP_RANK[tier] > STAMP_RANK[prev];
+    if(updated){
+      saveStamp(mode, tier);
+    }
+    return {tier: tier, bestTier: updated ? tier : prev, updated: updated};
+  }
+
+  // 過去にクリア済みなのにスタンプ未保存(旧バージョンのデータ等)の場合、その場で作成する
+  function ensureStamp(mode, bestTimeList){
+    if(bestTimeList.length === 0) return null;
+    let stamp = getStoredStamp(mode);
+    if(!stamp){
+      stamp = getStampTier(mode, bestTimeList[0]);
+      saveStamp(mode, stamp);
+    }
+    return stamp;
+  }
+
+  let selectedDan = 2;
+  let selectedOrder = 'up';
+
+  let currentMode = {type:'random'};
   let questions = [];
   let currentIndex = 0;
   let correctCount = 0;
+  let totalQuestions = RANDOM_TOTAL;
   let timerInterval = null;
   let startTime = 0;
   let finished = false;
@@ -333,8 +646,31 @@
     return a;
   }
 
-  function pickQuestions(){
-    questions = shuffle(allProblems).slice(0, TOTAL_QUESTIONS);
+  function bestKeyFor(mode){
+    if(mode.type === 'random') return RANDOM_BEST_KEY;
+    return 'kuku_challenge_best3_v1_dan' + mode.dan + '_' + mode.order;
+  }
+
+  function modeTitleFor(mode){
+    if(mode.type === 'random') return 'ランダム10問';
+    return mode.dan + 'の段(' + ORDER_LABEL[mode.order] + ')';
+  }
+
+  function pickQuestions(mode){
+    if(mode.type === 'random'){
+      return shuffle(randomProblems).slice(0, RANDOM_TOTAL);
+    }
+    const dan = mode.dan;
+    let list = [];
+    for(let b=1; b<=9; b++){
+      list.push({a:dan, b:b, answer:dan*b});
+    }
+    if(mode.order === 'down'){
+      list.reverse();
+    } else if(mode.order === 'random'){
+      list = shuffle(list);
+    }
+    return list;
   }
 
   function makeChoices(correctAnswer){
@@ -374,14 +710,20 @@
   }
 
   function updateProgress(){
-    const pct = (currentIndex / TOTAL_QUESTIONS) * 100;
+    const pct = (currentIndex / totalQuestions) * 100;
     progressBar.style.width = pct + '%';
   }
 
   function renderQuestion(){
     if(finished) return;
     const q = questions[currentIndex];
-    qnumEl.textContent = '第' + (currentIndex+1) + '問 / ' + TOTAL_QUESTIONS + '問';
+    qnumEl.textContent = '第' + (currentIndex+1) + '問 / ' + totalQuestions + '問';
+    if(currentMode.type === 'dan'){
+      modeLabelEl.style.display = 'block';
+      modeLabelEl.textContent = modeTitleFor(currentMode);
+    } else {
+      modeLabelEl.style.display = 'none';
+    }
     questionTextEl.textContent = q.a + ' × ' + q.b + ' = ?';
     updateProgress();
 
@@ -406,7 +748,7 @@
       correctCount++;
       currentIndex++;
       updateProgress();
-      if(correctCount >= TOTAL_QUESTIONS){
+      if(correctCount >= totalQuestions){
         finished = true;
         const elapsed = stopTimer();
         setTimeout(()=> showClear(elapsed), 500);
@@ -427,10 +769,10 @@
     }
   }
 
-  // ===== 自己ベスト3（この端末のlocalStorageに保存）=====
-  function loadBest(){
+  // ===== 自己ベスト3（この端末のlocalStorageに、モードごとに保存）=====
+  function loadBest(key){
     try{
-      const raw = localStorage.getItem(BEST_KEY);
+      const raw = localStorage.getItem(key);
       if(!raw) return [];
       const arr = JSON.parse(raw);
       return Array.isArray(arr) ? arr : [];
@@ -439,27 +781,27 @@
     }
   }
 
-  function saveBest(list){
+  function saveBest(key, list){
     try{
-      localStorage.setItem(BEST_KEY, JSON.stringify(list));
+      localStorage.setItem(key, JSON.stringify(list));
     }catch(e){
       // 保存できなくてもアプリの進行は止めない
     }
   }
 
   // elapsedMsを記録し、ベスト3入りしたかどうかの順位(入らなければ0)を返す
-  function registerBest(elapsedMs){
-    const list = loadBest();
+  function registerBest(key, elapsedMs){
+    const list = loadBest(key);
     list.push(elapsedMs);
     list.sort((a,b) => a - b);
     const trimmed = list.slice(0, MAX_BEST);
-    saveBest(trimmed);
+    saveBest(key, trimmed);
     const rank = trimmed.indexOf(elapsedMs);
     return rank === -1 ? 0 : rank + 1;
   }
 
-  function renderBestList(ulEl, highlightTime){
-    const list = loadBest();
+  function renderBestList(ulEl, key, highlightTime){
+    const list = loadBest(key);
     ulEl.innerHTML = '';
     if(list.length === 0){
       ulEl.innerHTML = '<li class="best-empty">まだ記録がありません</li>';
@@ -481,17 +823,77 @@
     });
   }
 
+  // メニュー画面の「クリアスタンプ＋ベストタイム」表示行を更新
+  function renderStampRow(rowEl, mode){
+    const list = loadBest(bestKeyFor(mode));
+    if(list.length === 0){
+      rowEl.innerHTML = '<span class="stamp-empty">まだクリアしていません</span>';
+      return;
+    }
+    const stamp = ensureStamp(mode, list);
+    rowEl.innerHTML =
+      '<span class="stamp-icon">' + STAMP_EMOJI[stamp] + '</span>' +
+      '<span>' + STAMP_NAME[stamp] + 'スタンプ ・ ベスト ' + formatTime(list[0]) + '</span>';
+  }
+
+  // 段グリッド／上り下りランダムボタンの右上バッジを更新
+  function renderDanGridBadges(){
+    danGrid.querySelectorAll('.dan-btn').forEach(btn => {
+      const dan = parseInt(btn.dataset.dan, 10);
+      const mode = {type:'dan', dan:dan, order:selectedOrder};
+      const list = loadBest(bestKeyFor(mode));
+      const badgeEl = btn.querySelector('.stamp-badge');
+      badgeEl.textContent = list.length ? STAMP_EMOJI[ensureStamp(mode, list)] : '';
+    });
+  }
+
+  function renderOrderButtonBadges(){
+    orderButtons.querySelectorAll('.order-btn').forEach(btn => {
+      const order = btn.dataset.order;
+      const mode = {type:'dan', dan:selectedDan, order:order};
+      const list = loadBest(bestKeyFor(mode));
+      const badgeEl = btn.querySelector('.stamp-badge');
+      badgeEl.textContent = list.length ? STAMP_EMOJI[ensureStamp(mode, list)] : '';
+    });
+  }
+
+  function renderDanBestPreview(){
+    const mode = {type:'dan', dan:selectedDan, order:selectedOrder};
+    danBestTitle.textContent = '🏆 ' + selectedDan + 'の段(' + ORDER_LABEL[selectedOrder] + ')のベスト3';
+    renderBestList(danBestList, bestKeyFor(mode));
+    renderStampRow(danStampRow, mode);
+    renderDanGridBadges();
+    renderOrderButtonBadges();
+  }
+
+  // メニュー画面全体(ランダムパネル＋段パネル)を最新の記録で再描画
+  function refreshMenu(){
+    renderBestList(startBestList, RANDOM_BEST_KEY);
+    renderStampRow(randomStampRow, {type:'random'});
+    renderDanBestPreview();
+  }
+
   function showClear(elapsedMs){
-    const rank = registerBest(elapsedMs);
+    const bestKey = bestKeyFor(currentMode);
+    const rank = registerBest(bestKey, elapsedMs);
+    const stampResult = registerStamp(currentMode, elapsedMs);
+
     resultEmoji.textContent = '🎉';
     resultTitle.textContent = 'クリア!';
     resultTitle.className = 'result-title clear';
     resultBody.innerHTML =
+      '<p style="color:#a87a4a;font-weight:bold;margin:0 0 4px;">' + modeTitleFor(currentMode) + '</p>' +
+      '<div class="earned-stamp-box">' +
+        '<div class="earned-stamp-emoji">' + STAMP_EMOJI[stampResult.tier] + '</div>' +
+        '<div class="earned-stamp-name">' + STAMP_NAME[stampResult.tier] + 'スタンプ獲得!</div>' +
+        (stampResult.updated ? '<div class="earned-stamp-new">✨ 自己ベストスタンプ更新!</div>' : '') +
+      '</div>' +
       (rank > 0 ? '<div class="new-record-badge">🏅 じぶんのベスト' + rank + '位!</div>' : '') +
       '<div class="time-display">タイム: ' + formatTime(elapsedMs) + '</div>' +
-      '<p>10問全問正解、おめでとう!</p>';
+      '<p>' + totalQuestions + '問全問正解、おめでとう!</p>';
     resultBestBox.style.display = 'block';
-    renderBestList(resultBestList, rank > 0 ? elapsedMs : undefined);
+    resultBestTitle.textContent = '🏆 ' + modeTitleFor(currentMode) + ' ベスト3';
+    renderBestList(resultBestList, bestKey, rank > 0 ? elapsedMs : undefined);
     showScreen(resultScreen);
   }
 
@@ -501,6 +903,7 @@
     resultTitle.textContent = '残念、終了です';
     resultTitle.className = 'result-title fail';
     resultBody.innerHTML =
+      '<p style="color:#a87a4a;font-weight:bold;margin:0 0 4px;">' + modeTitleFor(currentMode) + '</p>' +
       '<div class="fail-detail">' +
         '<div class="q">' + q.a + ' × ' + q.b + ' = ' + q.answer + '</div>' +
         'あなたの答え: ' + selected +
@@ -509,22 +912,100 @@
     showScreen(resultScreen);
   }
 
-  function startQuiz(){
+  function startQuiz(mode){
+    currentMode = mode;
     finished = false;
     currentIndex = 0;
     correctCount = 0;
-    pickQuestions();
+    questions = pickQuestions(mode);
+    totalQuestions = questions.length;
     showScreen(quizScreen);
     updateProgress();
-    startTimer();
-    renderQuestion();
+    stopwatchEl.textContent = '0.0秒';
+    startCountdown(() => {
+      startTimer();
+      renderQuestion();
+    });
   }
 
-  startBtn.addEventListener('click', startQuiz);
-  retryBtn.addEventListener('click', startQuiz);
+  // スタートボタンを押してから3秒間のカウントダウンを表示する
+  // （カウントダウン中は問題文・選択肢は非表示）
+  function startCountdown(onDone){
+    questionBoxEl.classList.add('hidden');
+    choicesEl.classList.add('hidden');
+    countdownBox.classList.remove('hidden');
 
-  // 初期表示：スタート画面に自己ベスト3を表示
-  renderBestList(startBestList);
+    let count = 3;
+    countdownNumber.textContent = count;
+    const interval = setInterval(() => {
+      count--;
+      if(count > 0){
+        countdownNumber.textContent = count;
+      } else if(count === 0){
+        countdownNumber.textContent = 'スタート!';
+      } else {
+        clearInterval(interval);
+        countdownBox.classList.add('hidden');
+        questionBoxEl.classList.remove('hidden');
+        choicesEl.classList.remove('hidden');
+        onDone();
+      }
+    }, 1000);
+  }
+
+  // ===== モード切り替えタブのイベント =====
+  tabRandom.addEventListener('click', () => {
+    tabRandom.classList.add('active');
+    tabDan.classList.remove('active');
+    randomPanel.style.display = 'block';
+    danPanel.style.display = 'none';
+  });
+  tabDan.addEventListener('click', () => {
+    tabDan.classList.add('active');
+    tabRandom.classList.remove('active');
+    danPanel.style.display = 'block';
+    randomPanel.style.display = 'none';
+  });
+
+  // ===== 段えらびボタンの生成 =====
+  for(let d=2; d<=9; d++){
+    const btn = document.createElement('button');
+    btn.className = 'dan-btn' + (d === selectedDan ? ' selected' : '');
+    btn.dataset.dan = d;
+    const badge = document.createElement('span');
+    badge.className = 'stamp-badge';
+    btn.appendChild(badge);
+    btn.appendChild(document.createTextNode(d + 'の段'));
+    btn.addEventListener('click', () => {
+      selectedDan = d;
+      danGrid.querySelectorAll('.dan-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      renderDanBestPreview();
+    });
+    danGrid.appendChild(btn);
+  }
+
+  // ===== 上り/下り/ランダムボタン =====
+  orderButtons.querySelectorAll('.order-btn').forEach(btn => {
+    if(btn.dataset.order === selectedOrder) btn.classList.add('selected');
+    btn.addEventListener('click', () => {
+      selectedOrder = btn.dataset.order;
+      orderButtons.querySelectorAll('.order-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      renderDanBestPreview();
+    });
+  });
+
+  startRandomBtn.addEventListener('click', () => startQuiz({type:'random'}));
+  startDanBtn.addEventListener('click', () => startQuiz({type:'dan', dan:selectedDan, order:selectedOrder}));
+  retryBtn.addEventListener('click', () => startQuiz(currentMode));
+  backToMenuBtn.addEventListener('click', () => {
+    refreshMenu();
+    showScreen(startScreen);
+  });
+
+  // 初期表示
+  refreshMenu();
 })();
 </script>
 </body>

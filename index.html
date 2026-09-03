@@ -427,7 +427,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v1.3</span>
+      <span class="version-badge">v1.5</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -554,20 +554,20 @@
       allProblems.push({a:a, b:b, answer:a*b});
     }
   }
-  // ランダム10問モードでは1の段(1×N)は出題しない
-  const randomProblems = allProblems.filter(q => q.a !== 1);
+  // ランダム10問モードでは1の段(1×N)と、◯×1(N×1)の問題も出題しない
+  const randomProblems = allProblems.filter(q => q.a !== 1 && q.b !== 1);
 
   const ORDER_LABEL = {up:'上り', down:'下り', random:'ランダム'};
 
   // ===== スタンプ関連の定義 =====
-  const STAMP_RANK = {bronze:1, silver:2, gold:3};
-  const STAMP_EMOJI = {bronze:'🥉', silver:'🥈', gold:'🥇'};
-  const STAMP_NAME = {bronze:'ブロンズ', silver:'シルバー', gold:'ゴールド'};
+  const STAMP_RANK = {bronze:1, silver:2, gold:3, platinum:4};
+  const STAMP_EMOJI = {bronze:'🥉', silver:'🥈', gold:'🥇', platinum:'💎'};
+  const STAMP_NAME = {bronze:'ブロンズ', silver:'シルバー', gold:'ゴールド', platinum:'プラチナ'};
 
   function getThresholds(mode){
     // ミリ秒単位のしきい値。このタイム以下ならそのスタンプを獲得
     if(mode.type === 'random'){
-      return {gold:17000, silver:20000};
+      return {platinum:15000, gold:17000, silver:20000};
     }
     if(mode.order === 'random'){
       return {gold:13000, silver:22000};
@@ -577,6 +577,7 @@
 
   function getStampTier(mode, elapsedMs){
     const th = getThresholds(mode);
+    if(th.platinum !== undefined && elapsedMs <= th.platinum) return 'platinum';
     if(elapsedMs <= th.gold) return 'gold';
     if(elapsedMs <= th.silver) return 'silver';
     return 'bronze';

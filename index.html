@@ -427,7 +427,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v1.5</span>
+      <span class="version-badge">v1.6</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -569,10 +569,8 @@
     if(mode.type === 'random'){
       return {platinum:15000, gold:17000, silver:20000};
     }
-    if(mode.order === 'random'){
-      return {gold:13000, silver:22000};
-    }
-    return {gold:10000, silver:18000}; // 上り・下り(順番通りで覚えやすい)
+    // 段別モード（上り・下り・ランダムすべて共通のしきい値）
+    return {platinum:10000, gold:14000, silver:18000};
   }
 
   function getStampTier(mode, elapsedMs){

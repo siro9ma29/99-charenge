@@ -110,7 +110,7 @@
     background:#fff;
     color:var(--main-dark);
     font-weight:bold;
-    font-size:0.95em;
+    font-size:0.85em;
     cursor:pointer;
   }
   .mode-tab.active{
@@ -123,7 +123,7 @@
   /* 段えらび */
   .dan-grid{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(3,1fr);
     gap:10px;
     margin:14px 0;
   }
@@ -522,6 +522,186 @@
     border-radius:20px;
     margin-bottom:10px;
   }
+
+  /* ===== v2.0 ゴースト ===== */
+  .ghost-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin:-12px 0 16px;
+    font-size:0.75em;
+    color:#8a7a99;
+    font-weight:bold;
+  }
+  .ghost-track{
+    flex:1;
+    background:#eee8f4;
+    border-radius:10px;
+    height:8px;
+    overflow:hidden;
+  }
+  .ghost-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#b9a6d6,#d8c9ee);
+  }
+  .ghost-result{
+    display:inline-block;
+    font-weight:bold;
+    font-size:0.95em;
+    padding:6px 14px;
+    border-radius:20px;
+    margin-bottom:10px;
+    background:#efe7fa;
+    color:#5b3f8c;
+  }
+
+  /* ===== v2.0 カードゲットのお知らせ ===== */
+  .card-toast{
+    position:absolute;
+    left:50%;
+    top:70px;
+    transform:translateX(-50%);
+    background:#fff;
+    border:3px solid #ffca28;
+    border-radius:18px;
+    padding:8px 16px;
+    font-weight:bold;
+    font-size:1.05em;
+    color:#7a5200;
+    box-shadow:0 6px 18px rgba(255,170,0,0.35);
+    white-space:nowrap;
+    z-index:20;
+    pointer-events:none;
+    animation:toastIn 1.4s ease forwards;
+  }
+  .card-toast.recover{border-color:#51cf66;color:#2b7a3a;}
+  .card-toast.boss{border-color:#b388ff;color:#5b2fa8;}
+  @keyframes toastIn{
+    0%{opacity:0;transform:translate(-50%,-12px) scale(0.8);}
+    15%{opacity:1;transform:translate(-50%,0) scale(1.08);}
+    25%{transform:translate(-50%,0) scale(1);}
+    80%{opacity:1;}
+    100%{opacity:0;transform:translate(-50%,-6px);}
+  }
+
+  /* ===== v2.0 結果画面のカード一覧 ===== */
+  .card-events{
+    background:#fffaf0;
+    border:2px solid #ffe6c6;
+    border-radius:16px;
+    padding:12px 14px;
+    margin:10px 0 6px;
+    text-align:left;
+    font-size:0.95em;
+  }
+  .card-events h4{margin:0 0 6px;font-size:0.95em;color:var(--main-dark);}
+  .card-events .ev-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+  .card-events .ev-list:last-child{margin-bottom:0;}
+  .ev-chip{
+    background:#fff;
+    border:2px solid #ffd8ae;
+    border-radius:12px;
+    padding:4px 8px;
+    font-weight:bold;
+  }
+  .ev-chip.nige{border-color:#d0c4b8;color:#8a7a6a;}
+  .ev-note{font-size:0.85em;color:#8a7a6a;margin:0 0 4px;}
+
+  /* ===== v2.0 九九図鑑 ===== */
+  .mode-tab{position:relative;}
+  .tab-dot{
+    position:absolute;
+    top:-7px;
+    right:-5px;
+    background:var(--wrong);
+    color:#fff;
+    font-size:0.75em;
+    min-width:20px;
+    height:20px;
+    line-height:20px;
+    border-radius:10px;
+    padding:0 5px;
+  }
+  .zukan-summary{
+    display:flex;
+    gap:8px;
+    margin:12px 0 8px;
+  }
+  .zukan-stat{
+    flex:1;
+    background:#fff3e2;
+    border-radius:12px;
+    padding:8px 4px;
+    font-weight:bold;
+    color:var(--main-dark);
+    font-size:0.85em;
+  }
+  .zukan-stat b{display:block;font-size:1.5em;color:var(--text);}
+  .zukan-grid{
+    display:grid;
+    grid-template-columns:30px repeat(9,1fr);
+    gap:3px;
+    margin:10px 0;
+  }
+  .zukan-rowlabel{
+    font-size:0.7em;
+    font-weight:bold;
+    color:#a87a4a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .zukan-cell{
+    aspect-ratio:1;
+    border-radius:8px;
+    border:none;
+    padding:0;
+    font-size:1.25em;
+    line-height:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    background:#f1ebe4;
+    color:#c9b8a6;
+    font-family:inherit;
+  }
+  .zukan-cell.got{background:#fff8ef;box-shadow:inset 0 0 0 2px #ffd8ae;}
+  .zukan-cell.got.rare{background:linear-gradient(160deg,#fffbe6,#ffe9a8);box-shadow:inset 0 0 0 2px #ffca28;}
+  .zukan-cell.nige{background:#ece6f2;color:#9b8bb0;}
+  .zukan-cell.picked{outline:3px solid var(--accent);}
+  .zukan-cell .q-mark{font-size:0.75em;font-weight:bold;}
+  .zukan-cell .dots{font-size:0.38em;letter-spacing:-1px;margin-top:2px;color:var(--main);}
+  .zukan-detail{
+    min-height:44px;
+    background:#fff8ef;
+    border-radius:12px;
+    padding:10px;
+    font-size:0.95em;
+    font-weight:bold;
+    line-height:1.5;
+  }
+  .boss-row{
+    display:grid;
+    grid-template-columns:repeat(9,1fr);
+    gap:4px;
+    margin:10px 0 4px;
+  }
+  .boss-slot{
+    aspect-ratio:1;
+    border-radius:50%;
+    background:#eee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.3em;
+    color:#bbb;
+    font-weight:bold;
+  }
+  .boss-slot.got{background:radial-gradient(circle,#fff,#e4d4ff);box-shadow:0 0 0 2px #b388ff;}
+  .zukan-help{font-size:0.8em;color:#8a7a6a;line-height:1.6;margin:8px 0 0;}
 </style>
 </head>
 <body>
@@ -529,11 +709,15 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v1.7</span>
+      <span class="version-badge">v2.0</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
   <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="ghost-row hidden" id="ghostRow">
+    <span>👻 ベストのじぶん</span>
+    <div class="ghost-track"><div class="ghost-bar" id="ghostBar"></div></div>
+  </div>
 
   <!-- スタート画面 -->
   <div class="screen active" id="startScreen">
@@ -544,6 +728,7 @@
       <div class="mode-tabs">
         <button class="mode-tab active" id="tabRandom">🎲 ランダム10問</button>
         <button class="mode-tab" id="tabDan">🔢 段をえらぶ</button>
+        <button class="mode-tab" id="tabZukan">📖 九九図鑑<span class="tab-dot hidden" id="tabDot"></span></button>
       </div>
 
       <!-- ランダム10問モード -->
@@ -572,6 +757,24 @@
           <h3 id="danBestTitle">🏆 ベスト3</h3>
           <ul class="best-list" id="danBestList"></ul>
         </div>
+      </div>
+
+      <!-- 九九図鑑 -->
+      <div class="mode-panel" id="zukanPanel" style="display:none;">
+        <div class="zukan-summary">
+          <div class="zukan-stat">あつめたカード<b id="zukanGotCount">0/81</b></div>
+          <div class="zukan-stat">ボス<b id="zukanBossCount">0/9</b></div>
+          <div class="zukan-stat">にげたカード<b id="zukanNigeCount">0</b></div>
+        </div>
+        <button class="big-btn hidden" id="startCatchBtn">👣 とりもどしミッション</button>
+        <div class="zukan-grid" id="zukanGrid"></div>
+        <div class="zukan-detail" id="zukanDetail">マスをタッチすると、くわしく見られるよ</div>
+        <div class="boss-row" id="bossRow"></div>
+        <p class="zukan-help">
+          おなじ式に<b>3回つづけて正解</b>するとカードをゲット!<br>
+          ゲットした式をまちがえると、カードがにげちゃうよ。<b>2回つづけて正解</b>でとりもどせる。<br>
+          1つの段の9まいがそろうと、その段のボスがあらわれる!
+        </p>
       </div>
     </div>
   </div>
@@ -645,6 +848,21 @@
   const danBestTitle = document.getElementById('danBestTitle');
   const danBestList = document.getElementById('danBestList');
   const danStampRow = document.getElementById('danStampRow');
+
+  // v2.0
+  const appEl = document.querySelector('.app');
+  const ghostRow = document.getElementById('ghostRow');
+  const ghostBar = document.getElementById('ghostBar');
+  const tabZukan = document.getElementById('tabZukan');
+  const tabDot = document.getElementById('tabDot');
+  const zukanPanel = document.getElementById('zukanPanel');
+  const zukanGrid = document.getElementById('zukanGrid');
+  const zukanDetail = document.getElementById('zukanDetail');
+  const bossRow = document.getElementById('bossRow');
+  const zukanGotCount = document.getElementById('zukanGotCount');
+  const zukanBossCount = document.getElementById('zukanBossCount');
+  const zukanNigeCount = document.getElementById('zukanNigeCount');
+  const startCatchBtn = document.getElementById('startCatchBtn');
 
   const RANDOM_TOTAL = 10;
   const MAX_BEST = 3;
@@ -726,6 +944,102 @@
     return stamp;
   }
 
+  // ===== v2.0 九九図鑑(カードコレクション) =====
+  const ZUKAN_KEY = 'kuku_zukan_v1';
+  const NEED_GET = 3;      // 未ゲットの式:この回数つづけて正解でゲット
+  const NEED_RECOVER = 2;  // にげたカード:この回数つづけて正解でとりもどし
+  // 段ごとのテーマ(添字0が1の段)。7〜9の段はレア枠
+  const THEMES = [
+    {name:'はたけ',   cards:['🥕','🍅','🥒','🌽','🥦','🍆','🥔','🌶️','🍄'], boss:'🌻', bossName:'はたけのぬし'},
+    {name:'にわ',     cards:['🐛','🦋','🐌','🐞','🐜','🐝','🦗','🐸','🦔'], boss:'🧚', bossName:'にわのようせい'},
+    {name:'うみ',     cards:['🐟','🐠','🐡','🦀','🐙','🦑','🦈','🐬','🐳'], boss:'🐋', bossName:'うみのおう'},
+    {name:'とり',     cards:['🐤','🐔','🦆','🐧','🦉','🦜','🦢','🦅','🦩'], boss:'🦚', bossName:'にじいろくじゃく'},
+    {name:'くだもの', cards:['🍎','🍊','🍋','🍌','🍉','🍇','🍓','🍑','🍒'], boss:'🍍', bossName:'くだものキング'},
+    {name:'のりもの', cards:['🚗','🚌','🚓','🚑','🚒','🚲','🚂','✈️','🚀'], boss:'🚄', bossName:'ゆめのとっきゅう'},
+    {name:'そら',     cards:['🌙','⭐','🌞','☁️','🌈','⚡','❄️','☄️','🌏'], boss:'🌠', bossName:'ながれぼしのせい'},
+    {name:'もり',     cards:['🐰','🐿️','🦊','🐻','🐼','🦁','🐯','🐘','🦒'], boss:'🐉', bossName:'もりのりゅう'},
+    {name:'たから',   cards:['💍','🗝️','🧭','⚓','🔮','🎁','🏆','👑','💎'], boss:'🏰', bossName:'たからのしろ'}
+  ];
+  const TOTAL_CARDS = 81;
+
+  function cardKey(a,b){ return a + 'x' + b; }
+  function cardEmoji(a,b){ return THEMES[a-1].cards[b-1]; }
+  function cardLabel(a,b){ return cardEmoji(a,b) + ' ' + a + '×' + b + '=' + (a*b); }
+
+  function loadZukan(){
+    try{
+      const raw = localStorage.getItem(ZUKAN_KEY);
+      if(raw){
+        const z = JSON.parse(raw);
+        if(z && typeof z.cards === 'object'){
+          if(!Array.isArray(z.bosses)) z.bosses = [];
+          return z;
+        }
+      }
+    }catch(e){}
+    return {cards:{}, bosses:[]};
+  }
+
+  function saveZukan(z){
+    try{
+      localStorage.setItem(ZUKAN_KEY, JSON.stringify(z));
+    }catch(e){
+      // 保存できなくてもアプリの進行は止めない
+    }
+  }
+
+  function getCard(z, a, b){
+    return z.cards[cardKey(a,b)] || {s:0, st:'none', m:0};
+  }
+
+  function todayStr(){
+    const d = new Date();
+    return d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate();
+  }
+
+  // 1問答えるたびに呼ぶ。カードの状態を進め、起きたできごとを返す
+  function recordAnswer(a, b, isCorrect){
+    const z = loadZukan();
+    const c = getCard(z, a, b);
+    let ev = null;
+    let boss = null;
+    if(isCorrect){
+      c.s++;
+      if(c.st === 'none' && c.s >= NEED_GET){
+        c.st = 'got'; c.g = todayStr(); ev = 'get';
+      } else if(c.st === 'nige' && c.s >= NEED_RECOVER){
+        c.st = 'got'; ev = 'recover';
+      }
+    } else {
+      c.s = 0;
+      c.m = (c.m || 0) + 1;
+      if(c.st === 'got'){ c.st = 'nige'; ev = 'nige'; }
+    }
+    z.cards[cardKey(a,b)] = c;
+    // ボス判定(一度出たボスはずっと残る)
+    if((ev === 'get' || ev === 'recover') && z.bosses.indexOf(a) === -1){
+      let all = true;
+      for(let k=1; k<=9; k++){
+        if(getCard(z, a, k).st !== 'got'){ all = false; break; }
+      }
+      if(all){ z.bosses.push(a); boss = a; }
+    }
+    saveZukan(z);
+    return {ev:ev, boss:boss, a:a, b:b};
+  }
+
+  function zukanStats(z){
+    let got = 0, nige = [];
+    for(let a=1; a<=9; a++){
+      for(let b=1; b<=9; b++){
+        const st = getCard(z, a, b).st;
+        if(st === 'got') got++;
+        else if(st === 'nige') nige.push({a:a, b:b, answer:a*b});
+      }
+    }
+    return {got:got, nige:nige, bosses:z.bosses.length};
+  }
+
   let selectedDan = 2;
   let selectedOrder = 'up';
 
@@ -737,6 +1051,10 @@
   let timerInterval = null;
   let startTime = 0;
   let finished = false;
+  let runEvents = [];      // 今回のプレイで起きたカードのできごと
+  let laps = [];           // 正解した時刻(スタートからのミリ秒)
+  let activeGhost = null;  // 今回並走するゴースト {laps:[...]} または null
+  let catchCorrect = 0;    // とりもどしミッションの正解数
 
   function shuffle(arr){
     const a = arr.slice();
@@ -754,10 +1072,23 @@
 
   function modeTitleFor(mode){
     if(mode.type === 'random') return 'ランダム10問';
+    if(mode.type === 'catch') return 'とりもどしミッション';
     return mode.dan + 'の段(' + ORDER_LABEL[mode.order] + ')';
   }
 
+  // とりもどしミッション:にげたカード(最大6まい)を、間をあけて2回ずつ出題する
+  function pickCatchQuestions(){
+    const nige = shuffle(zukanStats(loadZukan()).nige).slice(0, 6);
+    if(nige.length === 0) return [];
+    const nigeKeys = nige.map(q => cardKey(q.a, q.b));
+    const fillerCount = Math.max(2, 4 - nige.length);
+    const fillers = shuffle(randomProblems.filter(q => nigeKeys.indexOf(cardKey(q.a, q.b)) === -1))
+      .slice(0, fillerCount);
+    return nige.concat(fillers, shuffle(nige));
+  }
+
   function pickQuestions(mode){
+    if(mode.type === 'catch') return pickCatchQuestions();
     if(mode.type === 'random'){
       return shuffle(randomProblems).slice(0, RANDOM_TOTAL);
     }
@@ -791,12 +1122,100 @@
     return (ms/1000).toFixed(1) + '秒';
   }
 
+  // ===== v2.0 ゴースト(ベスト1位のときの1問ごとのペースを保存) =====
+  function ghostKeyFor(mode){
+    return bestKeyFor(mode).replace('best3', 'ghost');
+  }
+
+  function loadGhost(mode, total){
+    try{
+      const raw = localStorage.getItem(ghostKeyFor(mode));
+      if(raw){
+        const g = JSON.parse(raw);
+        if(g && Array.isArray(g.laps) && g.laps.length === total) return g;
+      }
+    }catch(e){}
+    // 旧バージョンの記録(タイムだけ)しかない場合は、同じペースで進むゴーストを作る
+    const best = loadBest(bestKeyFor(mode));
+    if(best.length === 0) return null;
+    const ls = [];
+    for(let i=1; i<=total; i++) ls.push(Math.round(best[0] * i / total));
+    return {laps:ls};
+  }
+
+  function saveGhost(mode, lapList){
+    try{
+      localStorage.setItem(ghostKeyFor(mode), JSON.stringify({laps:lapList}));
+    }catch(e){}
+  }
+
+  function updateGhostBar(elapsed){
+    if(!activeGhost) return;
+    const ls = activeGhost.laps;
+    let i = 0;
+    while(i < ls.length && ls[i] <= elapsed) i++;
+    let pos = i;
+    if(i < ls.length){
+      const prev = i === 0 ? 0 : ls[i-1];
+      pos += (elapsed - prev) / Math.max(1, ls[i] - prev);
+    }
+    ghostBar.style.width = Math.min(100, pos / ls.length * 100) + '%';
+  }
+
+  // ===== v2.0 カードのお知らせ(出題を止めない小さな表示) =====
+  function showToast(text, cls){
+    appEl.querySelectorAll('.card-toast').forEach(x => x.remove());
+    const t = document.createElement('div');
+    t.className = 'card-toast' + (cls ? ' ' + cls : '');
+    t.textContent = text;
+    appEl.appendChild(t);
+    setTimeout(() => t.remove(), 1500);
+  }
+
+  function handleCardEvent(r){
+    if(!r.ev && !r.boss) return;
+    runEvents.push(r);
+    if(r.boss){
+      const th = THEMES[r.boss-1];
+      showToast('👑 ボスあらわる! ' + th.boss + ' ' + th.bossName, 'boss');
+    } else if(r.ev === 'get'){
+      showToast('🃏 カードGET! ' + cardLabel(r.a, r.b));
+    } else if(r.ev === 'recover'){
+      showToast('✨ とりもどした! ' + cardLabel(r.a, r.b), 'recover');
+    }
+  }
+
+  function cardEventsHtml(){
+    const gets = runEvents.filter(r => r.ev === 'get');
+    const recs = runEvents.filter(r => r.ev === 'recover');
+    const niges = runEvents.filter(r => r.ev === 'nige');
+    const bosses = runEvents.filter(r => r.boss);
+    if(!gets.length && !recs.length && !niges.length && !bosses.length) return '';
+    const chips = (list, cls) => '<div class="ev-list">' +
+      list.map(r => '<span class="ev-chip' + (cls ? ' ' + cls : '') + '">' + cardLabel(r.a, r.b) + '</span>').join('') +
+      '</div>';
+    let html = '<div class="card-events">';
+    if(bosses.length){
+      html += '<h4>👑 ボスがあらわれた!</h4><div class="ev-list">' +
+        bosses.map(r => '<span class="ev-chip">' + THEMES[r.boss-1].boss + ' ' + THEMES[r.boss-1].bossName + '</span>').join('') +
+        '</div>';
+    }
+    if(gets.length) html += '<h4>🃏 あたらしいカード</h4>' + chips(gets);
+    if(recs.length) html += '<h4>✨ とりもどしたカード</h4>' + chips(recs);
+    if(niges.length){
+      html += '<h4>👣 にげたカード</h4>' + chips(niges, 'nige') +
+        '<p class="ev-note">図鑑の「とりもどしミッション」でつかまえよう!</p>';
+    }
+    return html + '</div>';
+  }
+
   function startTimer(){
     startTime = Date.now();
     stopwatchEl.textContent = '0.0秒';
     timerInterval = setInterval(()=>{
       const elapsed = Date.now() - startTime;
       stopwatchEl.textContent = formatTime(elapsed);
+      updateGhostBar(elapsed);
     }, 100);
   }
 
@@ -808,6 +1227,7 @@
   function showScreen(screen){
     [startScreen, quizScreen, resultScreen].forEach(s => s.classList.remove('active'));
     screen.classList.add('active');
+    if(screen !== quizScreen) ghostRow.classList.add('hidden');
   }
 
   function updateProgress(){
@@ -819,7 +1239,7 @@
     if(finished) return;
     const q = questions[currentIndex];
     qnumEl.textContent = '第' + (currentIndex+1) + '問 / ' + totalQuestions + '問';
-    if(currentMode.type === 'dan'){
+    if(currentMode.type !== 'random'){
       modeLabelEl.style.display = 'block';
       modeLabelEl.textContent = modeTitleFor(currentMode);
     } else {
@@ -843,9 +1263,35 @@
     if(finished) return;
     const allBtns = choicesEl.querySelectorAll('.choice-btn');
     allBtns.forEach(b => b.disabled = true);
+    const cur = questions[currentIndex];
+    const isCorrect = (selected === correctAnswer);
+    handleCardEvent(recordAnswer(cur.a, cur.b, isCorrect));
 
-    if(selected === correctAnswer){
+    // とりもどしミッション:まちがえても終わらず、正しい答えを見せて次へ進む
+    if(currentMode.type === 'catch'){
+      if(isCorrect){
+        btnEl.classList.add('correct');
+        catchCorrect++;
+      } else {
+        btnEl.classList.add('wrong');
+        allBtns.forEach(b => {
+          if(parseInt(b.textContent,10) === correctAnswer) b.classList.add('correct');
+        });
+      }
+      currentIndex++;
+      updateProgress();
+      if(currentIndex >= totalQuestions){
+        finished = true;
+        setTimeout(showCatchResult, isCorrect ? 600 : 1300);
+      } else {
+        setTimeout(renderQuestion, isCorrect ? 500 : 1300);
+      }
+      return;
+    }
+
+    if(isCorrect){
       btnEl.classList.add('correct');
+      laps.push(Date.now() - startTime);
       correctCount++;
       currentIndex++;
       updateProgress();
@@ -967,17 +1413,90 @@
     renderOrderButtonBadges();
   }
 
-  // メニュー画面全体(ランダムパネル＋段パネル)を最新の記録で再描画
+  // ===== v2.0 九九図鑑の描画 =====
+  function cardDetailText(z, a, b){
+    const c = getCard(z, a, b);
+    const q = a + '×' + b + '=' + (a*b);
+    if(c.st === 'got'){
+      return cardEmoji(a,b) + ' ' + q + '<br><span style="font-weight:normal;font-size:0.9em;">' +
+        THEMES[a-1].name + 'のカード' + (c.g ? '・' + c.g + 'にゲット' : '') + '</span>';
+    }
+    if(c.st === 'nige'){
+      const left = Math.max(1, NEED_RECOVER - c.s);
+      return '👣 ' + q + '<br><span style="font-weight:normal;font-size:0.9em;">にげちゃった! あと' + left + '回つづけて正解で とりもどせるよ</span>';
+    }
+    const left = Math.max(1, NEED_GET - c.s);
+    return '❓ ' + a + '×' + b + '<br><span style="font-weight:normal;font-size:0.9em;">あと' + left + '回つづけて正解で ゲット!</span>';
+  }
+
+  function renderZukan(){
+    const z = loadZukan();
+    const stats = zukanStats(z);
+    zukanGotCount.textContent = stats.got + '/' + TOTAL_CARDS;
+    zukanBossCount.textContent = stats.bosses + '/9';
+    zukanNigeCount.textContent = stats.nige.length;
+    startCatchBtn.classList.toggle('hidden', stats.nige.length === 0);
+    tabDot.textContent = stats.nige.length;
+    tabDot.classList.toggle('hidden', stats.nige.length === 0);
+
+    zukanGrid.innerHTML = '';
+    for(let a=1; a<=9; a++){
+      const label = document.createElement('div');
+      label.className = 'zukan-rowlabel';
+      label.textContent = a + 'の段';
+      zukanGrid.appendChild(label);
+      for(let b=1; b<=9; b++){
+        const c = getCard(z, a, b);
+        const cell = document.createElement('button');
+        cell.className = 'zukan-cell ' + c.st + (a >= 7 ? ' rare' : '');
+        if(c.st === 'got'){
+          cell.textContent = cardEmoji(a,b);
+        } else if(c.st === 'nige'){
+          cell.textContent = '👣';
+        } else {
+          const dots = '●'.repeat(Math.min(c.s, NEED_GET)) + '○'.repeat(Math.max(0, NEED_GET - c.s));
+          cell.innerHTML = '<span class="q-mark">?</span><span class="dots">' + dots + '</span>';
+        }
+        cell.addEventListener('click', () => {
+          zukanGrid.querySelectorAll('.zukan-cell').forEach(x => x.classList.remove('picked'));
+          cell.classList.add('picked');
+          zukanDetail.innerHTML = cardDetailText(loadZukan(), a, b);
+        });
+        zukanGrid.appendChild(cell);
+      }
+    }
+
+    bossRow.innerHTML = '';
+    for(let a=1; a<=9; a++){
+      const slot = document.createElement('div');
+      const got = z.bosses.indexOf(a) !== -1;
+      slot.className = 'boss-slot' + (got ? ' got' : '');
+      slot.textContent = got ? THEMES[a-1].boss : a;
+      slot.title = got ? THEMES[a-1].bossName : a + 'の段のボス';
+      bossRow.appendChild(slot);
+    }
+  }
+
+  // メニュー画面全体(ランダムパネル＋段パネル＋図鑑)を最新の記録で再描画
   function refreshMenu(){
     renderBestList(startBestList, RANDOM_BEST_KEY);
     renderStampRow(randomStampRow, {type:'random'});
     renderDanBestPreview();
+    renderZukan();
   }
 
   function showClear(elapsedMs){
     const bestKey = bestKeyFor(currentMode);
     const rank = registerBest(bestKey, elapsedMs);
     const stampResult = registerStamp(currentMode, elapsedMs);
+    if(rank === 1) saveGhost(currentMode, laps.slice());
+    let ghostHtml = '';
+    if(activeGhost){
+      const ghostTotal = activeGhost.laps[activeGhost.laps.length - 1];
+      ghostHtml = elapsedMs < ghostTotal
+        ? '<div class="ghost-result">👻 ゴーストに勝った!(' + formatTime(ghostTotal - elapsedMs) + 'はやい)</div>'
+        : '<div class="ghost-result">👻 ゴーストまで あと' + formatTime(elapsedMs - ghostTotal) + '</div>';
+    }
 
     resultEmoji.textContent = '🎉';
     resultTitle.textContent = 'クリア!';
@@ -995,8 +1514,11 @@
         (stampResult.updated ? '<div class="earned-stamp-new">✨ 自己ベストスタンプ更新!</div>' : '') +
       '</div>' +
       (rank > 0 ? '<div class="new-record-badge">🏅 じぶんのベスト' + rank + '位!</div>' : '') +
+      ghostHtml +
       '<div class="time-display">タイム: ' + formatTime(elapsedMs) + '</div>' +
-      '<p>' + totalQuestions + '問全問正解、おめでとう!</p>';
+      '<p>' + totalQuestions + '問全問正解、おめでとう!</p>' +
+      cardEventsHtml();
+    retryBtn.classList.remove('hidden');
     resultBestBox.style.display = 'block';
     resultBestTitle.textContent = '🏆 ' + modeTitleFor(currentMode) + ' ベスト3';
     renderBestList(resultBestList, bestKey, rank > 0 ? elapsedMs : undefined);
@@ -1014,7 +1536,29 @@
         '<div class="q">' + q.a + ' × ' + q.b + ' = ' + q.answer + '</div>' +
         'あなたの答え: ' + selected +
       '</div>' +
-      '<p>記録は残りません。もう一度チャレンジしてみよう!</p>';
+      '<p>タイムの記録は残りません。もう一度チャレンジしてみよう!</p>' +
+      cardEventsHtml();
+    retryBtn.classList.remove('hidden');
+    showScreen(resultScreen);
+  }
+
+  function showCatchResult(){
+    resultBestBox.style.display = 'none';
+    const recovered = runEvents.filter(r => r.ev === 'recover').length;
+    const remain = zukanStats(loadZukan()).nige.length;
+    resultEmoji.textContent = recovered > 0 ? '✨' : '👣';
+    resultTitle.textContent = remain === 0 ? 'ぜんぶ とりもどした!' : 'ミッション おわり';
+    resultTitle.className = 'result-title clear';
+    resultBody.innerHTML =
+      '<p style="color:#a87a4a;font-weight:bold;margin:0 0 4px;">とりもどしミッション</p>' +
+      '<p>' + totalQuestions + '問中 ' + catchCorrect + '問 正解!<br>' +
+      (remain > 0 ? 'にげているカードは あと' + remain + 'まい。' : 'にげたカードは もういないよ。') + '</p>' +
+      cardEventsHtml();
+    if(remain > 0){
+      retryBtn.classList.remove('hidden');
+    } else {
+      retryBtn.classList.add('hidden');
+    }
     showScreen(resultScreen);
   }
 
@@ -1023,10 +1567,35 @@
     finished = false;
     currentIndex = 0;
     correctCount = 0;
+    catchCorrect = 0;
+    runEvents = [];
+    laps = [];
     questions = pickQuestions(mode);
     totalQuestions = questions.length;
+    if(totalQuestions === 0){
+      refreshMenu();
+      showScreen(startScreen);
+      return;
+    }
+    progressBar.style.width = '0%';
+    ghostBar.style.width = '0%';
     showScreen(quizScreen);
     updateProgress();
+
+    if(mode.type === 'catch'){
+      // タイムをはからず、カウントダウンもなし
+      activeGhost = null;
+      ghostRow.classList.add('hidden');
+      stopwatchEl.textContent = '👣';
+      questionBoxEl.classList.remove('hidden');
+      choicesEl.classList.remove('hidden');
+      countdownBox.classList.add('hidden');
+      renderQuestion();
+      return;
+    }
+
+    activeGhost = loadGhost(mode, totalQuestions);
+    ghostRow.classList.toggle('hidden', !activeGhost);
     stopwatchEl.textContent = '0.0秒';
     startCountdown(() => {
       startTimer();
@@ -1060,21 +1629,20 @@
   }
 
   // ===== モード切り替えタブのイベント =====
-  tabRandom.addEventListener('click', () => {
-    tabRandom.classList.add('active');
-    tabDan.classList.remove('active');
-    randomPanel.style.display = 'block';
-    danPanel.style.display = 'none';
-  });
-  tabDan.addEventListener('click', () => {
-    tabDan.classList.add('active');
-    tabRandom.classList.remove('active');
-    danPanel.style.display = 'block';
-    randomPanel.style.display = 'none';
-  });
+  const TABS = [[tabRandom, randomPanel], [tabDan, danPanel], [tabZukan, zukanPanel]];
+  function selectTab(tab){
+    TABS.forEach(([t, p]) => {
+      t.classList.toggle('active', t === tab);
+      p.style.display = (t === tab) ? 'block' : 'none';
+    });
+  }
+  TABS.forEach(([t]) => t.addEventListener('click', () => {
+    if(t === tabZukan) renderZukan();
+    selectTab(t);
+  }));
 
   // ===== 段えらびボタンの生成 =====
-  for(let d=2; d<=9; d++){
+  for(let d=1; d<=9; d++){
     const btn = document.createElement('button');
     btn.className = 'dan-btn' + (d === selectedDan ? ' selected' : '');
     btn.dataset.dan = d;
@@ -1105,8 +1673,10 @@
   startRandomBtn.addEventListener('click', () => startQuiz({type:'random'}));
   startDanBtn.addEventListener('click', () => startQuiz({type:'dan', dan:selectedDan, order:selectedOrder}));
   retryBtn.addEventListener('click', () => startQuiz(currentMode));
+  startCatchBtn.addEventListener('click', () => startQuiz({type:'catch'}));
   backToMenuBtn.addEventListener('click', () => {
     refreshMenu();
+    if(currentMode.type === 'catch') selectTab(tabZukan);
     showScreen(startScreen);
   });
 

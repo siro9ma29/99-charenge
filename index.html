@@ -834,6 +834,24 @@
   .boss-slot{cursor:pointer}
   .fcard.sealwrap{width:72px;height:auto;background:none;box-shadow:none;padding:0}
   .card-toast.rare{border-color:#b197fc;color:#5b2fa8;background:linear-gradient(90deg,#fff,#f3ecff,#fff)}
+
+  /* ===== v3.0 モンスター ===== */
+  .seal-art svg{width:96%;height:96%;position:relative}
+  .seal.m-got .seal-art{background:radial-gradient(circle,rgba(255,255,255,.95) 0 30%,transparent 66%),
+    repeating-conic-gradient(from 0deg,var(--dc) 0 9deg,color-mix(in srgb,var(--dc) 35%,#fff) 9deg 18deg)}
+  .zukan-cell svg{width:100%;height:100%}
+  .zukan-cell.got{padding:1px}
+  .zukan-cell.got.r-n{background:#fffaf0;box-shadow:inset 0 0 0 2px #e8d9bf}
+  .boss-slot svg{width:100%;height:100%}
+  .boss-slot.got{padding:1px}
+  .pack.evo .pack-back{background:none;border:none;padding:0;animation:packGlow 1.1s ease-in-out infinite alternate;border-radius:12px}
+  .pack.evo .pack-back .seal{position:absolute;inset:0;width:100%}
+  .evo-tap{position:absolute;left:50%;bottom:30%;transform:translateX(-50%);z-index:3;font-style:normal;font-weight:900;font-size:15px;color:#fff;
+    background:#ff6b6b;border:2px solid #fff;border-radius:999px;padding:2px 10px;box-shadow:0 2px 6px rgba(0,0,0,.3);animation:tapBob .8s ease-in-out infinite alternate;white-space:nowrap}
+  @keyframes tapBob{to{transform:translate(-50%,-4px) scale(1.06)}}
+  .pack.evo.open .pack-in{transition-duration:.9s}
+  .pack.evo.open .pack-front{animation:evoFlash 1s .3s ease-out 1}
+  @keyframes evoFlash{0%{filter:brightness(2.4)}100%{filter:none}}
 </style>
 </head>
 <body>
@@ -841,7 +859,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v2.1</span>
+      <span class="version-badge">v3.0</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -856,7 +874,7 @@
     <div class="start-screen">
       <!-- 図鑑の表紙 -->
       <div class="cover">
-        <div class="cover-title"><small>81まいの キラキラシールを あつめよう</small>九九チャレンジ<span class="version-badge">v2.1</span></div>
+        <div class="cover-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.0</span></div>
         <div class="fan" id="coverFan" aria-hidden="true"></div>
         <div class="cover-count" id="coverCount"></div>
         <div class="dan-meter" id="danMeter"></div>
@@ -900,9 +918,9 @@
       <!-- 九九図鑑 -->
       <div class="mode-panel" id="zukanPanel" style="display:none;">
         <div class="zukan-summary">
-          <div class="zukan-stat">あつめたシール<b id="zukanGotCount">0/81</b></div>
+          <div class="zukan-stat">なかま<b id="zukanGotCount">0/81</b></div>
           <div class="zukan-stat">ボス<b id="zukanBossCount">0/9</b></div>
-          <div class="zukan-stat">にげたシール<b id="zukanNigeCount">0</b></div>
+          <div class="zukan-stat">にげた なかま<b id="zukanNigeCount">0</b></div>
         </div>
         <div class="rarity-row" id="rarityRow"></div>
         <button class="big-btn hidden" id="startCatchBtn">👣 とりもどしミッション</button>
@@ -910,10 +928,10 @@
         <div class="zukan-detail" id="zukanDetail">マスをタッチすると、くわしく見られるよ</div>
         <div class="boss-row" id="bossRow"></div>
         <p class="zukan-help">
-          おなじ式に<b>3回つづけて正解</b>するとシールをゲット!<br>
-          ゲットした式をまちがえると、シールがにげちゃうよ。<b>2回つづけて正解</b>でとりもどせる。<br>
-          1つの段の9まいがそろうと、その段のボスがあらわれる!<br>
-          レア度：1・2・5の段は<b>ノーマル</b>、3・4の段は<b>キラ</b>、6・7の段は<b>ゴールド</b>、8・9の段は<b>ホロ</b>、ボスは<b>レジェンド</b>!
+          おなじ式に<b>3回つづけて正解</b>すると たまごを ゲット!<br>
+          つぎの日 いこうに その式に 正解すると うまれて、さらに つぎの日 いこうに 正解すると しんか!<br>
+          ゲットした式をまちがえると、なかまが にげちゃうよ。<b>2回つづけて正解</b>でとりもどせる。<br>
+          1つの段の 9ひきが そろうと、その段の ボスが あらわれる!
         </p>
       </div>
     </div>
@@ -1116,52 +1134,320 @@
   const TOTAL_CARDS = 81;
 
   function cardKey(a,b){ return a + 'x' + b; }
-  function cardEmoji(a,b){ return THEMES[a-1].cards[b-1]; }
-  function cardLabel(a,b){ return cardEmoji(a,b) + ' ' + a + '×' + b + '=' + (a*b); }
+  function cardLabel(a,b,lv){ return monName(a, b, lv || 0) + ' ' + a + '×' + b + '=' + (a*b); }
 
-  // ===== v2.1 キラキラシール(名前・レア度・シールの絵) =====
-  const SEAL_NAMES = [
-    ['ニンジャロット','トマトボンバー','キュウリブレード','コーンキャノン','ブロッコリーフ','ナスビート','ポテトゴーレム','トウガラシファイア','キノコマジシャン'],
-    ['イモムシロード','チョウチョプリンセス','カタツムリガード','テントウナイト','アリソルジャー','ハチスティンガー','バッタジャンパー','カエルショット','ハリネズミアーマー'],
-    ['サカナスイマー','ネッタイフィッシュ','フグバルーン','カニシザース','タコインク','イカジェット','サメファング','イルカウェーブ','クジラタイフーン'],
-    ['ヒヨコスター','ニワトリモーニング','アヒルボート','ペンギンスライダー','フクロウセージ','オウムトーク','ハクチョウバレエ','ワシストーム','フラミンゴダンサー'],
-    ['リンゴシールド','ミカンサンシャイン','レモンスパーク','バナナブーメラン','スイカボール','ブドウクラスター','イチゴハート','モモプリンセス','サクランボツインズ'],
-    ['カーレーサー','バスキャプテン','パトロールジャスティス','キュウキュウレスキュー','ショウボウファイター','サイクルスピード','キシャエクスプレス','ジェットウイング','ロケットギャラクシー'],
-    ['ツキミナイト','ホシノカケラ','タイヨウフレア','クモフワリ','ニジブリッジ','カミナリボルト','ユキクリスタル','スイセイダッシュ','チキュウガーディアン'],
-    ['ウサギホッパー','リスナッツ','キツネミラージュ','クマパワー','パンダバンブー','ライオンロード','トラストライプ','ゾウトランペット','キリンタワー'],
-    ['リングプリンセス','カギマスター','コンパスナビ','イカリキャプテン','スイショウマジック','プレゼントボックス','トロフィーチャンプ','オウカンキング','ダイヤモンドエンペラー']
+  // ===== 九九モンスター（すべて この アプリの ための オリジナルの いきもの） =====
+  // creatureSVG(a, b, stage)  stage: 0=たまご 1=こども 2=しんか
+  // bossSVG(a)                a の段の ボス
+  const KM = (() => {
+    const INK = "#2b2b3a";
+    const mix = (hex, to, t) => { const h = hex.slice(1), n = [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)), m = to === "w" ? 255 : 0;
+      return "#" + n.map(v => Math.round(v + (m - v) * t).toString(16).padStart(2, "0")).join(""); };
+    const pal = m => [m, mix(m, "b", .28), mix(m, "w", .72)];
+    const st = (fill, w = 2.6) => `fill="${fill}" stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+    const ln = (d, col, w) => `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const mir = s => `<g transform="translate(100 0) scale(-1 1)">${s}</g>`; // ひだりみぎ はんてん
+    const both = s => s + mir(s);
+    const star = (x, y, r, fill) => { let p = ""; for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? r * .45 : r; p += (k ? "L" : "M") + (x + rr * Math.cos(a)).toFixed(1) + " " + (y + rr * Math.sin(a)).toFixed(1); }
+      return `<path d="${p}Z" ${st(fill, 1.6)}/>`; };
+
+    // からだの かたち（top＝あたまの 上の y、ey＝目の y、by＝おなかの y）
+    const SH = {
+      drop:   { p: `<path d="M50 22 C66 38 78 52 78 66 A28 24 0 0 1 22 66 C22 52 34 38 50 22Z" `, top: 30, ey: 58, by: 72 },
+      bean:   { p: `<ellipse cx="50" cy="62" rx="30" ry="25" `, top: 38, ey: 58, by: 72 },
+      fish:   { p: `<ellipse cx="50" cy="62" rx="31" ry="23" `, top: 40, ey: 58, by: 72 },
+      blob:   { p: `<path d="M24 74 Q18 52 34 42 Q50 32 66 42 Q82 52 76 74 Q50 84 24 74Z" `, top: 39, ey: 58, by: 71 },
+      dome:   { p: `<path d="M22 64 A28 30 0 0 1 78 64 Q78 70 72 70 L28 70 Q22 70 22 64Z" `, top: 35, ey: 54, by: 0 },
+      round:  { p: `<circle cx="50" cy="62" r="27" `, top: 36, ey: 58, by: 73 },
+      tall:   { p: `<ellipse cx="50" cy="58" rx="24" ry="30" `, top: 29, ey: 54, by: 70 },
+      pear:   { p: `<path d="M50 36 C64 36 66 46 72 56 C82 72 70 88 50 88 C30 88 18 72 28 56 C34 46 36 36 50 36Z" `, top: 37, ey: 58, by: 75 },
+      square: { p: `<rect x="23" y="38" width="54" height="48" rx="17" `, top: 39, ey: 58, by: 74 },
+      tri:    { p: `<path d="M50 30 Q56 30 60 38 L80 74 Q84 86 70 86 L30 86 Q16 86 20 74 L40 38 Q44 30 50 30Z" `, top: 33, ey: 63, by: 76 }
+    };
+
+    // パーツ：(t＝あたまの上, F＝しんかしたか, c＝[いろ, こい, うすい], S＝かたち) → {b:うしろ, m:からだの上, f:いちばん まえ}
+    const FT = {
+      /* ---- うみ ---- */
+      bubble: (t, F, c) => F ? { b: both(`<path d="M22 66 Q8 58 12 46 Q22 54 26 60Z" ${st(c[1])}/>`), f: `<circle cx="50" cy="16" r="7" ${st(c[2], 2.2)}/><circle cx="38" cy="22" r="4.5" ${st(c[2], 2.2)}/><circle cx="62" cy="22" r="4.5" ${st(c[2], 2.2)}/><circle cx="48" cy="14" r="2" fill="#fff"/>` }
+                              : { f: `<circle cx="62" cy="22" r="6" ${st(c[2], 2.2)}/><circle cx="60" cy="20" r="1.8" fill="#fff"/>` },
+      wave: (t, F, c) => ({ f: (F ? `<path d="M30 42 Q30 22 46 24 Q40 30 48 34 Q50 18 66 22 Q58 28 66 34 Q72 30 74 40" ${st(c[0])}/>` : `<path d="M40 40 Q40 28 50 30 Q46 34 52 37 Q56 30 62 34 Q60 38 60 40" ${st(c[0])}/>`) +
+        (F ? `<path d="M38 76 L50 82 L62 76 L62 84 Q50 90 38 84Z" fill="${c[2]}" stroke="${INK}" stroke-width="2"/>` : "") }),
+      fins: (t, F, c) => ({ b: F ? `<path d="M78 62 L98 44 L94 62 L98 80Z" ${st(c[1])}/><path d="M46 40 L54 18 L66 42Z" ${st(c[1])}/>` : `<path d="M78 62 L92 52 L92 72Z" ${st(c[1])}/><path d="M48 40 L54 30 L60 41Z" ${st(c[1])}/>`,
+        f: F ? `<path d="M30 70 L16 82 L34 78Z" ${st(c[1], 2.2)}/>` : `<path d="M32 70 L24 78 L36 76Z" ${st(c[1], 2.2)}/>` }),
+      coral: (t, F, c) => { const s = F ? 1.5 : 1, h = (x, fl) => `<path d="M${x} 44 L${x + fl * 2} ${44 - 14 * s} M${x + fl * 2} ${44 - 8 * s} L${x + fl * 9 * s} ${44 - 14 * s} M${x + fl} ${44 - 12 * s} L${x - fl * 5 * s} ${44 - 20 * s}" stroke="${c[1]}" stroke-width="${5 * s}" stroke-linecap="round" fill="none"/>`;
+        return { b: h(38, -1) + h(62, 1), f: F ? `<circle cx="28" cy="76" r="4" ${st(c[1], 2)}/><circle cx="72" cy="76" r="4" ${st(c[1], 2)}/>` : "" }; },
+      jelly: (t, F, c) => { let b = ""; const n = F ? 5 : 3, L = F ? 26 : 14;
+        for (let k = 0; k < n; k++) { const x = 30 + k * (40 / (n - 1)); b += ln(`M${x} 68 Q${x - 5} ${68 + L / 2} ${x} ${68 + L}`, c[1], F ? 5 : 4) + (F ? `<circle cx="${x}" cy="${68 + L}" r="2.6" fill="#fff6a8" stroke="${INK}" stroke-width="1.2"/>` : ""); }
+        return { b, f: F ? ln("M34 46 Q50 36 66 46", "#fff", 2.4) : "" }; },
+      shell: (t, F, c) => ({ b: F ? `<circle cx="64" cy="36" r="24" ${st(c[2])}/>${ln("M64 36 m-14 0 a14 14 0 1 1 14 14 a9 9 0 1 1 -9 -9 a4.5 4.5 0 1 1 4.5 4.5", c[1], 3)}<path d="M48 16 L44 6 L54 12Z M78 14 L84 6 L84 18Z M88 36 L98 34 L90 44Z" ${st(c[1], 2)}/>`
+                                   : `<circle cx="62" cy="40" r="15" ${st(c[2])}/>${ln("M62 40 m-8 0 a8 8 0 1 1 8 8 a5 5 0 1 1 -5 -5", c[1], 2.6)}` }),
+      shark: (t, F, c) => ({ b: F ? `<path d="M36 42 Q46 8 70 38Z" ${st(c[1])}/><path d="M80 62 L96 50 L92 64 L96 76Z" ${st(c[1])}/>` : `<path d="M42 42 Q48 26 60 41Z" ${st(c[1])}/><path d="M80 62 L90 56 L90 68Z" ${st(c[1])}/>` }),
+      swirl: (t, F, c) => ({ b: ln("M74 72 Q90 72 88 60 Q86 52 80 56", c[1], F ? 6 : 4) + (F ? ln("M8 66 A44 13 0 0 1 92 58", c[1], 4) : ""),
+        m: ln("M50 76 m-6 0 a6 6 0 1 1 6 6 a3 3 0 1 1 -3 -3", c[1], 2.6), f: F ? `<path d="M92 58 A44 13 0 0 1 8 66" fill="none" stroke="${c[1]}" stroke-width="4" stroke-linecap="round" stroke-dasharray="10 7"/>` : "" }),
+      earfins: (t, F, c) => ({ b: both(F ? `<path d="M32 40 Q6 30 10 6 Q24 24 40 32Z" ${st(c[1])}/>` : `<path d="M34 38 Q20 30 22 16 Q30 26 42 32Z" ${st(c[1])}/>`), f: F ? star(50, 24, 6, "#fff6a8") : "" }),
+      /* ---- もり ---- */
+      sprout: (t, F, c) => ({ f: ln(`M50 ${t + 3} L50 ${t - 10}`, "#3d7a35", 3) + `<path d="M50 ${t - 8} Q60 ${t - 22} 70 ${t - 13} Q60 ${t - 4} 50 ${t - 8}Z" ${st("#7bc96f")}/>` +
+        (F ? `<path d="M50 ${t - 8} Q40 ${t - 24} 28 ${t - 15} Q38 ${t - 4} 50 ${t - 8}Z" ${st("#7bc96f")}/><circle cx="50" cy="${t - 15}" r="5" ${st("#ffd43b", 2)}/>` : "") }),
+      leafears: (t, F, c) => { const k = F ? 1.45 : 1; return { b: both(`<path d="M38 ${t + 8} Q${38 - 20 * k} ${t - 2 * k} ${36 - 12 * k} ${t - 20 * k} Q${42 - 4 * k} ${t - 8} 46 ${t + 4}Z" ${st("#5fb85f")}/>` + ln(`M41 ${t + 4} L${37 - 8 * k} ${t - 12 * k}`, "#3d7a35", 1.8)) }; },
+      mushcap: (t, F, c) => { const w = F ? 34 : 28, h = F ? 22 : 15, col = "#e8594a";
+        return { f: `<path d="M${50 - w} ${t + 10} Q${50 - w} ${t - h} 50 ${t - h - 2} Q${50 + w} ${t - h} ${50 + w} ${t + 10} Q50 ${t + 4} ${50 - w} ${t + 10}Z" ${st(col)}/>` +
+          `<circle cx="38" cy="${t - 2}" r="${F ? 5 : 4}" fill="#fff"/><circle cx="58" cy="${t - 6}" r="${F ? 6 : 4.5}" fill="#fff"/>` + (F ? `<circle cx="74" cy="${t + 2}" r="3.5" fill="#fff"/><circle cx="26" cy="${t + 3}" r="3" fill="#fff"/>` : "") }; },
+      acorn: (t, F, c) => ({ f: `<path d="M${F ? 26 : 30} ${t + 8} Q${F ? 26 : 30} ${t - 10} 50 ${t - 12} Q${F ? 74 : 70} ${t - 10} ${F ? 74 : 70} ${t + 8} Q50 ${t + 2} ${F ? 26 : 30} ${t + 8}Z" ${st("#a0703c")}/>` +
+        ln(`M38 ${t} L44 ${t - 8} M48 ${t + 1} L54 ${t - 9} M58 ${t} L64 ${t - 7}`, "#7a5226", 2) + ln(`M50 ${t - 12} L52 ${t - 18}`, "#5a3a1a", 3) +
+        (F ? `<path d="M52 ${t - 16} Q66 ${t - 28} 74 ${t - 18} Q64 ${t - 12} 52 ${t - 16}Z" ${st("#7bc96f", 2)}/>` : "") }),
+      antenna: (t, F, c) => ({ f: both(ln(F ? `M44 ${t + 2} Q36 ${t - 14} 26 ${t - 18}` : `M44 ${t + 2} L38 ${t - 10}`, INK, 2.4) + `<circle cx="${F ? 26 : 38}" cy="${F ? t - 18 : t - 11}" r="${F ? 4.5 : 3.5}" ${st(F ? "#fff6a8" : c[1], 2)}/>`) }),
+      petals: (t, F, c) => { let b = ""; const R = F ? 34 : 30, n = F ? 12 : 8, col = F ? "#ffd43b" : "#ffe08a";
+        for (let k = 0; k < n; k++) { const a = k * 2 * Math.PI / n, x = 50 + R * Math.cos(a), y = 60 + R * Math.sin(a); b += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${F ? 9 : 8}" ry="${F ? 6 : 5}" transform="rotate(${(a * 180 / Math.PI).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})" ${st(col, 2)}/>`; }
+        return { b }; },
+      leaftail: (t, F, c) => ({ b: F ? `<path d="M74 76 Q98 78 98 50 Q86 52 78 66Z" ${st("#5fb85f")}/>${ln("M77 72 Q90 66 95 54", "#3d7a35", 2)}` : `<path d="M74 76 Q90 78 90 60 Q82 62 76 70Z" ${st("#5fb85f")}/>` }),
+      owl: (t, F, c) => ({ b: F ? both(`<path d="M26 54 Q4 60 8 82 Q18 72 28 74Z" ${st(c[1])}/>`) : "",
+        m: both(`<circle cx="41" cy="58" r="10" fill="${c[2]}"/>`), f: both(`<path d="M30 ${t + 8} L${F ? 22 : 26} ${t - (F ? 12 : 6)} L40 ${t + 4}Z" ${st(c[1])}/>`) + `<path d="M47 63 L53 63 L50 68Z" ${st("#f2a33c", 1.6)}/>` }),
+      vine: (t, F, c) => ({ b: ln(F ? "M74 74 Q96 76 94 54 Q92 38 80 42" : "M74 74 Q90 76 88 62", "#3d7a35", 3.4) + `<path d="M${F ? 86 : 84} ${F ? 46 : 66} q8 -8 12 0 q-6 6 -12 0Z" ${st("#7bc96f", 2)}/>` + (F ? `<path d="M90 64 q8 -6 10 2 q-6 5 -10 -2Z" ${st("#7bc96f", 2)}/>` : "") }),
+      /* ---- くさはら ---- */
+      bunny: (t, F, c) => { const h = F ? 34 : 22; return { b: both(`<ellipse cx="40" cy="${t - h / 2 + 4}" rx="${F ? 7 : 6}" ry="${h / 2 + 4}" transform="rotate(-10 40 ${t})" ${st(c[0])}/><ellipse cx="40" cy="${t - h / 2 + 5}" rx="3" ry="${h / 2 - 1}" transform="rotate(-10 40 ${t})" fill="#ffc9b9"/>`) }; },
+      bee: (t, F, c) => ({ b: both(`<ellipse cx="${F ? 22 : 28}" cy="${t + 4}" rx="${F ? 15 : 10}" ry="${F ? 10 : 7}" transform="rotate(-30 28 ${t + 4})" fill="rgba(255,255,255,.75)" stroke="${INK}" stroke-width="2.2"/>`),
+        m: ln("M28 70 Q50 64 72 70", INK, 4) + (F ? ln("M30 80 Q50 74 70 80", INK, 4) : ""), f: F ? both(ln(`M44 ${t + 2} L40 ${t - 10}`, INK, 2.4) + `<circle cx="40" cy="${t - 11}" r="3" fill="${INK}"/>`) : "" }),
+      lady: (t, F, c) => ({ b: F ? both(`<ellipse cx="20" cy="56" rx="12" ry="20" transform="rotate(-25 20 56)" fill="rgba(255,255,255,.7)" stroke="${INK}" stroke-width="2"/>`) : "",
+        m: `<circle cx="32" cy="72" r="4" fill="${INK}"/><circle cx="68" cy="72" r="4" fill="${INK}"/><circle cx="${F ? 26 : 30}" cy="50" r="3.2" fill="${INK}"/><circle cx="${F ? 74 : 70}" cy="50" r="3.2" fill="${INK}"/>` }),
+      hopper: (t, F, c) => ({ b: both(`<path d="M28 74 L${F ? 8 : 14} ${F ? 54 : 60} L${F ? 14 : 18} ${F ? 88 : 84}" ${st("none", 0)}/>` + ln(`M28 74 L${F ? 8 : 14} ${F ? 54 : 60} L${F ? 14 : 18} ${F ? 88 : 84}`, c[1], 4)),
+        f: both(ln(F ? `M44 ${t + 2} Q40 ${t - 18} 28 ${t - 24}` : `M44 ${t + 2} Q42 ${t - 10} 36 ${t - 14}`, INK, 2.2)) }),
+      fluff: (t, F, c) => { let b = ""; const n = F ? 14 : 9, R = F ? 34 : 30;
+        for (let k = 0; k < n; k++) { const a = -Math.PI + k * Math.PI / (n - 1) * 1, x = 50 + R * Math.cos(a), y = 60 + R * .95 * Math.sin(a); b += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${F ? 7 : 6}" ${st("#fffdf2", 2)}/>`; }
+        return { b: b + (F ? `<circle cx="70" cy="18" r="2.5" fill="#fffdf2" stroke="${INK}" stroke-width="1.4"/><circle cx="82" cy="28" r="2" fill="#fffdf2" stroke="${INK}" stroke-width="1.4"/>` : "") }; },
+      cater: (t, F, c) => ({ b: F ? both(`<path d="M28 52 Q0 30 6 58 Q2 82 28 70Z" ${st("#ff9f43")}/><circle cx="12" cy="56" r="5" fill="#fff6a8"/>`) : `<circle cx="80" cy="74" r="11" ${st(c[0])}/><circle cx="94" cy="80" r="8" ${st(c[0])}/>`,
+        f: both(ln(`M45 ${t + 2} L42 ${t - 8}`, INK, 2.2) + `<circle cx="42" cy="${t - 9}" r="2.6" fill="${INK}"/>`) }),
+      puppy: (t, F, c) => ({ f: both(`<path d="M30 ${t + 4} Q${F ? 12 : 16} ${t + 6} ${F ? 14 : 18} ${t + (F ? 30 : 24)} Q${F ? 24 : 26} ${t + (F ? 30 : 24)} 34 ${t + 14}Z" ${st(c[1])}/>`) + (F ? `<circle cx="59" cy="58" r="9" fill="${c[1]}" opacity=".5"/>` : "") }),
+      snail: (t, F, c) => FT.shell(t, F, ["#d9a066", "#9a6a34", "#ffe3bd"]),
+      breeze: (t, F, c) => ({ b: ln("M6 40 Q20 30 30 40 Q22 46 16 42", "#7bc96f", 3) + ln("M70 26 Q84 16 94 26 Q86 32 80 28", "#7bc96f", 3) + (F ? ln("M4 70 Q18 60 28 70", "#7bc96f", 3) + ln("M78 84 Q90 76 98 84", "#7bc96f", 3) : ""),
+        f: `<path d="M50 ${t - 4} Q60 ${t - 16} 66 ${t - 6} Q58 ${t} 50 ${t - 4}Z" ${st("#a9e07b", 2)}/>` }),
+      /* ---- そら ---- */
+      wings: (t, F, c) => ({ b: both(F ? `<path d="M26 56 Q0 40 2 18 Q10 30 16 28 Q12 38 20 40 Q18 48 28 50Z" ${st("#fff")}/>` : `<path d="M26 60 Q10 52 10 38 Q20 46 28 50Z" ${st("#fff")}/>`) }),
+      beak: (t, F, c, S) => ({ f: `<path d="M44 ${S.ey + 7} L56 ${S.ey + 7} L50 ${S.ey + (F ? 16 : 13)}Z" ${st("#f2a33c", 2)}/>` + (F ? `<path d="M42 ${t + 2} Q46 ${t - 18} 52 ${t - 4} Q56 ${t - 20} 60 ${t + 2}" ${st(c[1], 2)}/>` : "") }),
+      cloud: (t, F, c) => ({ b: `<circle cx="22" cy="78" r="${F ? 12 : 9}" ${st("#fff")}/><circle cx="78" cy="78" r="${F ? 12 : 9}" ${st("#fff")}/><circle cx="12" cy="68" r="${F ? 8 : 6}" ${st("#fff")}/>`,
+        f: F ? `<path d="M84 30 L76 46 L84 46 L78 60 L92 40 L84 40 L90 30Z" ${st("#ffd43b", 2)}/>` : "" }),
+      crest: (t, F, c) => ({ f: [-1, 0, 1].map(k => `<path d="M${50 + k * 7} ${t + 2} Q${50 + k * 12} ${t - (F ? 24 : 14) - (k ? 0 : 6)} ${50 + k * 4 + 3} ${t - (F ? 18 : 10)}Z" ${st(k ? c[1] : "#ff8f5a", 2)}/>`).join("") }),
+      kite: (t, F, c) => { const pts = F ? [[80, 70], [90, 56], [86, 42], [94, 28]] : [[80, 70], [90, 60], [88, 48]];
+        return { b: ln("M74 74 " + pts.map(p => `L${p[0]} ${p[1]}`).join(" "), INK, 2) + pts.slice(1).map((p, k) => `<path d="M${p[0] - 5} ${p[1] - 4} L${p[0] + 5} ${p[1] + 4} L${p[0] + 5} ${p[1] - 4} L${p[0] - 5} ${p[1] + 4}Z" ${st(["#ff6b6b", "#ffd43b", "#4dabf7"][k % 3], 1.6)}/>`).join("") }; },
+      gust: (t, F, c) => ({ b: ln("M4 50 Q16 44 24 50 Q18 56 12 52", "#9fd6ff", 3) + ln("M76 30 Q90 24 96 32", "#9fd6ff", 3) + (F ? ln("M2 72 Q14 64 22 72 Q16 78 10 74", "#9fd6ff", 3) + ln("M78 86 Q90 80 98 86", "#9fd6ff", 3) : ""),
+        f: ln(`M38 ${t + 4} Q50 ${t - (F ? 16 : 8)} 62 ${t + 4}`, "#fff", 4) }),
+      rainbow: (t, F, c) => ({ b: ["#ff6b6b", "#ffd43b", "#69db7c", "#4dabf7"].slice(0, F ? 4 : 3).map((col, k) => ln(`M${12 + k * 5} 80 A${38 - k * 5} ${38 - k * 5} 0 0 1 ${88 - k * 5} 80`, col, 4.5)).join("") }),
+      propeller: (t, F, c) => ({ f: ln(`M50 ${t + 2} L50 ${t - 8}`, INK, 3) + `<ellipse cx="${F ? 38 : 42}" cy="${t - 9}" rx="${F ? 12 : 8}" ry="3.5" ${st("#ff6b6b", 2)}/><ellipse cx="${F ? 62 : 58}" cy="${t - 9}" rx="${F ? 12 : 8}" ry="3.5" ${st("#4dabf7", 2)}/><circle cx="50" cy="${t - 9}" r="2.5" fill="${INK}"/>` }),
+      sun: (t, F, c) => { let b = ""; const n = F ? 14 : 10;
+        for (let k = 0; k < n; k++) { const a = k * 2 * Math.PI / n, r0 = 31, r1 = F ? 44 : 38; b += ln(`M${(50 + r0 * Math.cos(a)).toFixed(1)} ${(60 + r0 * Math.sin(a)).toFixed(1)} L${(50 + r1 * Math.cos(a)).toFixed(1)} ${(60 + r1 * Math.sin(a)).toFixed(1)}`, "#ffc53d", F ? 5 : 4); }
+        return { b }; },
+      /* ---- かざん ---- */
+      flame: (t, F, c) => ({ f: F ? `<path d="M50 ${t + 4} Q30 ${t - 6} 40 ${t - 26} Q42 ${t - 12} 50 ${t - 14} Q46 ${t - 30} 58 ${t - 36} Q56 ${t - 20} 64 ${t - 22} Q72 ${t - 6} 50 ${t + 4}Z" ${st("#ff7b2e")}/><path d="M50 ${t} Q42 ${t - 8} 50 ${t - 18} Q58 ${t - 8} 50 ${t}Z" fill="#ffd43b"/>`
+                                   : `<path d="M50 ${t + 4} Q38 ${t - 4} 46 ${t - 18} Q48 ${t - 8} 54 ${t - 12} Q62 ${t - 2} 50 ${t + 4}Z" ${st("#ff7b2e")}/><path d="M50 ${t} Q46 ${t - 4} 50 ${t - 9} Q54 ${t - 4} 50 ${t}Z" fill="#ffd43b"/>` }),
+      spikes: (t, F, c) => { const n = F ? 5 : 3, h = F ? 16 : 10; let b = "";
+        for (let k = 0; k < n; k++) { const a = Math.PI * (1.15 + .7 * k / (n - 1)), x = 50 + 25 * Math.cos(a), y = 62 + 25 * Math.sin(a), x2 = 50 + (25 + h) * Math.cos(a), y2 = 62 + (25 + h) * Math.sin(a);
+          b += `<path d="M${(x - 6 * Math.sin(a)).toFixed(1)} ${(y + 6 * Math.cos(a)).toFixed(1)} L${x2.toFixed(1)} ${y2.toFixed(1)} L${(x + 6 * Math.sin(a)).toFixed(1)} ${(y - 6 * Math.cos(a)).toFixed(1)}Z" ${st("#4a3f4f", 2.2)}/>`; }
+        return { b }; },
+      magma: (t, F, c) => ({ b: `<path d="M74 76 Q${F ? 98 : 90} ${F ? 78 : 78} ${F ? 96 : 88} ${F ? 56 : 64}" fill="none" stroke="${INK}" stroke-width="${F ? 11 : 9}" stroke-linecap="round"/>` + ln(`M74 76 Q${F ? 98 : 90} ${F ? 78 : 78} ${F ? 96 : 88} ${F ? 56 : 64}`, c[1], F ? 7 : 5) +
+        `<path d="M${F ? 96 : 88} ${F ? 50 : 58} Q${F ? 88 : 82} ${F ? 40 : 52} ${F ? 96 : 88} ${F ? 34 : 46} Q${F ? 104 : 94} ${F ? 42 : 52} ${F ? 96 : 88} ${F ? 50 : 58}Z" ${st("#ffb02e", 2)}/>` }),
+      horns: (t, F, c) => ({ f: both(F ? `<path d="M38 ${t + 6} Q22 ${t - 4} 24 ${t - 22} Q32 ${t - 8} 44 ${t + 2}Z" ${st("#fff3d6")}/>` : `<path d="M40 ${t + 5} Q32 ${t - 2} 34 ${t - 12} Q38 ${t - 4} 45 ${t + 2}Z" ${st("#fff3d6")}/>`) }),
+      smoke: (t, F, c) => ({ b: `<circle cx="64" cy="${t - 2}" r="${F ? 9 : 7}" ${st("#c9c3cf", 2)}/><circle cx="72" cy="${t - 12}" r="${F ? 7 : 5}" ${st("#c9c3cf", 2)}/>` + (F ? `<circle cx="36" cy="${t - 4}" r="8" ${st("#c9c3cf", 2)}/><circle cx="80" cy="${t - 22}" r="5" ${st("#c9c3cf", 2)}/>` : "") }),
+      frill: (t, F, c) => { let p = "", n = F ? 9 : 7, R = F ? 40 : 34;
+        for (let k = 0; k <= n; k++) { const a = Math.PI * (1.05 + .9 * k / n), r = k % 2 ? R : R - 8; p += (k ? "L" : "M") + (50 + r * Math.cos(a)).toFixed(1) + " " + (60 + r * Math.sin(a)).toFixed(1); }
+        return { b: `<path d="${p} L50 60Z" ${st(F ? "#ffb02e" : "#ffcf6e")}/>` }; },
+      embers: (t, F, c) => ({ m: [[34, 48], [66, 50], [30, 76], [70, 78]].concat(F ? [[50, 44], [42, 82], [58, 82]] : []).map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="#ffd43b"/>`).join(""),
+        b: F ? `<circle cx="50" cy="60" r="40" fill="#ff7b2e" opacity=".18"/>` : "" }),
+      dragon: (t, F, c) => ({ b: both(F ? `<path d="M28 54 L2 26 L8 46 L0 52 L12 60 L6 70 L28 66Z" ${st(c[1])}/>` : `<path d="M28 56 L12 42 L14 54 L8 60 L28 64Z" ${st(c[1])}/>`) }),
+      crater: (t, F, c) => ({ f: `<path d="M${F ? 32 : 36} ${t + 6} L${F ? 38 : 40} ${t - (F ? 10 : 4)} L${F ? 62 : 60} ${t - (F ? 10 : 4)} L${F ? 68 : 64} ${t + 6}Z" ${st("#6b5a52")}/><ellipse cx="50" cy="${t - (F ? 10 : 4)}" rx="${F ? 12 : 10}" ry="3" fill="#ffb02e" stroke="${INK}" stroke-width="2"/>` + (F ? `<path d="M50 ${t - 12} Q46 ${t - 20} 50 ${t - 26} Q54 ${t - 20} 50 ${t - 12}Z" fill="#ff7b2e"/>` : "") }),
+      /* ---- ゆきやま ---- */
+      snowcap: (t, F, c) => ({ f: `<path d="M${F ? 24 : 28} ${t + 10} Q${F ? 24 : 30} ${t - 8} 50 ${t - 10} Q${F ? 76 : 70} ${t - 8} ${F ? 76 : 72} ${t + 10} Q66 ${t + 4} 60 ${t + 10} Q54 ${t + 4} 48 ${t + 10} Q42 ${t + 4} 36 ${t + 10} Q30 ${t + 6} ${F ? 24 : 28} ${t + 10}Z" ${st("#fff")}/>` +
+        (F ? `<path d="M36 ${t + 9} L38 ${t + 16} L40 ${t + 9}Z M58 ${t + 9} L60 ${t + 18} L62 ${t + 9}Z" ${st("#d6f1ff", 1.4)}/>` : "") }),
+      icehorn: (t, F, c) => ({ f: `<path d="M44 ${t + 6} L50 ${t - (F ? 22 : 12)} L56 ${t + 6}Z" ${st("#c9f1ff")}/>` + ln(`M50 ${t - (F ? 18 : 8)} L50 ${t + 2}`, "#fff", 2) +
+        (F ? both(`<path d="M34 ${t + 8} L30 ${t - 8} L40 ${t + 4}Z" ${st("#c9f1ff", 2)}/>`) : "") }),
+      scarf: (t, F, c, S) => ({ f: `<path d="M26 ${S.ey + 14} Q50 ${S.ey + 22} 74 ${S.ey + 14} L74 ${S.ey + 20} Q50 ${S.ey + 28} 26 ${S.ey + 20}Z" ${st("#ff6b6b", 2.2)}/>` +
+        `<path d="M64 ${S.ey + 22} L${F ? 80 : 70} ${S.ey + (F ? 40 : 34)} L${F ? 88 : 76} ${S.ey + (F ? 34 : 30)} L70 ${S.ey + 20}Z" ${st("#ff6b6b", 2.2)}/>` + ln(`M34 ${S.ey + 18} L34 ${S.ey + 23} M44 ${S.ey + 20} L44 ${S.ey + 25} M56 ${S.ey + 20} L56 ${S.ey + 25}`, "#fff", 2) }),
+      flipper: (t, F, c) => ({ b: both(`<path d="M26 60 Q${F ? 4 : 10} ${F ? 70 : 68} ${F ? 6 : 12} ${F ? 86 : 80} Q20 80 28 72Z" ${st(c[1])}/>`), m: `<ellipse cx="50" cy="70" rx="17" ry="16" fill="#fff" opacity=".95"/>` }),
+      fox: (t, F, c) => ({ b: both(`<path d="M30 ${t + 10} L${F ? 22 : 26} ${t - (F ? 18 : 10)} L44 ${t + 2}Z" ${st(c[0])}/><path d="M32 ${t + 6} L${F ? 26 : 28} ${t - (F ? 10 : 4)} L40 ${t + 2}Z" fill="#fff"/>`) +
+        `<path d="M74 78 Q${F ? 100 : 92} ${F ? 74 : 76} ${F ? 96 : 90} ${F ? 44 : 56} Q${F ? 84 : 82} ${F ? 60 : 66} 74 70Z" ${st(c[0])}/><path d="M${F ? 96 : 90} ${F ? 44 : 56} Q${F ? 88 : 85} ${F ? 54 : 62} ${F ? 92 : 87} ${F ? 58 : 64} Q${F ? 98 : 91} ${F ? 52 : 60} ${F ? 96 : 90} ${F ? 44 : 56}Z" fill="#fff"/>` }),
+      icicle: (t, F, c) => { const n = F ? 5 : 3; let b = "";
+        for (let k = 0; k < n; k++) { const a = Math.PI * (1.15 + .7 * k / (n - 1)), x = 50 + 24 * Math.cos(a), y = 62 + 24 * Math.sin(a), L = F ? 18 : 11;
+          b += `<path d="M${(x - 5).toFixed(1)} ${y.toFixed(1)} L${(50 + (24 + L) * Math.cos(a)).toFixed(1)} ${(62 + (24 + L) * Math.sin(a)).toFixed(1)} L${(x + 5).toFixed(1)} ${y.toFixed(1)}Z" ${st("#c9f1ff", 2)}/>`; }
+        return { b }; },
+      flake: (t, F, c) => { const fk = (x, y, r) => [0, 60, 120].map(a => ln(`M${x - r * Math.cos(a * Math.PI / 180)} ${y - r * Math.sin(a * Math.PI / 180)} L${x + r * Math.cos(a * Math.PI / 180)} ${y + r * Math.sin(a * Math.PI / 180)}`, "#fff", 2.2)).join("");
+        return { m: fk(50, 74, F ? 7 : 5), b: F ? fk(12, 30, 6) + fk(88, 22, 5) + fk(90, 72, 4) : "" }; },
+      fur: (t, F, c) => { let p = "", n = F ? 22 : 16, R = F ? 34 : 30;
+        for (let k = 0; k <= n; k++) { const a = Math.PI * 2 * k / n, r = k % 2 ? R : R - 6; p += (k ? "L" : "M") + (50 + r * Math.cos(a)).toFixed(1) + " " + (62 + r * .95 * Math.sin(a)).toFixed(1); }
+        return { b: `<path d="${p}Z" ${st(c[2])}/>` }; },
+      crystal: (t, F, c) => ({ b: `<path d="M30 46 L${F ? 14 : 20} ${F ? 22 : 32} L38 40Z" ${st("#c9f1ff", 2)}/><path d="M62 40 L${F ? 74 : 68} ${F ? 10 : 24} L74 44Z" ${st("#c9f1ff", 2)}/>` + (F ? `<path d="M44 38 L50 14 L56 38Z" ${st("#e3f8ff", 2)}/>` : "") }),
+      /* ---- よぞら ---- */
+      moon: (t, F, c) => { const k = F ? 1.35 : 1, x = 50, y = t - 10 * k, R = 11 * k;
+        return { f: `<path d="M${x - R * .5} ${y - R * .87} A${R} ${R} 0 1 0 ${x + R} ${y + R * .1} A${R * .85} ${R * .85} 0 0 1 ${x - R * .5} ${y - R * .87}Z" ${st("#ffe66d", 2.2)}/>` + (F ? star(78, t - 6, 4, "#fff6a8") + star(22, t - 2, 3, "#fff6a8") : "") }; },
+      staranten: (t, F, c) => ({ f: (F ? both(ln(`M44 ${t + 2} Q38 ${t - 12} 32 ${t - 16}`, INK, 2.2) + star(31, t - 18, 6, "#ffe66d")) : ln(`M50 ${t + 2} L50 ${t - 10}`, INK, 2.2) + star(50, t - 13, 6, "#ffe66d")) }),
+      comet: (t, F, c) => ({ b: [0, 1, 2].slice(0, F ? 3 : 2).map(k => ln(`M74 ${56 + k * 8} L${F ? 100 : 94} ${46 + k * 12}`, ["#ffe66d", "#fff6a8", "#b49cff"][k], F ? 6 : 5)).join("") }),
+      bat: (t, F, c) => ({ b: both(F ? `<path d="M28 54 Q14 34 2 38 Q8 46 4 52 Q12 52 10 60 Q18 58 20 66 L28 64Z" ${st(c[1])}/>` : `<path d="M28 56 Q18 44 10 48 Q14 54 12 58 Q18 58 20 64 L28 64Z" ${st(c[1])}/>`),
+        f: both(`<path d="M34 ${t + 8} L${F ? 28 : 32} ${t - (F ? 8 : 2)} L42 ${t + 3}Z" ${st(c[0], 2)}/>`) }),
+      ring: (t, F, c) => ({ b: `<path d="M${F ? 2 : 8} 66 A${F ? 48 : 42} ${F ? 14 : 11} 0 0 1 ${F ? 98 : 92} 58" fill="none" stroke="#ffd43b" stroke-width="${F ? 5 : 4}" stroke-linecap="round"/>`,
+        f: `<path d="M${F ? 98 : 92} 58 A${F ? 48 : 42} ${F ? 14 : 11} 0 0 1 ${F ? 2 : 8} 66" fill="none" stroke="#ffd43b" stroke-width="${F ? 5 : 4}" stroke-linecap="round"/>` + (F ? star(86, 24, 5, "#fff6a8") : "") }),
+      nightcap: (t, F, c) => ({ f: `<path d="M30 ${t + 6} Q46 ${t - 14} ${F ? 80 : 70} ${t - (F ? 18 : 8)} Q66 ${t + 2} 70 ${t + 6} Q50 ${t + 2} 30 ${t + 6}Z" ${st("#5b5fc7")}/><circle cx="${F ? 82 : 72}" cy="${t - (F ? 20 : 10)}" r="4.5" ${st("#fff", 2)}/>` + (F ? star(40, t - 4, 3.5, "#ffe66d") : "") }),
+      firefly: (t, F, c) => ({ b: both(`<ellipse cx="${F ? 24 : 30}" cy="${t + 6}" rx="${F ? 12 : 8}" ry="${F ? 8 : 5}" transform="rotate(-30 30 ${t + 6})" fill="rgba(255,255,255,.7)" stroke="${INK}" stroke-width="2"/>`) + `<circle cx="50" cy="62" r="${F ? 44 : 36}" fill="#fff6a8" opacity="${F ? .35 : .25}"/>`,
+        m: `<ellipse cx="50" cy="78" rx="${F ? 14 : 10}" ry="${F ? 8 : 6}" fill="#fff6a8"/>`, f: both(ln(`M45 ${t + 2} L42 ${t - 8}`, INK, 2)) }),
+      ears: (t, F, c) => ({ f: both(`<path d="M32 ${t + 8} L${F ? 22 : 26} ${t - (F ? 16 : 8)} L44 ${t + 3}Z" ${st(c[1])}/>`), m: both(`<circle cx="41" cy="58" r="10" fill="${c[2]}"/>`) }),
+      aurora: (t, F, c) => ({ b: ["#69db7c", "#4dabf7", "#b49cff"].map((col, k) => ln(`M${F ? 2 : 10} ${(F ? 34 : 42) + k * 9} Q26 ${(F ? 20 : 30) + k * 9} 50 ${(F ? 32 : 40) + k * 9} T${F ? 98 : 90} ${(F ? 28 : 38) + k * 9}`, col, F ? 8 : 6)).join("") }),
+      /* ---- さばく ---- */
+      cactus: (t, F, c) => ({ b: F ? both(`<path d="M28 70 L16 70 Q10 70 10 62 L10 48 Q10 44 14 44 Q18 44 18 48 L18 62 L28 62Z" ${st(c[0], 2.4)}/>`) : "",
+        m: [[34, 50], [66, 50], [30, 66], [70, 66], [40, 80], [60, 80]].map(p => ln(`M${p[0] - 2} ${p[1]} L${p[0] + 2} ${p[1]} M${p[0]} ${p[1] - 2} L${p[0]} ${p[1] + 2}`, c[1], 1.6)).join(""),
+        f: `<circle cx="50" cy="${t - 2}" r="${F ? 6 : 4}" ${st("#ff7bac", 2)}/><circle cx="50" cy="${t - 2}" r="${F ? 2.4 : 1.6}" fill="#ffd43b"/>` }),
+      hump: (t, F, c) => ({ b: `<ellipse cx="${F ? 40 : 46}" cy="${t + 2}" rx="12" ry="10" ${st(c[0])}/>` + (F ? `<ellipse cx="62" cy="${t + 2}" rx="12" ry="10" ${st(c[0])}/>` : "") }),
+      fennec: (t, F, c) => ({ b: both(`<path d="M34 ${t + 10} Q${F ? 8 : 16} ${t - (F ? 8 : 2)} ${F ? 14 : 20} ${t - (F ? 30 : 20)} Q${F ? 34 : 34} ${t - 10} 44 ${t + 4}Z" ${st(c[0])}/><path d="M34 ${t + 4} Q${F ? 16 : 22} ${t - 4} ${F ? 18 : 23} ${t - (F ? 22 : 14)} Q30 ${t - 8} 40 ${t + 2}Z" fill="#ffc9b9"/>`) }),
+      sting: (t, F, c) => ({ b: `<path d="M74 72 Q${F ? 100 : 92} 70 ${F ? 96 : 88} ${F ? 40 : 50} Q${F ? 90 : 84} ${F ? 22 : 36} ${F ? 74 : 72} ${F ? 22 : 34}" fill="none" stroke="${INK}" stroke-width="${F ? 10 : 8}" stroke-linecap="round"/>` + ln(`M74 72 Q${F ? 100 : 92} 70 ${F ? 96 : 88} ${F ? 40 : 50} Q${F ? 90 : 84} ${F ? 22 : 36} ${F ? 74 : 72} ${F ? 22 : 34}`, c[0], F ? 6 : 4.5) +
+        `<path d="M${F ? 74 : 72} ${F ? 16 : 29} L${F ? 66 : 66} ${F ? 24 : 34} L${F ? 76 : 74} ${F ? 28 : 38}Z" ${st("#ffd43b", 2)}/>` }),
+      sand: (t, F, c) => ({ b: ln("M4 60 Q18 50 30 58", "#e2b56b", 3.4) + ln("M70 30 Q84 22 96 30", "#e2b56b", 3.4) + (F ? ln("M2 82 Q16 74 26 82", "#e2b56b", 3.4) + ln("M76 86 Q88 78 98 86", "#e2b56b", 3.4) : ""),
+        f: F ? `<circle cx="50" cy="${t - 8}" r="7" ${st("#ffd43b", 2)}/>` + ln(`M50 ${t - 19} L50 ${t - 16} M39 ${t - 8} L42 ${t - 8} M58 ${t - 8} L61 ${t - 8}`, "#ffb02e", 2.4) : "" }),
+      pyramid: (t, F, c) => ({ m: ln("M36 56 L64 56", c[1], 2) + ln("M30 70 L70 70", c[1], 2), f: F ? `<path d="M50 ${t - 22} L58 ${t - 6} L42 ${t - 6}Z" ${st("#ffd43b", 2)}/><circle cx="50" cy="${t - 10}" r="2" fill="${INK}"/>` : "" }),
+      tumble: (t, F, c) => { let p = "", n = F ? 26 : 18, R = F ? 36 : 32;
+        for (let k = 0; k <= n; k++) { const a = Math.PI * 2 * k / n, r = k % 2 ? R : R - 7; p += (k ? "L" : "M") + (50 + r * Math.cos(a)).toFixed(1) + " " + (62 + r * Math.sin(a)).toFixed(1); }
+        return { b: `<path d="${p}Z" fill="none" stroke="#b08850" stroke-width="2.4" stroke-linejoin="round"/>` + (F ? `<circle cx="50" cy="62" r="40" fill="none" stroke="#d9b27a" stroke-width="2" stroke-dasharray="3 6"/>` : "") }; },
+      oasis: (t, F, c) => ({ f: `<path d="M50 ${t - (F ? 20 : 14)} C${F ? 60 : 56} ${t - 8} ${F ? 60 : 57} ${t} 50 ${t + 2} C${F ? 40 : 43} ${t} ${F ? 40 : 44} ${t - 8} 50 ${t - (F ? 20 : 14)}Z" ${st("#6fc9ff", 2.2)}/>`,
+        b: F ? both(`<path d="M44 ${t} Q24 ${t - 22} 6 ${t - 12} Q24 ${t - 12} 40 ${t + 4}Z" ${st("#5fb85f", 2)}/>`) : "" }),
+      /* ---- たからの どうくつ ---- */
+      gemhead: (t, F, c) => ({ f: `<path d="M${F ? 38 : 42} ${t + 4} L${F ? 42 : 45} ${t - (F ? 18 : 10)} L50 ${t - (F ? 26 : 16)} L${F ? 58 : 55} ${t - (F ? 18 : 10)} L${F ? 62 : 58} ${t + 4}Z" ${st(c[2])}/>` + ln(`M50 ${t - (F ? 26 : 16)} L50 ${t + 4}`, "#fff", 1.6) +
+        (F ? both(`<path d="M30 ${t + 8} L28 ${t - 6} L38 ${t + 4}Z" ${st(c[2], 2)}/>`) : "") }),
+      gembelly: (t, F, c) => ({ m: `<path d="M50 ${F ? 64 : 67} L${F ? 61 : 58} ${F ? 72 : 73} L50 ${F ? 84 : 81} L${F ? 39 : 42} ${F ? 72 : 73}Z" ${st("#ff6b9a", 2)}/>` + ln(`M${F ? 39 : 42} ${F ? 72 : 73} L${F ? 61 : 58} ${F ? 72 : 73}`, "#fff", 1.4) +
+        (F ? `<path d="M26 60 l5 -6 5 6 -5 6Z" ${st("#4dabf7", 1.6)}/><path d="M64 60 l5 -6 5 6 -5 6Z" ${st("#69db7c", 1.6)}/>` : "") }),
+      goldhorns: (t, F, c) => ({ f: both(F ? `<path d="M38 ${t + 6} Q20 ${t - 2} 18 ${t - 22} Q28 ${t - 6} 44 ${t}Z" ${st("#ffd43b")}/>` : `<path d="M40 ${t + 5} Q30 ${t} 30 ${t - 12} Q36 ${t - 2} 45 ${t + 1}Z" ${st("#ffd43b")}/>`) }),
+      lantern: (t, F, c) => ({ f: ln(`M50 ${t + 2} Q${F ? 56 : 54} ${t - 12} ${F ? 66 : 60} ${t - (F ? 16 : 12)}`, INK, 2.4) + `<rect x="${F ? 60 : 55}" y="${t - (F ? 18 : 14)}" width="${F ? 12 : 10}" height="${F ? 14 : 11}" rx="3" ${st("#ffe66d", 2)}/>` +
+        (F ? `<circle cx="66" cy="${t - 11}" r="14" fill="#fff6a8" opacity=".45"/>` : "") }),
+      keytail: (t, F, c) => ({ b: ln(`M74 74 L${F ? 94 : 88} ${F ? 58 : 64}`, "#ffd43b", F ? 5 : 4) + `<circle cx="${F ? 96 : 90}" cy="${F ? 54 : 61}" r="${F ? 7 : 5}" fill="none" stroke="#ffd43b" stroke-width="${F ? 4 : 3}"/>` +
+        ln(`M80 70 L84 74 M84 66 L88 70`, "#ffd43b", 3) }),
+      rock: (t, F, c) => ({ m: `<path d="M30 ${F ? 46 : 50} L40 ${F ? 42 : 46} L44 ${F ? 50 : 52} L34 ${F ? 54 : 56}Z" ${st(c[1], 2)}/><path d="M60 ${F ? 46 : 50} L70 ${F ? 44 : 48} L72 ${F ? 54 : 56} L62 ${F ? 54 : 56}Z" ${st(c[1], 2)}/>` +
+        (F ? `<path d="M40 78 L50 74 L60 78 L56 86 L44 86Z" ${st(c[1], 2)}/>` : "") }),
+      coins: (t, F, c) => ({ m: [[34, 74], [66, 72]].concat(F ? [[50, 82], [28, 60], [72, 58]] : []).map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="4" ${st("#ffd43b", 1.6)}/>`).join(""),
+        b: F ? `<circle cx="16" cy="84" r="6" ${st("#ffd43b", 1.8)}/><circle cx="86" cy="86" r="5" ${st("#ffd43b", 1.8)}/><circle cx="92" cy="76" r="4" ${st("#ffd43b", 1.8)}/>` : "" }),
+      mole: (t, F, c) => ({ f: both(`<path d="M28 78 L${F ? 14 : 18} ${F ? 84 : 82} M28 82 L${F ? 16 : 20} ${F ? 90 : 88} M30 86 L${F ? 22 : 24} ${F ? 96 : 92}" stroke="#fff3d6" stroke-width="${F ? 4 : 3}" stroke-linecap="round"/>`) + `<ellipse cx="50" cy="66" rx="5" ry="4" fill="#ff9aa2" stroke="${INK}" stroke-width="2"/>` }),
+      crown: (t, F, c) => ({ f: `<path d="M${F ? 34 : 38} ${t + 4} L${F ? 34 : 38} ${t - (F ? 12 : 8)} L${F ? 42 : 44} ${t - 2} L50 ${t - (F ? 16 : 10)} L${F ? 58 : 56} ${t - 2} L${F ? 66 : 62} ${t - (F ? 12 : 8)} L${F ? 66 : 62} ${t + 4}Z" ${st("#ffd43b", 2.2)}/><circle cx="50" cy="${t - 1}" r="2.6" fill="#ff6b9a"/>` }),
+      aura: (t, F, c) => ({ b: `<circle cx="50" cy="60" r="46" fill="${c[2]}" opacity=".55"/><circle cx="50" cy="60" r="46" fill="none" stroke="#ffd43b" stroke-width="2.4" stroke-dasharray="4 7"/>` })
+    };
+
+    // [こどもの名前, しんかの名前, いろ, かたち, [パーツ], {sleepy, fang}]
+    const R = [
+      // 1の段：もり
+      [["メブン", "メブンガルド", "#7bc96f", "bean", ["sprout"]], ["ハッパル", "ハッパルーン", "#8fd18f", "round", ["leafears"]], ["キノポコ", "キノポルガ", "#f4d9b5", "pear", ["mushcap"]],
+       ["ドングー", "ドングルド", "#c99a62", "round", ["acorn"]], ["ツノピ", "ツノガイア", "#5fae8a", "blob", ["antenna", "leaftail"], { fang: 1 }], ["ハナポン", "ハナブリス", "#ff9f73", "round", ["petals"]],
+       ["コケモ", "コケモノス", "#6b9e5a", "square", ["leaftail", "sprout"]], ["フクロン", "フクロナイト", "#9b7b5c", "tall", ["owl"], { nomouth: 1 }], ["ツタッチ", "ツタロード", "#4f9c6a", "drop", ["vine"]]],
+      // 2の段：くさはら
+      [["ピョンタ", "ピョンガルド", "#e9dcc8", "round", ["bunny"]], ["ブンブ", "ブンブリッツ", "#ffc93c", "round", ["bee"]], ["テンテン", "テントロン", "#ef5350", "dome", ["lady"]],
+       ["ピョコット", "ピョコガイア", "#8cc152", "bean", ["hopper"]], ["ワタポ", "ワタフォート", "#d9e86a", "round", ["fluff"]], ["モゾリ", "モゾリアーク", "#a3d65c", "bean", ["cater"]],
+       ["ワフル", "ワフルード", "#e0b07a", "round", ["puppy"]], ["デンデン", "デンデガイア", "#b8a8e0", "bean", ["snail"]], ["ソヨギ", "ソヨギノヴァ", "#9ed98a", "tall", ["breeze"]]],
+      // 3の段：うみ（しさくと おなじ）
+      [["ポチャ", "ポチャリオン", "#5ec8e5", "drop", ["bubble"]], ["ナミッチ", "ナミガード", "#3fb5a6", "bean", ["wave"]], ["ヒレル", "ヒレギア", "#ff9f5a", "fish", ["fins"]],
+       ["サンゴロ", "サンゴレム", "#ff7b6b", "blob", ["coral"], { fang: 1 }], ["ユラリ", "ユラリウス", "#b49cff", "dome", ["jelly"]], ["シェルン", "シェルガイア", "#f2c14e", "round", ["shell"]],
+       ["ガブル", "ガブルマリン", "#5b84f0", "fish", ["shark"], { fang: 1 }], ["ウズ", "ウズライド", "#2bb3a3", "round", ["swirl"]], ["アオミ", "アオミタイド", "#6fc9ff", "tall", ["earfins"]]],
+      // 4の段：そら
+      [["ピヨット", "ピヨウイング", "#ffd95a", "round", ["wings", "beak"], { nomouth: 1 }], ["モクリン", "モクライザー", "#e8f1fb", "blob", ["cloud"]], ["トサカン", "トサカルド", "#ff8a65", "round", ["crest", "beak"], { nomouth: 1 }],
+       ["ヒラリ", "ヒラリオン", "#9fd6ff", "tri", ["kite"]], ["クルリ", "クルリング", "#a5e3e0", "round", ["gust"]], ["ニジッコ", "ニジアーク", "#ffffff", "bean", ["rainbow"]],
+       ["プロペラン", "プロペガイア", "#7fb2ff", "square", ["propeller"]], ["ツバサン", "ツバサロード", "#4d8fe0", "pear", ["wings", "crest"]], ["ソラリン", "ソラリオン", "#ffcf4a", "round", ["sun"]]],
+      // 5の段：かざん
+      [["ヒバチ", "ヒバチブレイズ", "#ff6f4f", "round", ["flame"]], ["ゴツガル", "ゴツガルド", "#8a6b62", "square", ["spikes"], { fang: 1 }], ["トロリン", "トロリノヴァ", "#e8573a", "bean", ["magma"]],
+       ["ツノボー", "ツノボルケノ", "#c94a3a", "round", ["horns"], { fang: 1 }], ["ケムリン", "ケムリガルド", "#9a8fa0", "blob", ["smoke"]], ["エリマキ", "エリマキロード", "#e07a3c", "round", ["frill"]],
+       ["ヒノコロ", "ヒノコロナ", "#d9483b", "round", ["embers"]], ["ドララ", "ドラフレア", "#ff7a59", "pear", ["dragon", "horns"]], ["カコウ", "カコウガイア", "#7d675e", "tri", ["crater"]]],
+      // 6の段：ゆきやま
+      [["ユキマロ", "ユキマロード", "#dfe9f5", "round", ["snowcap"]], ["ヒョウカ", "ヒョウカノン", "#a8dcf0", "bean", ["icehorn"]], ["マフラン", "マフラード", "#cfd8ff", "round", ["scarf"]],
+       ["ペンギル", "ペンギルド", "#3d4f7a", "pear", ["flipper", "beak"], { nomouth: 1 }], ["コンユキ", "コンユキアーク", "#f2f4f7", "round", ["fox"]], ["ツララン", "ツララガルド", "#9fc9e8", "square", ["icicle"]],
+       ["セッカ", "セッカノヴァ", "#8fb8ef", "round", ["flake"]], ["モフル", "モフルガイア", "#e6e1f0", "round", ["fur"]], ["コオリン", "コオリンフォート", "#7fc4e0", "blob", ["crystal"]]],
+      // 7の段：よぞら
+      [["ミカヅ", "ミカヅキロード", "#4a4f9e", "round", ["moon"]], ["ホシッチ", "ホシルミナ", "#6c5fc7", "bean", ["staranten"]], ["ナガレ", "ナガレスター", "#5b7fd6", "drop", ["comet"]],
+       ["ヨルバ", "ヨルバット", "#5a4a8a", "round", ["bat"], { fang: 1 }], ["ワッカ", "ワッカプラネ", "#8a7fe0", "round", ["ring"]], ["ネムネ", "ネムネムーン", "#7f8fd6", "bean", ["nightcap"], { sleepy: 1 }],
+       ["ホタリ", "ホタリウス", "#3f5a7a", "round", ["firefly"]], ["ヨミミ", "ヨミミナイト", "#6a5f8e", "tall", ["ears"], { nomouth: 1, beak: 1 }], ["オーロ", "オーロラード", "#3a4a7a", "pear", ["aurora"]]],
+      // 8の段：さばく
+      [["サボテ", "サボテガルド", "#6fb36a", "tall", ["cactus"]], ["コブル", "コブルガイア", "#d9a868", "bean", ["hump"]], ["デカミミ", "デカミミアーク", "#f0c88a", "round", ["fennec"]],
+       ["トカリ", "トカリオン", "#d98a4e", "fish", ["frill"]], ["サソリン", "サソリガード", "#c97b4a", "round", ["sting"], { fang: 1 }], ["スナウズ", "スナウズロード", "#e8c27a", "round", ["sand"]],
+       ["ピラミ", "ピラミガイア", "#e6c26e", "tri", ["pyramid"]], ["タンブル", "タンブリード", "#c9a06a", "round", ["tumble"]], ["オアシン", "オアシンフォート", "#8fd0c8", "drop", ["oasis"]]],
+      // 9の段：たからの どうくつ
+      [["キラリ", "キラリスタル", "#a98be0", "round", ["gemhead"]], ["ジュエル", "ジュエルガード", "#6c7a9a", "bean", ["gembelly"]], ["キンツノ", "キンツノルド", "#5a6e8a", "round", ["goldhorns"], { fang: 1 }],
+       ["ランタ", "ランタンロード", "#4a5a7a", "pear", ["lantern"]], ["カギロン", "カギロンド", "#7a8aa8", "fish", ["keytail"]], ["イワヨロ", "イワヨロイガ", "#8a8f99", "square", ["rock"]],
+       ["コインコ", "コインフォート", "#e8b04a", "round", ["coins"]], ["モグリ", "モグリガイア", "#7a6a5e", "bean", ["mole"], { nomouth: 1 }], ["タカラン", "タカラアーク", "#3fb0a0", "round", ["crown", "gembelly"]]]
+    ];
+    // ボス（その段の 9たい ぜんぶで あらわれる）
+    const BOSS = [
+      ["もりの ぬし", "#5fae6a", "round", ["sprout", "leafears", "leaftail"]],
+      ["くさはらの ぬし", "#ffd95a", "round", ["bunny", "petals"]],
+      ["うみの ぬし", "#3f8fd6", "fish", ["shark", "earfins"]],
+      ["そらの ぬし", "#ffffff", "pear", ["wings", "crest", "sun"]],
+      ["かざんの ぬし", "#d9483b", "round", ["dragon", "flame", "horns"]],
+      ["ゆきやまの ぬし", "#e6eef8", "round", ["fur", "icehorn", "crystal"]],
+      ["よぞらの ぬし", "#4a3f8a", "round", ["bat", "moon", "comet"]],
+      ["さばくの ぬし", "#e0b46a", "tri", ["sting", "sand", "pyramid"]],
+      ["どうくつの ぬし", "#4a5a7a", "round", ["crown", "goldhorns", "gembelly", "coins"]]
+    ];
+
+    function eyes(y, F, sleepy) {
+      if (sleepy) return both(ln(`M36 ${y} Q41 ${y + 4} 46 ${y}`, INK, 2.6)) + (F ? both(ln(`M36 ${y - 8} L45 ${y - 6}`, INK, 2.4)) : "");
+      const e = x => F
+        ? `<ellipse cx="${x}" cy="${y}" rx="4.6" ry="5.6" fill="${INK}"/><circle cx="${x + 1.6}" cy="${y - 2}" r="1.8" fill="#fff"/>`
+        : `<ellipse cx="${x}" cy="${y}" rx="5.6" ry="6.6" fill="${INK}"/><circle cx="${x + 2}" cy="${y - 2.4}" r="2.3" fill="#fff"/><circle cx="${x - 1.6}" cy="${y + 2.4}" r="1" fill="#fff"/>`;
+      return e(41) + e(59) + (F ? both(ln(`M36 ${y - 10} L46 ${y - 7}`, INK, 2.6)) : "");
+    }
+    function mouth(y, F, fang, nomouth) {
+      const ck = both(`<ellipse cx="33" cy="${y - 2}" rx="4.5" ry="2.6" fill="#ff8f7a" opacity=".45"/>`);
+      if (nomouth) return ck;
+      return ck + (F ? `<path d="M43 ${y} Q50 ${y + 7} 57 ${y}" fill="#7a2d3a" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>` + (fang ? `<path d="M46 ${y + .5} L48 ${y + 4} L50 ${y + 1}Z" fill="#fff"/>` : "")
+                     : ln(`M45 ${y} Q50 ${y + 4.5} 55 ${y}`, INK, 2.2));
+    }
+    function draw(color, shape, feats, F, opt, scale) {
+      const c = pal(color), S = SH[shape];
+      let B = "", M = "", Fr = "";
+      feats.forEach(k => { const r = FT[k](S.top, F, c, S); B += r.b || ""; M += r.m || ""; Fr += r.f || ""; });
+      const belly = S.by ? `<ellipse cx="50" cy="${S.by}" rx="15" ry="10" fill="${c[2]}" opacity=".9"/>` : "";
+      return `<ellipse cx="50" cy="92" rx="${F ? 26 : 20}" ry="4" fill="rgba(0,0,0,.12)"/>
+        <g transform="translate(50 64) scale(${scale}) translate(-50 -64)">${B}${S.p}${st(c[0])}/>${belly}${M}
+        <path d="M34 50 Q38 44 44 44" stroke="#fff" stroke-width="3" fill="none" opacity=".55" stroke-linecap="round"/>
+        ${eyes(S.ey, F, opt.sleepy)}${mouth(S.ey + 10, F, opt.fang, opt.nomouth)}${opt.beak ? `<path d="M47 ${S.ey + 6} L53 ${S.ey + 6} L50 ${S.ey + 11}Z" ${st("#f2a33c", 1.6)}/>` : ""}${Fr}</g>`;
+    }
+    const svg = inner => `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+    function egg(color) {
+      const c = pal(color);
+      return `<ellipse cx="50" cy="90" rx="20" ry="4" fill="rgba(0,0,0,.12)"/>
+        <path d="M50 22 C68 22 76 50 76 64 A26 26 0 0 1 24 64 C24 50 32 22 50 22Z" ${st("#fffaf0")}/>
+        <circle cx="40" cy="50" r="6" fill="${c[0] === "#ffffff" ? "#cfe3f5" : c[0]}"/><circle cx="60" cy="64" r="8" fill="${c[0] === "#ffffff" ? "#cfe3f5" : c[0]}"/><circle cx="44" cy="76" r="4" fill="${c[1]}"/><circle cx="62" cy="42" r="3.5" fill="${c[1]}"/>
+        <path d="M36 34 Q40 30 44 32" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    }
+    return {
+      name: (a, b, stage) => stage === 2 ? R[a - 1][b - 1][1] : R[a - 1][b - 1][0],
+      color: (a, b) => R[a - 1][b - 1][2],
+      bossName: a => BOSS[a - 1][0],
+      bossColor: a => BOSS[a - 1][1],
+      creatureSVG(a, b, stage) {
+        const r = R[a - 1][b - 1];
+        if (stage === 0) return svg(egg(r[2]));
+        return svg(draw(r[2], r[3], r[4], stage === 2, r[5] || {}, stage === 2 ? 1 : .86));
+      },
+      bossSVG(a) { const r = BOSS[a - 1]; return svg(draw(r[1], r[2], ["aura"].concat(r[3]), true, { fang: 1 }, .92)); }
+    };
+  })();
+
+  // ===== v3.0 モンスターシール(たまご → こども → しんか) =====
+  const STAGE = [
+    {name:'たまご', r:'n'},
+    {name:'こども', r:'kira'},
+    {name:'しんか', r:'holo'}
   ];
-  // 段の色(シールの まんなかの 光の色)
-  const DAN_COL = ['#ff9f43','#7bc96f','#4dabf7','#ffb347','#ff6b9a','#5c7cfa','#9775fa','#51cf66','#f7b731'];
-  // レア度:おぼえにくい段ほど レア
-  const RARITY = {
-    n:      {name:'ノーマル', star:1},
-    kira:   {name:'キラ',     star:2},
-    gold:   {name:'ゴールド', star:3},
-    holo:   {name:'ホロ',     star:4},
-    legend: {name:'レジェンド', star:5}
-  };
-  function rarityOf(a){ return a===3||a===4 ? 'kira' : a===6||a===7 ? 'gold' : a>=8 ? 'holo' : 'n'; }
+  const lvOf = c => Math.max(0, Math.min(2, c.lv || 0));
   const sealNo = (a,b) => (a-1)*9 + b;
-  // シールの HTML。mode:'got'(もっている)/'sil'(まだ)/'nige'(にげた)。w:はば(px)
-  function sealHTML(a, b, mode, w){
-    const r = rarityOf(a), R = RARITY[r], got = mode === 'got';
-    const art = got ? cardEmoji(a,b) : mode === 'nige' ? '👣' : '？';
-    const name = got ? SEAL_NAMES[a-1][b-1] : '？？？';
+  const monName = (a,b,lv) => lv === 0 ? 'なぞの たまご' : KM.name(a,b,lv);
+  const sunCol = col => col === '#ffffff' || col === '#f2f4f7' || col === '#e8f1fb' ? '#9fc4e8' : col;
+  // シールの HTML。mode:'got'(もっている)/'sil'(まだ)/'nige'(にげた)。w:はば(px)。lv:だんかい
+  function sealHTML(a, b, mode, w, lv){
+    lv = lv || 0;
+    const got = mode === 'got', r = got || mode === 'nige' ? STAGE[lv].r : 'n';
+    const art = got ? KM.creatureSVG(a, b, lv) : mode === 'nige' ? '<span>👣</span>' : '<span>？</span>';
+    const name = got ? monName(a, b, lv) : '？？？';
     const eq = a + '×' + b + '=' + (got || mode === 'nige' ? a*b : '？');
-    return '<div class="seal r-' + r + ' m-' + mode + '" style="--w:' + w + 'px;--dc:' + DAN_COL[a-1] + '" data-a="' + a + '" data-b="' + b + '">' +
-      '<div class="seal-in"><div class="seal-top"><span>No.' + sealNo(a,b) + '</span><span class="rr">' + '★'.repeat(R.star) + '</span></div>' +
-      '<div class="seal-art"><span>' + art + '</span></div>' +
+    return '<div class="seal r-' + r + ' m-' + mode + '" style="--w:' + w + 'px;--dc:' + sunCol(KM.color(a,b)) + '" data-a="' + a + '" data-b="' + b + '">' +
+      '<div class="seal-in"><div class="seal-top"><span>No.' + sealNo(a,b) + '</span><span class="rr">' + (got ? '★'.repeat(lv + 1) : '') + '</span></div>' +
+      '<div class="seal-art">' + art + '</div>' +
       '<div class="seal-name" style="--nf:' + nameSize(name) + '">' + name + '</div><div class="seal-eq">' + eq + '</div></div></div>';
   }
-  // 名前の 長さに あわせて 字を 小さく
   function nameSize(n){ const l = n.length; return l <= 6 ? '.66em' : l <= 8 ? '.56em' : l <= 10 ? '.47em' : '.42em'; }
   function bossSealHTML(a, w, sil){
-    const th = THEMES[a-1];
-    return '<div class="seal r-legend' + (sil ? ' m-sil' : ' m-got') + '" style="--w:' + w + 'px;--dc:' + DAN_COL[a-1] + '">' +
-      '<div class="seal-in"><div class="seal-top"><span>' + a + 'の段</span><span class="rr">★★★★★</span></div>' +
-      '<div class="seal-art"><span>' + (sil ? '？' : th.boss) + '</span></div>' +
-      '<div class="seal-name" style="--nf:' + nameSize(sil ? '？？？' : th.bossName) + '">' + (sil ? '？？？' : th.bossName) + '</div><div class="seal-eq">レジェンド</div></div></div>';
+    const nm = sil ? '？？？' : KM.bossName(a);
+    return '<div class="seal r-legend' + (sil ? ' m-sil' : ' m-got') + '" style="--w:' + w + 'px;--dc:' + sunCol(KM.bossColor(a)) + '">' +
+      '<div class="seal-in"><div class="seal-top"><span>' + a + 'の段</span><span class="rr">' + (sil ? '' : '★★★★★') + '</span></div>' +
+      '<div class="seal-art">' + (sil ? '<span>？</span>' : KM.bossSVG(a)) + '</div>' +
+      '<div class="seal-name" style="--nf:' + nameSize(nm) + '">' + nm + '</div><div class="seal-eq">レジェンド</div></div></div>';
   }
   // さわると かたむいて、光が うごく
   function attachTilt(root){
@@ -1189,6 +1475,9 @@
         const z = JSON.parse(raw);
         if(z && typeof z.cards === 'object'){
           if(!Array.isArray(z.bosses)) z.bosses = [];
+          // v2のデータ:もっていた カードは たまごから はじめる
+          Object.keys(z.cards).forEach(k => { const c = z.cards[k];
+            if((c.st === 'got' || c.st === 'nige') && c.lv === undefined){ c.lv = 0; c.d = gToKey(c.g) || todayKey(); } });
           return z;
         }
       }
@@ -1214,6 +1503,9 @@
   }
 
   // 1問答えるたびに呼ぶ。カードの状態を進め、起きたできごとを返す
+  // きょうの日づけ(YYYY-MM-DD)。しんかは「まえに すすんだ日より あと」の日に 正解すると おきる
+  function todayKey(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+  function gToKey(g){ if(!g) return ''; const m = String(g).split('/'); return m.length === 3 ? m[0] + '-' + m[1].padStart(2,'0') + '-' + m[2].padStart(2,'0') : ''; }
   function recordAnswer(a, b, isCorrect){
     const z = loadZukan();
     const c = getCard(z, a, b);
@@ -1222,9 +1514,11 @@
     if(isCorrect){
       c.s++;
       if(c.st === 'none' && c.s >= NEED_GET){
-        c.st = 'got'; c.g = todayStr(); ev = 'get';
+        c.st = 'got'; c.g = todayStr(); c.lv = 0; c.d = todayKey(); ev = 'get';
       } else if(c.st === 'nige' && c.s >= NEED_RECOVER){
         c.st = 'got'; ev = 'recover';
+      } else if(c.st === 'got' && lvOf(c) < 2 && (c.d || '') < todayKey()){
+        c.lv = lvOf(c) + 1; c.d = todayKey(); ev = 'evolve';
       }
     } else {
       c.s = 0;
@@ -1241,19 +1535,19 @@
       if(all){ z.bosses.push(a); boss = a; }
     }
     saveZukan(z);
-    return {ev:ev, boss:boss, a:a, b:b};
+    return {ev:ev, boss:boss, a:a, b:b, lv:lvOf(c)};
   }
 
   function zukanStats(z){
-    let got = 0, nige = [];
+    let got = 0, nige = [], lvN = [0,0,0];
     for(let a=1; a<=9; a++){
       for(let b=1; b<=9; b++){
         const st = getCard(z, a, b).st;
-        if(st === 'got') got++;
+        if(st === 'got'){ got++; lvN[lvOf(getCard(z, a, b))]++; }
         else if(st === 'nige') nige.push({a:a, b:b, answer:a*b});
       }
     }
-    return {got:got, nige:nige, bosses:z.bosses.length};
+    return {got:got, nige:nige, bosses:z.bosses.length, lvN:lvN};
   }
 
   let selectedDan = 2;
@@ -1392,12 +1686,13 @@
     if(!r.ev && !r.boss) return;
     runEvents.push(r);
     if(r.boss){
-      const th = THEMES[r.boss-1];
-      showToast('👑 ボスあらわる! ' + th.boss + ' ' + th.bossName, 'boss');
+      showToast('👑 ボスあらわる! ' + KM.bossName(r.boss), 'boss');
     } else if(r.ev === 'get'){
-      showToast('✨ シールGET! ' + cardLabel(r.a, r.b) + '(' + RARITY[rarityOf(r.a)].name + ')', rarityOf(r.a) === 'n' ? '' : 'rare');
+      showToast('🥚 たまごGET! ' + r.a + '×' + r.b + '=' + (r.a*r.b));
+    } else if(r.ev === 'evolve'){
+      showToast((r.lv === 1 ? '🐣 うまれた! ' : '✨ しんか! ') + KM.name(r.a, r.b, r.lv), 'rare');
     } else if(r.ev === 'recover'){
-      showToast('✨ とりもどした! ' + cardLabel(r.a, r.b), 'recover');
+      showToast('✨ とりもどした! ' + cardLabel(r.a, r.b, r.lv), 'recover');
     }
   }
 
@@ -1406,20 +1701,24 @@
     const recs = runEvents.filter(r => r.ev === 'recover');
     const niges = runEvents.filter(r => r.ev === 'nige');
     const bosses = runEvents.filter(r => r.boss);
-    if(!gets.length && !recs.length && !niges.length && !bosses.length) return '';
-    const minis = (list, mode) => '<div class="ev-seals">' + list.map(r => sealHTML(r.a, r.b, mode, 64)).join('') + '</div>';
-    const pack = (rr, front) => '<button class="pack r-' + rr + '"><div class="pack-in"><div class="pack-back"><b>九九</b><small>タッチで<br>めくる</small></div>' +
-      '<div class="pack-front">' + front + '</div></div></button>';
+    if(!gets.length && !recs.length && !niges.length && !bosses.length && !runEvents.some(r => r.ev === 'evolve')) return '';
+    const minis = (list, mode) => '<div class="ev-seals">' + list.map(r => sealHTML(r.a, r.b, mode, 64, r.lv)).join('') + '</div>';
+    const evos = runEvents.filter(r => r.ev === 'evolve');
+    const pack = (rr, front, back) => '<button class="pack r-' + rr + (back ? ' evo' : '') + '"><div class="pack-in"><div class="pack-back">' +
+      (back || '<b>九九</b><small>タッチで<br>めくる</small>') + '</div><div class="pack-front">' + front + '</div></div></button>';
     let html = '<div class="card-events">';
-    const packs = bosses.map(r => pack('legend', bossSealHTML(r.boss, 108)))
-      .concat(gets.map(r => pack(rarityOf(r.a), sealHTML(r.a, r.b, 'got', 108))));
+    // しんかは うらに まえの すがた。タッチで あたらしい すがたに なる
+    const evoPacks = evos.map(r => pack(STAGE[r.lv].r, sealHTML(r.a, r.b, 'got', 108, r.lv), sealHTML(r.a, r.b, 'got', 108, r.lv - 1) + '<i class="evo-tap">タッチ!</i>'));
+    const packs = bosses.map(r => pack('legend', bossSealHTML(r.boss, 108))).concat(evoPacks)
+      .concat(gets.map(r => pack('n', sealHTML(r.a, r.b, 'got', 108, 0))));
     if(packs.length){
-      html += '<h4>🎁 あたらしいシールが ' + packs.length + 'まい!</h4><div class="packs">' + packs.join('') + '</div>' +
+      const t = [bosses.length ? 'ボス' : '', evos.length ? 'うまれた・しんか ' + evos.length : '', gets.length ? 'たまご ' + gets.length : ''].filter(Boolean).join('、');
+      html += '<h4>🎁 ' + t + '!</h4><div class="packs">' + packs.join('') + '</div>' +
         (packs.length > 1 ? '<button class="open-all">ぜんぶ めくる</button>' : '');
     }
-    if(recs.length) html += '<h4>✨ とりもどしたシール</h4>' + minis(recs, 'got');
+    if(recs.length) html += '<h4>✨ とりもどした なかま</h4>' + minis(recs, 'got');
     if(niges.length){
-      html += '<h4>👣 にげたシール</h4>' + minis(niges, 'nige') +
+      html += '<h4>👣 にげた なかま</h4>' + minis(niges, 'nige') +
         '<p class="ev-note">図鑑の「とりもどしミッション」でつかまえよう!</p>';
     }
     return html + '</div>';
@@ -1632,19 +1931,22 @@
 
   // ===== v2.0 九九図鑑の描画 =====
   function cardDetailText(z, a, b){
-    const c = getCard(z, a, b), R = RARITY[rarityOf(a)];
+    const c = getCard(z, a, b), lv = lvOf(c), S = STAGE[lv], q = a + '×' + b + '=' + (a*b);
+    const wait = (c.d || '') >= todayKey();   // きょうは もう すすめない
     let t;
     if(c.st === 'got'){
-      t = '<b class="dn">' + SEAL_NAMES[a-1][b-1] + '</b><span class="dr r-' + rarityOf(a) + '">' + R.name + '</span>' +
-        '<span class="dt">' + a + '×' + b + '=' + (a*b) + '<br>' + THEMES[a-1].name + 'のシール' + (c.g ? '<br>' + c.g + 'にゲット' : '') + '<br>さわると キラッ!</span>';
+      const next = lv === 2 ? 'さいごの すがた!' :
+        (wait ? 'あした いこうに ' + a + '×' + b + ' に 正解すると ' : 'つぎに ' + a + '×' + b + ' に 正解すると ') + (lv === 0 ? 'うまれるよ' : 'しんかするよ');
+      t = '<b class="dn">' + monName(a, b, lv) + '</b><span class="dr r-' + S.r + '">' + S.name + '</span>' +
+        '<span class="dt">' + q + (c.g ? '<br>' + c.g + 'に ゲット' : '') + '<br>' + next + '</span>';
     } else if(c.st === 'nige'){
       const left = Math.max(1, NEED_RECOVER - c.s);
-      t = '<b class="dn">にげちゃった!</b><span class="dr r-' + rarityOf(a) + '">' + R.name + '</span><span class="dt">あと' + left + '回つづけて正解で とりもどせるよ</span>';
+      t = '<b class="dn">にげちゃった!</b><span class="dr r-' + S.r + '">' + S.name + '</span><span class="dt">あと' + left + '回つづけて正解で とりもどせるよ</span>';
     } else {
       const left = Math.max(1, NEED_GET - c.s);
-      t = '<b class="dn">No.' + sealNo(a,b) + ' ？？？</b><span class="dr r-' + rarityOf(a) + '">' + R.name + '</span><span class="dt">' + a + '×' + b + ' に<br>あと' + left + '回つづけて正解で ゲット!</span>';
+      t = '<b class="dn">No.' + sealNo(a,b) + ' ？？？</b><span class="dt">' + a + '×' + b + ' に<br>あと' + left + '回つづけて正解で たまごを ゲット!</span>';
     }
-    return sealHTML(a, b, c.st === 'none' ? 'sil' : c.st, 112) + '<div class="dinfo">' + t + '</div>';
+    return sealHTML(a, b, c.st === 'none' ? 'sil' : c.st, 112, lv) + '<div class="dinfo">' + t + '</div>';
   }
   function showDetail(html){
     zukanDetail.innerHTML = html; zukanDetail.classList.add('has-seal'); attachTilt(zukanDetail);
@@ -1655,11 +1957,9 @@
     const z = loadZukan();
     const stats = zukanStats(z);
     zukanGotCount.textContent = stats.got + '/' + TOTAL_CARDS;
-    const rc = {n:[0,0], kira:[0,0], gold:[0,0], holo:[0,0]};
-    for(let a=1; a<=9; a++) for(let b=1; b<=9; b++){ const r = rc[rarityOf(a)]; r[1]++; if(getCard(z,a,b).st === 'got') r[0]++; }
-    document.getElementById('rarityRow').innerHTML = Object.keys(rc).map(k =>
-      '<span class="rc r-' + k + '">' + RARITY[k].name + ' <b>' + rc[k][0] + '</b>/' + rc[k][1] + '</span>').join('') +
-      '<span class="rc r-legend">レジェンド <b>' + z.bosses.length + '</b>/9</span>';
+    document.getElementById('rarityRow').innerHTML = STAGE.map((S, k) =>
+      '<span class="rc r-' + S.r + '">' + S.name + ' <b>' + stats.lvN[k] + '</b></span>').join('') +
+      '<span class="rc r-legend">ボス <b>' + z.bosses.length + '</b>/9</span>';
     zukanBossCount.textContent = stats.bosses + '/9';
     zukanNigeCount.textContent = stats.nige.length;
     startCatchBtn.classList.toggle('hidden', stats.nige.length === 0);
@@ -1675,9 +1975,9 @@
       for(let b=1; b<=9; b++){
         const c = getCard(z, a, b);
         const cell = document.createElement('button');
-        cell.className = 'zukan-cell ' + c.st + ' r-' + rarityOf(a);
+        cell.className = 'zukan-cell ' + c.st + ' r-' + STAGE[lvOf(c)].r;
         if(c.st === 'got'){
-          cell.textContent = cardEmoji(a,b);
+          cell.innerHTML = KM.creatureSVG(a, b, lvOf(c));
         } else if(c.st === 'nige'){
           cell.textContent = '👣';
         } else {
@@ -1698,9 +1998,9 @@
       const slot = document.createElement('div');
       const got = z.bosses.indexOf(a) !== -1;
       slot.className = 'boss-slot' + (got ? ' got' : '');
-      slot.textContent = got ? THEMES[a-1].boss : a;
-      slot.title = got ? THEMES[a-1].bossName : a + 'の段のボス';
-      slot.addEventListener('click', () => showDetail(bossSealHTML(a, 112, !got) + '<div class="dinfo"><b class="dn">' + (got ? THEMES[a-1].bossName : '？？？') +
+      if(got) slot.innerHTML = KM.bossSVG(a); else slot.textContent = a;
+      slot.title = got ? KM.bossName(a) : a + 'の段のボス';
+      slot.addEventListener('click', () => showDetail(bossSealHTML(a, 112, !got) + '<div class="dinfo"><b class="dn">' + (got ? KM.bossName(a) : '？？？') +
         '</b><span class="dr r-legend">レジェンド</span><span class="dt">' + (got ? a + 'の段の ボス' : a + 'の段の 9まいを<br>ぜんぶ そろえると あらわれる') + '</span></div>'));
       bossRow.appendChild(slot);
     }
@@ -1711,21 +2011,21 @@
     const z = loadZukan(), got = [], perDan = [];
     for(let a=1; a<=9; a++){
       let n = 0;
-      for(let b=1; b<=9; b++) if(getCard(z, a, b).st === 'got'){ n++; got.push([a,b]); }
+      for(let b=1; b<=9; b++) if(getCard(z, a, b).st === 'got'){ n++; got.push([a, b, lvOf(getCard(z, a, b))]); }
       perDan.push(n);
     }
-    const picks = shuffle(got).slice(0, 3).sort((x, y) => x[0] - y[0]);
+    const picks = shuffle(got).sort((x, y) => y[2] - x[2]).slice(0, 3).sort((x, y) => x[0] - y[0]);
     const rot = [[-14, -46], [0, 0], [14, 46]];
     let fan = '';
     for(let i=0; i<3; i++){
       const c = picks[i], st = 'style="--r:' + rot[i][0] + 'deg;--x:' + rot[i][1] + 'px"';
       fan += c
-        ? '<div class="fcard sealwrap" ' + st + '>' + sealHTML(c[0], c[1], 'got', 72) + '</div>'
+        ? '<div class="fcard sealwrap" ' + st + '>' + sealHTML(c[0], c[1], 'got', 72, c[2]) + '</div>'
         : '<div class="fcard back" ' + st + '><span class="e">?</span></div>';
     }
     document.getElementById('coverFan').innerHTML = fan;
     document.getElementById('coverCount').innerHTML =
-      'あつめたシール <b>' + got.length + '</b> / ' + TOTAL_CARDS + '<span class="sep"></span>ボス <b>' + z.bosses.length + '</b> / 9';
+      'なかま <b>' + got.length + '</b> / ' + TOTAL_CARDS + '<span class="sep"></span>ボス <b>' + z.bosses.length + '</b> / 9';
     document.getElementById('danMeter').innerHTML = perDan.map((n, i) =>
       '<div class="dm' + (z.bosses.indexOf(i+1) !== -1 ? ' boss' : '') + '" title="' + (i+1) + 'の段 ' + n + '/9"><div class="bar"><i style="height:' + (n/9*100) + '%"></i></div><span>' + (i+1) + '</span></div>'
     ).join('');
@@ -1807,7 +2107,7 @@
     resultBody.innerHTML =
       '<p style="color:#a87a4a;font-weight:bold;margin:0 0 4px;">とりもどしミッション</p>' +
       '<p>' + totalQuestions + '問中 ' + catchCorrect + '問 正解!<br>' +
-      (remain > 0 ? 'にげているシールは あと' + remain + 'まい。' : 'にげたシールは もういないよ。') + '</p>' +
+      (remain > 0 ? 'にげている なかまは あと' + remain + 'ひき。' : 'にげた なかまは もう いないよ。') + '</p>' +
       cardEventsHtml();
     if(remain > 0){
       retryBtn.classList.remove('hidden');

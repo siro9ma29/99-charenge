@@ -884,6 +884,15 @@
   .zukan-cell.rowflash{animation:rowFlash 1.4s ease-out 1}
   @keyframes rowFlash{0%,40%{box-shadow:0 0 0 3px #ffd43b}100%{}}
   @media (max-width:420px){ .mode-tab{font-size:.74em;padding:8px 2px 7px;white-space:nowrap;letter-spacing:-.03em} .mode-tab.active{padding-bottom:9px} }
+
+  /* ===== v3.2 といかたの ロック ===== */
+  .order-btn.locked{background:#f1ebe4;color:#b5a796;border-style:dashed;opacity:.85}
+  .order-note{margin:6px 0 2px !important;font-size:.82em !important;color:#6b5d50;line-height:1.5 !important}
+  .order-note.warn{color:#d9480f;font-weight:bold}
+  .unlock-box{margin:10px 0 6px;padding:10px 12px;border-radius:14px;background:#eef6ff;border:2px solid #4dabf7;font-weight:bold;color:#1e5bb8}
+  .next-order{display:block;margin:8px auto 0;background:#4dabf7;color:#fff;border:none;border-radius:999px;padding:8px 20px;font-weight:bold;font-size:1em;
+    box-shadow:0 4px 0 #2f8fd6;cursor:pointer;font-family:inherit}
+  .next-order:active{transform:translateY(3px);box-shadow:0 1px 0 #2f8fd6}
 </style>
 </head>
 <body>
@@ -891,7 +900,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.1</span>
+      <span class="version-badge">v3.2</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -907,7 +916,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.1</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.2</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -940,6 +949,7 @@
           <button class="order-btn" data-order="down"><span class="stamp-badge"></span>⬇️ 下り</button>
           <button class="order-btn" data-order="random"><span class="stamp-badge"></span>🔀 ランダム</button>
         </div>
+        <p class="order-note" id="orderNote"></p>
         <div class="stamp-row" id="danStampRow"></div>
         <button class="big-btn" id="startDanBtn">この段でスタート</button>
         <div class="best-box">
@@ -961,6 +971,7 @@
         <div class="zukan-detail" id="zukanDetail">マスをタッチすると、くわしく見られるよ</div>
         <div class="boss-row" id="bossRow"></div>
         <p class="zukan-help">
+          モンスターは <b>下り・ランダム・ランダム10問</b>で 正解すると あつまるよ(上りは れんしゅう用)。<br>
           おなじ式に<b>3回つづけて正解</b>すると たまごを ゲット!<br>
           つぎの日 いこうに その式に 正解すると うまれて、さらに つぎの日 いこうに 正解すると しんか!<br>
           ゲットした式をまちがえると、なかまが にげちゃうよ。<b>2回つづけて正解</b>でとりもどせる。<br>
@@ -1023,6 +1034,13 @@
   const resultBody = document.getElementById('resultBody');
   // v2.1 シールの パックを めくる
   resultBody.addEventListener('click', e => {
+    const nx = e.target.closest('.next-order');
+    if(nx){
+      selectedDan = +nx.dataset.dan; selectedOrder = nx.dataset.order;
+      danGrid.querySelectorAll('.dan-btn').forEach(b => b.classList.toggle('selected', +b.dataset.dan === selectedDan));
+      orderButtons.querySelectorAll('.order-btn').forEach(b => b.classList.toggle('selected', b.dataset.order === selectedOrder));
+      startQuiz({type:'dan', dan:selectedDan, order:selectedOrder}); return;
+    }
     if(e.target.closest('.open-all')){
       resultBody.querySelectorAll('.pack:not(.open)').forEach((p, i) => setTimeout(() => openPack(p), i * 260));
       e.target.closest('.open-all').remove(); return;
@@ -1814,7 +1832,8 @@
     allBtns.forEach(b => b.disabled = true);
     const cur = questions[currentIndex];
     const isCorrect = (selected === correctAnswer);
-    handleCardEvent(recordAnswer(cur.a, cur.b, isCorrect));
+    // 上りは れんしゅう用:モンスターの きろくは すすめない(まちがえても にげない)
+    if(countsForMonsters(currentMode)) handleCardEvent(recordAnswer(cur.a, cur.b, isCorrect));
 
     // とりもどしミッション:まちがえても終わらず、正しい答えを見せて次へ進む
     if(currentMode.type === 'catch'){
@@ -1943,17 +1962,42 @@
     });
   }
 
+  // ===== v3.2 上り → 下り → ランダム の じゅんに ひらく =====
+  const NEXT_ORDER = {up:'down', down:'random'};
+  const PREV_ORDER = {down:'up', random:'down'};
+  function orderOpen(dan, order){
+    if(order === 'up') return true;
+    return loadBest(bestKeyFor({type:'dan', dan:dan, order:PREV_ORDER[order]})).length > 0;
+  }
+  function countsForMonsters(mode){ return !(mode.type === 'dan' && mode.order === 'up'); }
+  function setOrderNote(text, warn){
+    const el = document.getElementById('orderNote');
+    el.innerHTML = text; el.classList.toggle('warn', !!warn);
+  }
+  function defaultOrderNote(){
+    setOrderNote(selectedOrder === 'up'
+      ? '⬆️ 上りは れんしゅう用。モンスターは <b>下り・ランダム</b>で あつまるよ'
+      : '🥚 この といかたで 正解すると、モンスターが あつまるよ');
+  }
   function renderOrderButtonBadges(){
     orderButtons.querySelectorAll('.order-btn').forEach(btn => {
       const order = btn.dataset.order;
       const mode = {type:'dan', dan:selectedDan, order:order};
       const list = loadBest(bestKeyFor(mode));
+      const open = orderOpen(selectedDan, order);
+      btn.classList.toggle('locked', !open);
       const badgeEl = btn.querySelector('.stamp-badge');
-      badgeEl.textContent = list.length ? STAMP_EMOJI[ensureStamp(mode, list)] : '';
+      badgeEl.textContent = !open ? '🔒' : list.length ? STAMP_EMOJI[ensureStamp(mode, list)] : '';
     });
   }
 
   function renderDanBestPreview(){
+    // えらんだ といかたが まだ ひらいていない段なら、上りに もどす
+    if(!orderOpen(selectedDan, selectedOrder)){
+      selectedOrder = 'up';
+      orderButtons.querySelectorAll('.order-btn').forEach(b => b.classList.toggle('selected', b.dataset.order === 'up'));
+    }
+    defaultOrderNote();
     const mode = {type:'dan', dan:selectedDan, order:selectedOrder};
     danBestTitle.textContent = '🏆 ' + selectedDan + 'の段(' + ORDER_LABEL[selectedOrder] + ')のベスト3';
     renderBestList(danBestList, bestKeyFor(mode));
@@ -2091,6 +2135,9 @@
   }
 
   function showClear(elapsedMs){
+    // この クリアで つぎの といかたが ひらくか
+    const nextOrder = currentMode.type === 'dan' ? NEXT_ORDER[currentMode.order] : null;
+    const unlockNow = nextOrder && !orderOpen(currentMode.dan, nextOrder);
     const bestKey = bestKeyFor(currentMode);
     const rank = registerBest(bestKey, elapsedMs);
     const stampResult = registerStamp(currentMode, elapsedMs);
@@ -2122,6 +2169,8 @@
       ghostHtml +
       '<div class="time-display">タイム: ' + formatTime(elapsedMs) + '</div>' +
       '<p>' + totalQuestions + '問全問正解、おめでとう!</p>' +
+      (unlockNow ? '<div class="unlock-box">🔓 ' + currentMode.dan + 'の段の <b>' + ORDER_LABEL[nextOrder] + '</b>が ひらいた!' +
+        '<button class="next-order" data-dan="' + currentMode.dan + '" data-order="' + nextOrder + '">' + (nextOrder === 'down' ? '⬇️' : '🔀') + ' ' + ORDER_LABEL[nextOrder] + 'に すすむ</button></div>' : '') +
       cardEventsHtml();
     retryBtn.classList.remove('hidden');
     resultBestBox.style.display = 'block';
@@ -2279,6 +2328,10 @@
   orderButtons.querySelectorAll('.order-btn').forEach(btn => {
     if(btn.dataset.order === selectedOrder) btn.classList.add('selected');
     btn.addEventListener('click', () => {
+      if(!orderOpen(selectedDan, btn.dataset.order)){
+        setOrderNote('🔒 ' + selectedDan + 'の段の <b>' + ORDER_LABEL[PREV_ORDER[btn.dataset.order]] + '</b>を クリアすると ひらくよ', true);
+        return;
+      }
       selectedOrder = btn.dataset.order;
       orderButtons.querySelectorAll('.order-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');

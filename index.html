@@ -893,6 +893,22 @@
   .next-order{display:block;margin:8px auto 0;background:#4dabf7;color:#fff;border:none;border-radius:999px;padding:8px 20px;font-weight:bold;font-size:1em;
     box-shadow:0 4px 0 #2f8fd6;cursor:pointer;font-family:inherit}
   .next-order:active{transform:translateY(3px);box-shadow:0 1px 0 #2f8fd6}
+
+  /* ===== v3.3 かがやき ===== */
+  .seal.r-kaga{padding:.26em;background:conic-gradient(from var(--hue),#fff6c8,#ffd43b,#fff,#ffb02e,#fff6c8,#ffe066,#fff6c8);
+    box-shadow:0 0 .8em rgba(255,212,59,.9),0 .25em .6em rgba(0,0,0,.25);animation:hueSpin 4s linear infinite}
+  .seal.r-kaga .seal-in::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;mix-blend-mode:color-dodge;opacity:.45;
+    background:linear-gradient(125deg,rgba(255,240,150,.5),rgba(255,255,255,.2),rgba(255,200,80,.5),rgba(255,255,255,.2));background-size:300% 300%;background-position:var(--px) var(--py)}
+  .seal.r-kaga.sweep{animation:sweep 1.3s .55s ease-out 1,hueSpin 4s linear infinite}
+  .seal.r-kaga .seal-name{background:linear-gradient(90deg,#b8860b,#e0a81e,#b8860b)}
+  .kaga-wrap{position:relative;display:block;width:100%;height:100%}
+  .kaga-wrap svg{width:100%;height:100%;filter:drop-shadow(0 0 3px #fff6a8) drop-shadow(0 0 7px #ffd43b)}
+  .kaga-wrap::before,.kaga-wrap::after{content:"✦";position:absolute;color:#fff6a8;text-shadow:0 0 4px #ffd43b;font-size:.9em;animation:twinkle 1.2s ease-in-out infinite alternate}
+  .kaga-wrap::before{left:6%;top:8%} .kaga-wrap::after{right:8%;top:30%;animation-delay:.6s}
+  .pack.r-kaga{--glow:#ffe066}
+  .r-kaga.dr,.r-kaga.rc{background:linear-gradient(90deg,#e0a81e,#ffd43b,#e0a81e);color:#5a3d00}
+  .zukan-cell.got.r-kaga{background:radial-gradient(circle,#fff6c8,#ffe066);box-shadow:inset 0 0 0 2px #e0a81e,0 0 6px rgba(255,212,59,.8)}
+  .r10-note{font-size:.85em !important;background:#fff6db;border:2px solid #ffd43b;border-radius:12px;padding:6px 10px;color:#7a5200;line-height:1.5 !important}
 </style>
 </head>
 <body>
@@ -900,7 +916,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.2</span>
+      <span class="version-badge">v3.3</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -916,7 +932,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.2</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.3</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -932,6 +948,7 @@
       <!-- ランダム10問モード -->
       <div class="mode-panel" id="randomPanel">
         <p>1の段〜9の段、ぜんぶ(81問)の中からランダムに10問出るよ。<br>全問正解でクリア!</p>
+        <p class="r10-note">🌟 しんかした モンスターの 式に、つぎの日 いこうに ここで 正解すると <b>かがやく</b>よ!</p>
         <div class="stamp-row" id="randomStampRow"></div>
         <button class="big-btn" id="startRandomBtn">スタート</button>
         <div class="best-box">
@@ -971,9 +988,11 @@
         <div class="zukan-detail" id="zukanDetail">マスをタッチすると、くわしく見られるよ</div>
         <div class="boss-row" id="bossRow"></div>
         <p class="zukan-help">
-          モンスターは <b>下り・ランダム・ランダム10問</b>で 正解すると あつまるよ(上りは れんしゅう用)。<br>
-          おなじ式に<b>3回つづけて正解</b>すると たまごを ゲット!<br>
-          つぎの日 いこうに その式に 正解すると うまれて、さらに つぎの日 いこうに 正解すると しんか!<br>
+          🥚 <b>上り</b>で おなじ式に3回つづけて正解すると たまごを ゲット!<br>
+          🐣 つぎの日 いこうに <b>下り</b>で 正解すると うまれる!<br>
+          ✨ さらに つぎの日 いこうに <b>ランダム</b>で 正解すると しんか!<br>
+          🌟 さらに つぎの日 いこうに <b>ランダム10問</b>で 正解すると かがやく!(1の段と ○×1 は 段の ランダムで)<br>
+          上りで まちがえても にげないよ。
           ゲットした式をまちがえると、なかまが にげちゃうよ。<b>2回つづけて正解</b>でとりもどせる。<br>
           1つの段の 9ひきが そろうと、その段の ボスが あらわれる!
         </p>
@@ -1474,17 +1493,29 @@
   const STAGE = [
     {name:'たまご', r:'n'},
     {name:'こども', r:'kira'},
-    {name:'しんか', r:'holo'}
+    {name:'しんか', r:'holo'},
+    {name:'かがやき', r:'kaga'}
   ];
-  const lvOf = c => Math.max(0, Math.min(2, c.lv || 0));
+  const lvOf = c => Math.max(0, Math.min(3, c.lv || 0));
+  // かがやき(lv3)は しんかの すがたに 光を つけて えがく
+  const monSVG = (a, b, lv) => lv >= 3 ? '<span class="kaga-wrap">' + KM.creatureSVG(a, b, 2) + '</span>' : KM.creatureSVG(a, b, lv);
+  // といかたの しゅるい:'up' 'down' 'random'(段の ランダム) 'r10'(ランダム10問) 'catch'
+  function stageMode(mode){ return mode.type === 'random' ? 'r10' : mode.type === 'catch' ? 'catch' : mode.order; }
+  // つぎの だんかいに すすめる といかたか(ランダム10問に 出ない 1の段・○×1 は、段の ランダムで かがやく)
+  function canGrow(a, b, lv, sm){
+    if(lv === 0) return sm === 'down';
+    if(lv === 1) return sm === 'random' || sm === 'r10';
+    if(lv === 2) return sm === 'r10' || (sm === 'random' && (a === 1 || b === 1));
+    return false;
+  }
   const sealNo = (a,b) => (a-1)*9 + b;
-  const monName = (a,b,lv) => lv === 0 ? 'なぞの たまご' : KM.name(a,b,lv);
+  const monName = (a,b,lv) => lv === 0 ? 'なぞの たまご' : KM.name(a,b,Math.min(lv,2));
   const sunCol = col => col === '#ffffff' || col === '#f2f4f7' || col === '#e8f1fb' ? '#9fc4e8' : col;
   // シールの HTML。mode:'got'(もっている)/'sil'(まだ)/'nige'(にげた)。w:はば(px)。lv:だんかい
   function sealHTML(a, b, mode, w, lv){
     lv = lv || 0;
     const got = mode === 'got', r = got || mode === 'nige' ? STAGE[lv].r : 'n';
-    const art = got ? KM.creatureSVG(a, b, lv) : mode === 'nige' ? '<span>👣</span>' : '<span>？</span>';
+    const art = got ? monSVG(a, b, lv) : mode === 'nige' ? '<span>👣</span>' : '<span>？</span>';
     const name = got ? monName(a, b, lv) : '？？？';
     const eq = a + '×' + b + '=' + (got || mode === 'nige' ? a*b : '？');
     return '<div class="seal r-' + r + ' m-' + mode + '" style="--w:' + w + 'px;--dc:' + sunCol(KM.color(a,b)) + '" data-a="' + a + '" data-b="' + b + '">' +
@@ -1557,24 +1588,28 @@
   // きょうの日づけ(YYYY-MM-DD)。しんかは「まえに すすんだ日より あと」の日に 正解すると おきる
   function todayKey(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
   function gToKey(g){ if(!g) return ''; const m = String(g).split('/'); return m.length === 3 ? m[0] + '-' + m[1].padStart(2,'0') + '-' + m[2].padStart(2,'0') : ''; }
-  function recordAnswer(a, b, isCorrect){
+  function recordAnswer(a, b, isCorrect, mode){
+    const sm = stageMode(mode || {type:'random'});
     const z = loadZukan();
     const c = getCard(z, a, b);
     let ev = null;
     let boss = null;
     if(isCorrect){
       c.s++;
-      if(c.st === 'none' && c.s >= NEED_GET){
+      if(c.st === 'none' && c.s >= NEED_GET && sm === 'up'){
+        // たまごは 上りで
         c.st = 'got'; c.g = todayStr(); c.lv = 0; c.d = todayKey(); ev = 'get';
       } else if(c.st === 'nige' && c.s >= NEED_RECOVER){
         c.st = 'got'; ev = 'recover';
-      } else if(c.st === 'got' && lvOf(c) < 2 && (c.d || '') < todayKey()){
+      } else if(c.st === 'got' && canGrow(a, b, lvOf(c), sm) && (c.d || '') < todayKey()){
+        // うまれる=下り、しんか=ランダム、かがやき=ランダム10問(どれも つぎの日 いこう)
         c.lv = lvOf(c) + 1; c.d = todayKey(); ev = 'evolve';
       }
     } else {
       c.s = 0;
       c.m = (c.m || 0) + 1;
-      if(c.st === 'got'){ c.st = 'nige'; ev = 'nige'; }
+      // 上りは おぼえはじめなので、まちがえても にげない
+      if(c.st === 'got' && sm !== 'up'){ c.st = 'nige'; ev = 'nige'; }
     }
     z.cards[cardKey(a,b)] = c;
     // ボス判定(一度出たボスはずっと残る)
@@ -1590,7 +1625,7 @@
   }
 
   function zukanStats(z){
-    let got = 0, nige = [], lvN = [0,0,0];
+    let got = 0, nige = [], lvN = [0,0,0,0];
     for(let a=1; a<=9; a++){
       for(let b=1; b<=9; b++){
         const st = getCard(z, a, b).st;
@@ -1741,7 +1776,7 @@
     } else if(r.ev === 'get'){
       showToast('🥚 たまごGET! ' + r.a + '×' + r.b + '=' + (r.a*r.b));
     } else if(r.ev === 'evolve'){
-      showToast((r.lv === 1 ? '🐣 うまれた! ' : '✨ しんか! ') + KM.name(r.a, r.b, r.lv), 'rare');
+      showToast((r.lv === 1 ? '🐣 うまれた! ' : r.lv === 2 ? '✨ しんか! ' : '🌟 かがやいた! ') + KM.name(r.a, r.b, Math.min(r.lv, 2)), 'rare');
     } else if(r.ev === 'recover'){
       showToast('✨ とりもどした! ' + cardLabel(r.a, r.b, r.lv), 'recover');
     }
@@ -1763,7 +1798,7 @@
     const packs = bosses.map(r => pack('legend', bossSealHTML(r.boss, 108))).concat(evoPacks)
       .concat(gets.map(r => pack('n', sealHTML(r.a, r.b, 'got', 108, 0))));
     if(packs.length){
-      const t = [bosses.length ? 'ボス' : '', evos.length ? 'うまれた・しんか ' + evos.length : '', gets.length ? 'たまご ' + gets.length : ''].filter(Boolean).join('、');
+      const t = [bosses.length ? 'ボス' : '', evos.length ? 'そだった なかま ' + evos.length : '', gets.length ? 'たまご ' + gets.length : ''].filter(Boolean).join('、');
       html += '<h4>🎁 ' + t + '!</h4><div class="packs">' + packs.join('') + '</div>' +
         (packs.length > 1 ? '<button class="open-all">ぜんぶ めくる</button>' : '');
     }
@@ -1833,7 +1868,7 @@
     const cur = questions[currentIndex];
     const isCorrect = (selected === correctAnswer);
     // 上りは れんしゅう用:モンスターの きろくは すすめない(まちがえても にげない)
-    if(countsForMonsters(currentMode)) handleCardEvent(recordAnswer(cur.a, cur.b, isCorrect));
+    handleCardEvent(recordAnswer(cur.a, cur.b, isCorrect, currentMode));
 
     // とりもどしミッション:まちがえても終わらず、正しい答えを見せて次へ進む
     if(currentMode.type === 'catch'){
@@ -1975,9 +2010,11 @@
     el.innerHTML = text; el.classList.toggle('warn', !!warn);
   }
   function defaultOrderNote(){
-    setOrderNote(selectedOrder === 'up'
-      ? '⬆️ 上りは れんしゅう用。モンスターは <b>下り・ランダム</b>で あつまるよ'
-      : '🥚 この といかたで 正解すると、モンスターが あつまるよ');
+    setOrderNote({
+      up: '🥚 上りで <b>3回つづけて正解</b>すると、たまごが もらえるよ',
+      down: '🐣 下りで 正解すると、たまごが <b>うまれる</b>よ(つぎの日 いこう)',
+      random: '✨ ランダムで 正解すると、こどもが <b>しんか</b>するよ(つぎの日 いこう)'
+    }[selectedOrder]);
   }
   function renderOrderButtonBadges(){
     orderButtons.querySelectorAll('.order-btn').forEach(btn => {
@@ -2012,8 +2049,9 @@
     const wait = (c.d || '') >= todayKey();   // きょうは もう すすめない
     let t;
     if(c.st === 'got'){
-      const next = lv === 2 ? 'さいごの すがた!' :
-        (wait ? 'あした いこうに ' + a + '×' + b + ' に 正解すると ' : 'つぎに ' + a + '×' + b + ' に 正解すると ') + (lv === 0 ? 'うまれるよ' : 'しんかするよ');
+      const how = lv === 0 ? '下りで' : lv === 1 ? 'ランダムで' : (a === 1 || b === 1) ? 'ランダムで' : 'ランダム10問で';
+      const next = lv === 3 ? '🌟 かがやいている! かんぺき!' :
+        (wait ? 'あした いこうに ' : 'つぎに ') + how + ' ' + a + '×' + b + ' に 正解すると ' + ['うまれるよ', 'しんかするよ', 'かがやくよ'][lv];
       t = '<b class="dn">' + monName(a, b, lv) + '</b><span class="dr r-' + S.r + '">' + S.name + '</span>' +
         '<span class="dt">' + q + (c.g ? '<br>' + c.g + 'に ゲット' : '') + '<br>' + next + '</span>';
     } else if(c.st === 'nige'){
@@ -2054,7 +2092,7 @@
         const cell = document.createElement('button');
         cell.className = 'zukan-cell ' + c.st + ' r-' + STAGE[lvOf(c)].r;
         if(c.st === 'got'){
-          cell.innerHTML = KM.creatureSVG(a, b, lvOf(c));
+          cell.innerHTML = monSVG(a, b, lvOf(c));
         } else if(c.st === 'nige'){
           cell.textContent = '👣';
         } else {
@@ -2112,7 +2150,7 @@
       // そだっている ものを まえに、さいだい3びき
       const show = shuffle(mine).sort((x, y) => y[1] - x[1]).slice(0, 3);
       const mons = show.length
-        ? show.map(m => '<i class="wm">' + KM.creatureSVG(a, m[0], m[1]) + '</i>').join('')
+        ? show.map(m => '<i class="wm">' + monSVG(a, m[0], m[1]) + '</i>').join('')
         : '<i class="wm unknown">？</i>';
       html += '<button class="hab' + (mine.length === 9 ? ' full' : '') + (mine.length ? '' : ' empty') + '" data-dan="' + a + '" aria-label="' + a + 'の段 ' + HABITATS[a-1] + ' ' + mine.length + 'ひき">' +
         sceneSVG(a-1) + '<span class="hab-name">' + a + ' ' + HABITATS[a-1] + '</span>' +

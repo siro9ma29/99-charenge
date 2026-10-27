@@ -916,7 +916,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.3</span>
+      <span class="version-badge">v3.4</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -932,7 +932,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.3</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.4</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -940,13 +940,13 @@
       <p class="menu-note">1問でも間違えると終了になるよ。</p>
 
       <div class="mode-tabs">
-        <button class="mode-tab active" id="tabRandom">🎲 ランダム10問</button>
-        <button class="mode-tab" id="tabDan">🔢 段をえらぶ</button>
+        <button class="mode-tab active" id="tabDan">🔢 段をえらぶ</button>
+        <button class="mode-tab" id="tabRandom">🎲 ランダム10問</button>
         <button class="mode-tab" id="tabZukan">📖 九九図鑑<span class="tab-dot hidden" id="tabDot"></span></button>
       </div>
 
       <!-- ランダム10問モード -->
-      <div class="mode-panel" id="randomPanel">
+      <div class="mode-panel" id="randomPanel" style="display:none;">
         <p>1の段〜9の段、ぜんぶ(81問)の中からランダムに10問出るよ。<br>全問正解でクリア!</p>
         <p class="r10-note">🌟 しんかした モンスターの 式に、つぎの日 いこうに ここで 正解すると <b>かがやく</b>よ!</p>
         <div class="stamp-row" id="randomStampRow"></div>
@@ -958,7 +958,7 @@
       </div>
 
       <!-- 段をえらぶモード -->
-      <div class="mode-panel" id="danPanel" style="display:none;">
+      <div class="mode-panel" id="danPanel">
         <p>れんしゅうしたい段と、といかたをえらんでね(9問)</p>
         <div class="dan-grid" id="danGrid"></div>
         <div class="order-buttons" id="orderButtons">
@@ -2332,7 +2332,7 @@
       for(let k=0; k<9 && el; k++, el = el.nextElementSibling){ el.classList.remove('rowflash'); void el.offsetWidth; el.classList.add('rowflash'); }
     }
   });
-  const TABS = [[tabRandom, randomPanel], [tabDan, danPanel], [tabZukan, zukanPanel]];
+  const TABS = [[tabDan, danPanel], [tabRandom, randomPanel], [tabZukan, zukanPanel]];
   function selectTab(tab){
     TABS.forEach(([t, p]) => {
       t.classList.toggle('active', t === tab);

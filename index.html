@@ -852,6 +852,38 @@
   .pack.evo.open .pack-in{transition-duration:.9s}
   .pack.evo.open .pack-front{animation:evoFlash 1s .3s ease-out 1}
   @keyframes evoFlash{0%{filter:brightness(2.4)}100%{filter:none}}
+
+  /* ===== v3.1 メニュー:モンスターの せかい ===== */
+  .world{position:relative;margin:-20px -20px 10px;padding:18px 14px 10px;text-align:center;color:#fff;border-radius:24px 24px 0 0;
+    background:radial-gradient(circle at 20% 0%,#3d5aa8 0,transparent 55%),linear-gradient(160deg,#24346e,#1b2150);}
+  .world-title{font-size:1.85em;font-weight:900;letter-spacing:.06em;line-height:1.2;color:#ffe08a;text-shadow:0 2px 0 #0b0e24}
+  .world-title small{display:block;font-size:.42em;letter-spacing:.12em;color:#c9d4ff;text-shadow:none;margin-bottom:2px}
+  .world .version-badge{background:transparent;color:#ffe08a;border-color:rgba(255,224,138,.7);font-size:.36em;margin-left:8px;vertical-align:middle}
+  .world-count{font-size:.9em;font-weight:bold;color:#c9d4ff;margin:4px 0 8px}
+  .world-count b{font-size:1.4em;color:#ffe08a}
+  .world-count .sep{display:inline-block;width:18px}
+  .world-map{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .hab{position:relative;aspect-ratio:1/0.82;border:none;padding:0;border-radius:14px;overflow:hidden;cursor:pointer;
+    box-shadow:0 0 0 2px rgba(255,255,255,.25),0 3px 0 #0b0e24;font-family:inherit;color:#fff}
+  .hab:active{transform:translateY(2px)}
+  .hab .scene{position:absolute;inset:0;width:100%;height:100%}
+  .hab.empty .scene{filter:saturate(.35) brightness(.8)}
+  .hab.full{box-shadow:0 0 0 3px #ffd43b,0 0 12px rgba(255,212,59,.7),0 3px 0 #0b0e24}
+  .hab-name{position:absolute;left:5px;top:4px;font-size:.72em;font-weight:900;background:rgba(11,14,36,.62);border-radius:8px;padding:1px 6px}
+  .hab-n{position:absolute;right:5px;top:4px;font-size:.8em;font-weight:900;color:#1b2150;background:#ffe08a;border-radius:8px;padding:0 6px;line-height:1.5}
+  .hab-n small{font-size:.75em;opacity:.7}
+  .hab-boss{position:absolute;right:2px;top:22px;width:30px;height:30px;filter:drop-shadow(0 0 4px #ffd43b)}
+  .hab-boss svg{width:100%;height:100%}
+  .hab-mons{position:absolute;left:0;right:0;bottom:2px;display:flex;justify-content:center;align-items:flex-end}
+  .hab-mons .wm{display:block;width:40%;margin:0 -5%}
+  .hab-mons .wm:nth-child(2){width:46%;position:relative;z-index:1}
+  .hab-mons .wm svg{width:100%;height:auto}
+  .hab-mons .unknown{width:auto;margin-bottom:10px;font-style:normal;font-size:1.4em;font-weight:900;color:rgba(255,255,255,.85);
+    background:rgba(11,14,36,.45);border-radius:50%;width:34px;height:34px;line-height:34px}
+  .world-hint{margin:6px 0 0;font-size:.75em;color:#9aa6d6}
+  .zukan-cell.rowflash{animation:rowFlash 1.4s ease-out 1}
+  @keyframes rowFlash{0%,40%{box-shadow:0 0 0 3px #ffd43b}100%{}}
+  @media (max-width:420px){ .mode-tab{font-size:.74em;padding:8px 2px 7px;white-space:nowrap;letter-spacing:-.03em} .mode-tab.active{padding-bottom:9px} }
 </style>
 </head>
 <body>
@@ -859,7 +891,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.0</span>
+      <span class="version-badge">v3.1</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -873,11 +905,12 @@
   <div class="screen active" id="startScreen">
     <div class="start-screen">
       <!-- 図鑑の表紙 -->
-      <div class="cover">
-        <div class="cover-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.0</span></div>
-        <div class="fan" id="coverFan" aria-hidden="true"></div>
-        <div class="cover-count" id="coverCount"></div>
-        <div class="dan-meter" id="danMeter"></div>
+      <!-- モンスターの せかい（9つの すみか） -->
+      <div class="world">
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.1</span></div>
+        <div class="world-count" id="coverCount"></div>
+        <div class="world-map" id="worldMap"></div>
+        <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
       </div>
       <p class="menu-note">1問でも間違えると終了になるよ。</p>
 
@@ -2007,28 +2040,45 @@
   }
 
   // ===== v2.0 表紙(あつめたカード3まい・段ごとのメーター) =====
+  // ===== v3.1 モンスターの せかい（メニュー） =====
+  const HABITATS = ['もり','くさはら','うみ','そら','かざん','ゆきやま','よぞら','さばく','どうくつ'];
+  // すみかの けしき（はいけい）
+  function sceneSVG(i){
+    const g = [
+      ['#cfeec0','#9bd68a','<path d="M0 52 Q30 44 60 50 T100 46 V70 H0Z" fill="#6fb85f"/><path d="M10 50 L18 26 L26 50Z M74 48 L82 20 L90 48Z" fill="#3f8f4a"/><rect x="16.5" y="48" width="3" height="6" fill="#7a5226"/><rect x="80.5" y="46" width="3" height="6" fill="#7a5226"/>'],
+      ['#e6f6ff','#bfe5ff','<path d="M0 50 Q40 40 100 48 V70 H0Z" fill="#a5d96a"/><circle cx="14" cy="52" r="2.4" fill="#ff8fa3"/><circle cx="86" cy="50" r="2.4" fill="#ffd43b"/><circle cx="72" cy="56" r="2" fill="#fff"/><circle cx="84" cy="16" r="6" fill="#ffe066"/>'],
+      ['#bfe9ff','#7fd0f5','<path d="M0 44 Q12 40 25 44 T50 44 T75 44 T100 44 V70 H0Z" fill="#3fa9d9"/><path d="M0 54 Q12 50 25 54 T50 54 T75 54 T100 54 V70 H0Z" fill="#2b8fc4"/><path d="M80 16 Q86 8 92 16" fill="none" stroke="#fff" stroke-width="2"/>'],
+      ['#9fd6ff','#d6efff','<ellipse cx="22" cy="20" rx="12" ry="5" fill="#fff"/><ellipse cx="78" cy="30" rx="14" ry="5" fill="#fff"/><ellipse cx="50" cy="62" rx="60" ry="10" fill="#fff"/>'],
+      ['#ffcfa8','#ff9b6b','<path d="M20 70 L42 26 L58 26 L80 70Z" fill="#7d5a52"/><path d="M42 26 L58 26 L54 34 L46 34Z" fill="#ff7b2e"/><path d="M46 34 Q44 48 40 52 M54 34 Q57 46 62 50" stroke="#ff7b2e" stroke-width="3" fill="none"/><circle cx="50" cy="14" r="5" fill="#c9c3cf"/><circle cx="58" cy="8" r="4" fill="#c9c3cf"/>'],
+      ['#e8f3ff','#c9e2f7','<path d="M0 60 L26 22 L44 44 L64 16 L100 60 V70 H0Z" fill="#9fb8d6"/><path d="M26 22 L20 30 L32 30Z M64 16 L56 26 L72 26Z" fill="#fff"/><path d="M0 60 Q50 52 100 60 V70 H0Z" fill="#fff"/>'],
+      ['#2c3570','#4a3f8a','<circle cx="80" cy="16" r="8" fill="#ffe66d"/><circle cx="76" cy="13" r="7" fill="#2f3874"/><circle cx="18" cy="14" r="1.4" fill="#fff"/><circle cx="40" cy="8" r="1" fill="#fff"/><circle cx="56" cy="22" r="1.2" fill="#fff"/><circle cx="10" cy="34" r="1" fill="#fff"/><path d="M0 56 Q50 48 100 56 V70 H0Z" fill="#232a5a"/>'],
+      ['#ffe9b8','#ffd27a','<circle cx="84" cy="16" r="7" fill="#ffb02e"/><path d="M0 52 Q30 40 60 50 T100 46 V70 H0Z" fill="#e8c27a"/><path d="M0 60 Q40 52 100 60 V70 H0Z" fill="#d9a868"/><path d="M14 52 V40 M14 46 L10 46 L10 42 M14 44 L18 44 L18 40" stroke="#5fae6a" stroke-width="3" fill="none" stroke-linecap="round"/>'],
+      ['#3a3f52','#525a72','<path d="M0 0 H100 V18 Q50 6 0 18Z" fill="#2a2e3d"/><path d="M8 58 l5 -8 5 8Z" fill="#b49cff"/><path d="M84 56 l4 -9 4 9Z" fill="#6fc9ff"/><path d="M70 60 l3 -6 3 6Z" fill="#ff6b9a"/><path d="M0 60 Q50 54 100 60 V70 H0Z" fill="#2f3446"/><circle cx="30" cy="26" r="1.2" fill="#ffe66d"/><circle cx="66" cy="30" r="1" fill="#ffe66d"/>']
+    ][i];
+    return '<svg class="scene" viewBox="0 0 100 70" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="sg' + i + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + g[0] + '"/><stop offset="1" stop-color="' + g[1] + '"/></linearGradient></defs><rect width="100" height="70" fill="url(#sg' + i + ')"/>' + g[2] + '</svg>';
+  }
   function renderCover(){
-    const z = loadZukan(), got = [], perDan = [];
+    const z = loadZukan();
+    let total = 0, html = '';
     for(let a=1; a<=9; a++){
-      let n = 0;
-      for(let b=1; b<=9; b++) if(getCard(z, a, b).st === 'got'){ n++; got.push([a, b, lvOf(getCard(z, a, b))]); }
-      perDan.push(n);
+      const mine = [];
+      for(let b=1; b<=9; b++){ const c = getCard(z, a, b); if(c.st === 'got') mine.push([b, lvOf(c)]); }
+      total += mine.length;
+      const boss = z.bosses.indexOf(a) !== -1;
+      // そだっている ものを まえに、さいだい3びき
+      const show = shuffle(mine).sort((x, y) => y[1] - x[1]).slice(0, 3);
+      const mons = show.length
+        ? show.map(m => '<i class="wm">' + KM.creatureSVG(a, m[0], m[1]) + '</i>').join('')
+        : '<i class="wm unknown">？</i>';
+      html += '<button class="hab' + (mine.length === 9 ? ' full' : '') + (mine.length ? '' : ' empty') + '" data-dan="' + a + '" aria-label="' + a + 'の段 ' + HABITATS[a-1] + ' ' + mine.length + 'ひき">' +
+        sceneSVG(a-1) + '<span class="hab-name">' + a + ' ' + HABITATS[a-1] + '</span>' +
+        '<span class="hab-n">' + mine.length + '<small>/9</small></span>' +
+        (boss ? '<span class="hab-boss">' + KM.bossSVG(a) + '</span>' : '') +
+        '<span class="hab-mons">' + mons + '</span></button>';
     }
-    const picks = shuffle(got).sort((x, y) => y[2] - x[2]).slice(0, 3).sort((x, y) => x[0] - y[0]);
-    const rot = [[-14, -46], [0, 0], [14, 46]];
-    let fan = '';
-    for(let i=0; i<3; i++){
-      const c = picks[i], st = 'style="--r:' + rot[i][0] + 'deg;--x:' + rot[i][1] + 'px"';
-      fan += c
-        ? '<div class="fcard sealwrap" ' + st + '>' + sealHTML(c[0], c[1], 'got', 72, c[2]) + '</div>'
-        : '<div class="fcard back" ' + st + '><span class="e">?</span></div>';
-    }
-    document.getElementById('coverFan').innerHTML = fan;
+    document.getElementById('worldMap').innerHTML = html;
     document.getElementById('coverCount').innerHTML =
-      'なかま <b>' + got.length + '</b> / ' + TOTAL_CARDS + '<span class="sep"></span>ボス <b>' + z.bosses.length + '</b> / 9';
-    document.getElementById('danMeter').innerHTML = perDan.map((n, i) =>
-      '<div class="dm' + (z.bosses.indexOf(i+1) !== -1 ? ' boss' : '') + '" title="' + (i+1) + 'の段 ' + n + '/9"><div class="bar"><i style="height:' + (n/9*100) + '%"></i></div><span>' + (i+1) + '</span></div>'
-    ).join('');
+      'なかま <b>' + total + '</b> / ' + TOTAL_CARDS + '<span class="sep"></span>ボス <b>' + z.bosses.length + '</b> / 9';
   }
 
   // メニュー画面全体(ランダムパネル＋段パネル＋図鑑)を最新の記録で再描画
@@ -2184,6 +2234,17 @@
   }
 
   // ===== モード切り替えタブのイベント =====
+  document.getElementById('worldMap').addEventListener('click', e => {
+    const h = e.target.closest('.hab'); if(!h) return;
+    const a = +h.dataset.dan;
+    tabZukan.click();
+    const label = zukanGrid.querySelectorAll('.zukan-rowlabel')[a-1];
+    if(label){
+      label.scrollIntoView({block:'center', behavior:'smooth'});
+      let el = label.nextElementSibling;
+      for(let k=0; k<9 && el; k++, el = el.nextElementSibling){ el.classList.remove('rowflash'); void el.offsetWidth; el.classList.add('rowflash'); }
+    }
+  });
   const TABS = [[tabRandom, randomPanel], [tabDan, danPanel], [tabZukan, zukanPanel]];
   function selectTab(tab){
     TABS.forEach(([t, p]) => {

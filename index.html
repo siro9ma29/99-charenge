@@ -243,6 +243,26 @@
     color:var(--text);
     letter-spacing:2px;
   }
+  /* v3.5 ランダム10問の10問目は ぬし */
+  .boss-stage{display:none;}
+  .question-box.boss-q{background:radial-gradient(circle at 50% 30%,#fff8e0,#f1e6ff);border:3px solid #b388ff;padding-top:12px;}
+  .question-box.boss-q .boss-stage{display:block;}
+  .boss-call{font-size:1.05em;font-weight:900;color:#5b2fa8;margin-bottom:2px;}
+  .boss-figure{width:120px;height:120px;margin:0 auto 4px;filter:drop-shadow(0 0 8px rgba(179,136,255,.8));}
+  .boss-figure svg{width:100%;height:100%;}
+  .boss-figure.sil svg{filter:brightness(0) opacity(.7);}
+  .boss-figure.enter{animation:bossEnter .9s cubic-bezier(.2,1.4,.4,1) both;}
+  .boss-figure.hit{animation:bossHit .9s ease forwards;}
+  .boss-figure.win{animation:bossWin .6s ease 2;}
+  .question-box.boss-q.waiting .question-text,.question-box.boss-q.waiting .qnum{visibility:hidden;}
+  @keyframes bossEnter{0%{transform:translateY(-30px) scale(.3);opacity:0;}60%{transform:translateY(4px) scale(1.15);opacity:1;}100%{transform:none;}}
+  @keyframes bossHit{0%{transform:none;filter:brightness(1);}15%{transform:translateX(-8px) rotate(-6deg);filter:brightness(2.2);}30%{transform:translateX(8px) rotate(6deg);}45%{transform:translateX(-5px);filter:brightness(1.6);}100%{transform:translateY(10px) scale(.75) rotate(-12deg);opacity:.35;filter:grayscale(.6);}}
+  @keyframes bossWin{0%,100%{transform:none;}50%{transform:translateY(-10px) scale(1.08);}}
+  .boss-result{display:flex;align-items:center;gap:8px;justify-content:center;margin:8px auto;padding:8px 12px;max-width:340px;
+    background:#f5eeff;border:2px solid #b388ff;border-radius:14px;color:#5b2fa8;font-weight:bold;text-align:left;}
+  .boss-result .boss-figure{width:56px;height:56px;margin:0;flex:none;}
+  .boss-result small{display:block;font-weight:normal;color:#7a5aa8;font-size:.82em;}
+  @media (prefers-reduced-motion: reduce){.boss-figure.enter,.boss-figure.hit,.boss-figure.win{animation:none;}}
   .choices{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -916,7 +936,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.4</span>
+      <span class="version-badge">v3.5</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -932,7 +952,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.4</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.5</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -1008,6 +1028,7 @@
     </div>
     <div class="question-box" id="questionBox">
       <div class="mode-label" id="modeLabel" style="display:none;"></div>
+      <div class="boss-stage" id="bossStage"></div>
       <div class="qnum" id="qnum">第1問 / 10問</div>
       <div class="question-text" id="questionText">3 × 4 = ?</div>
     </div>
@@ -1045,6 +1066,7 @@
   const modeLabelEl = document.getElementById('modeLabel');
   const questionBoxEl = document.getElementById('questionBox');
   const questionTextEl = document.getElementById('questionText');
+  const bossStageEl = document.getElementById('bossStage');
   const choicesEl = document.getElementById('choices');
   const countdownBox = document.getElementById('countdownBox');
   const countdownNumber = document.getElementById('countdownNumber');
@@ -1837,9 +1859,49 @@
     progressBar.style.width = pct + '%';
   }
 
+  // ===== v3.5 ランダム10問の 10問目は ぬし(出題・判定は そのまま。演出だけ) =====
+  const BOSS_INTRO_MS = 1300;
+  function isBossQuestion(){ return currentMode && currentMode.type === 'random' && currentIndex === totalQuestions - 1; }
+  function bossSeen(a){ return loadZukan().bosses.indexOf(a) !== -1; }
+  // 出ていない ぬしは かげ(シルエット)で 出す
+  function bossFigureHTML(a, cls){
+    return '<div class="boss-figure' + (bossSeen(a) ? '' : ' sil') + (cls ? ' ' + cls : '') + '">' + KM.bossSVG(a) + '</div>';
+  }
+  function bossLabel(a){ return bossSeen(a) ? KM.bossName(a) : a + 'の段の ぬし'; }
+  // 登場の あいだは タイマーを とめる(タイム・ゴーストに ふくめない)
+  function pauseTimer(){ clearInterval(timerInterval); return Date.now(); }
+  function resumeTimer(pausedAt){
+    startTime += Date.now() - pausedAt;
+    timerInterval = setInterval(()=>{
+      const elapsed = Date.now() - startTime;
+      stopwatchEl.textContent = formatTime(elapsed);
+      updateGhostBar(elapsed);
+    }, 100);
+  }
+  function clearBossStage(){
+    questionBoxEl.classList.remove('boss-q', 'waiting');
+    bossStageEl.innerHTML = '';
+    choicesEl.classList.remove('hidden');
+  }
+
   function renderQuestion(){
     if(finished) return;
     const q = questions[currentIndex];
+    if(isBossQuestion()){
+      bossStageEl.innerHTML = '<div class="boss-call">👑 さいごは ' + bossLabel(q.a) + '!</div>' + bossFigureHTML(q.a, 'enter');
+      questionBoxEl.classList.add('boss-q', 'waiting');
+      choicesEl.classList.add('hidden');
+      const pausedAt = pauseTimer();
+      const myQ = q;
+      setTimeout(() => {
+        if(finished || questions[currentIndex] !== myQ) return;
+        questionBoxEl.classList.remove('waiting');
+        choicesEl.classList.remove('hidden');
+        resumeTimer(pausedAt);
+      }, BOSS_INTRO_MS);
+    } else {
+      clearBossStage();
+    }
     qnumEl.textContent = '第' + (currentIndex+1) + '問 / ' + totalQuestions + '問';
     if(currentMode.type !== 'random'){
       modeLabelEl.style.display = 'block';
@@ -1901,7 +1963,13 @@
       if(correctCount >= totalQuestions){
         finished = true;
         const elapsed = stopTimer();
-        setTimeout(()=> showClear(elapsed), 500);
+        const bossBeaten = currentMode.type === 'random';
+        if(bossBeaten){
+          const fig = bossStageEl.querySelector('.boss-figure');
+          if(fig){ fig.classList.remove('enter'); fig.classList.add('hit'); }
+          showToast('👑 ぬしに かった!', 'boss');
+        }
+        setTimeout(()=> showClear(elapsed), bossBeaten ? 1200 : 500);
       } else {
         setTimeout(renderQuestion, 500);
       }
@@ -1915,7 +1983,12 @@
       });
       stopTimer();
       const q = questions[currentIndex];
-      setTimeout(()=> showFail(q, selected), 900);
+      const bossLost = isBossQuestion();
+      if(bossLost){
+        const fig = bossStageEl.querySelector('.boss-figure');
+        if(fig){ fig.classList.remove('enter'); fig.classList.add('win'); }
+      }
+      setTimeout(()=> showFail(q, selected, bossLost), bossLost ? 1300 : 900);
     }
   }
 
@@ -2207,6 +2280,7 @@
       ghostHtml +
       '<div class="time-display">タイム: ' + formatTime(elapsedMs) + '</div>' +
       '<p>' + totalQuestions + '問全問正解、おめでとう!</p>' +
+      (currentMode.type === 'random' ? bossResultHTML(questions[totalQuestions - 1].a, true) : '') +
       (unlockNow ? '<div class="unlock-box">🔓 ' + currentMode.dan + 'の段の <b>' + ORDER_LABEL[nextOrder] + '</b>が ひらいた!' +
         '<button class="next-order" data-dan="' + currentMode.dan + '" data-order="' + nextOrder + '">' + (nextOrder === 'down' ? '⬇️' : '🔀') + ' ' + ORDER_LABEL[nextOrder] + 'に すすむ</button></div>' : '') +
       cardEventsHtml();
@@ -2217,7 +2291,16 @@
     showScreen(resultScreen);
   }
 
-  function showFail(q, selected){
+  function bossResultHTML(a, won){
+    const seen = bossSeen(a);
+    const note = won
+      ? (seen ? '' : '<small>' + a + 'の段の 9ひきを そろえると、すがたが 見えるよ</small>')
+      : '<small>つぎは かてるよ! また いどもう</small>';
+    return '<div class="boss-result">' + bossFigureHTML(a) + '<div>' +
+      (won ? '👑 ' + bossLabel(a) + 'に かった!' : '👑 ' + bossLabel(a) + 'は つよかった…') + note + '</div></div>';
+  }
+
+  function showFail(q, selected, bossLost){
     resultBestBox.style.display = 'none';
     resultEmoji.textContent = '😢';
     resultTitle.textContent = '残念、終了です';
@@ -2228,6 +2311,7 @@
         '<div class="q">' + q.a + ' × ' + q.b + ' = ' + q.answer + '</div>' +
         'あなたの答え: ' + selected +
       '</div>' +
+      (bossLost ? bossResultHTML(q.a, false) : '') +
       '<p>タイムの記録は残りません。もう一度チャレンジしてみよう!</p>' +
       cardEventsHtml();
     retryBtn.classList.remove('hidden');
@@ -2264,6 +2348,7 @@
     laps = [];
     questions = pickQuestions(mode);
     totalQuestions = questions.length;
+    clearBossStage();
     if(totalQuestions === 0){
       refreshMenu();
       showScreen(startScreen);

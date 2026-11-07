@@ -926,6 +926,27 @@
   .kaga-wrap::before,.kaga-wrap::after{content:"✦";position:absolute;color:#fff6a8;text-shadow:0 0 4px #ffd43b;font-size:.9em;animation:twinkle 1.2s ease-in-out infinite alternate}
   .kaga-wrap::before{left:6%;top:8%} .kaga-wrap::after{right:8%;top:30%;animation-delay:.6s}
   .pack.r-kaga{--glow:#ffe066}
+  /* ===== v3.7 でんせつ(かがやきの さらに上。3びょう チャレンジで) ===== */
+  .seal.r-den{padding:.3em;background:conic-gradient(from var(--hue),#ffd43b,#ff6b9a,#b197fc,#4dabf7,#69db7c,#ffd43b);
+    box-shadow:0 0 .9em rgba(255,140,198,.85),0 0 .4em rgba(255,212,59,.9),0 .25em .6em rgba(0,0,0,.3);animation:hueSpin 3s linear infinite}
+  .seal.r-den .seal-in{background:linear-gradient(#fffdf2,#ffe9f6)}
+  .seal.r-den .seal-in::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;mix-blend-mode:color-dodge;opacity:.5;
+    background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.9) var(--px,50%),transparent 80%)}
+  .seal.r-den .seal-art{background:repeating-conic-gradient(from var(--hue),rgba(255,107,154,.35) 0 10deg,rgba(77,171,247,.35) 10deg 20deg,rgba(255,212,59,.4) 20deg 30deg)}
+  .seal.r-den.sweep{animation:sweep 1.3s .55s ease-out 1,hueSpin 3s linear infinite}
+  .seal.r-den .seal-name{background:linear-gradient(90deg,#ff6b9a,#b197fc,#4dabf7,#69db7c,#ffd43b);color:#fff;text-shadow:0 0 2px rgba(0,0,0,.5)}
+  .den-wrap{position:relative;display:block;width:100%;height:100%}
+  .den-wrap::before{content:"";position:absolute;inset:-6%;border-radius:50%;z-index:0;
+    background:conic-gradient(from var(--hue),#ff6b9a,#ffd43b,#69db7c,#4dabf7,#b197fc,#ff6b9a);filter:blur(5px);opacity:.75;animation:hueSpin 3s linear infinite}
+  .den-wrap svg{position:relative;z-index:1;width:100%;height:100%;filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 6px #ffd43b)}
+  .den-wrap .den-crown{position:absolute;left:50%;top:-14%;transform:translateX(-50%);z-index:2;font-size:.55em;line-height:1;filter:drop-shadow(0 0 2px #fff)}
+  .den-wrap .den-sp{position:absolute;z-index:2;color:#fff;text-shadow:0 0 4px #ff8cc6;font-size:.8em;animation:twinkle .9s ease-in-out infinite alternate}
+  .den-wrap .den-sp.s1{left:2%;top:12%} .den-wrap .den-sp.s2{right:4%;top:28%;animation-delay:.45s}
+  .zukan-cell .den-wrap .den-crown{font-size:.7em;top:-18%}
+  .seal-art .den-wrap .den-crown{top:4%;font-size:.42em}
+  .pack.r-den{--glow:#ff8cc6}
+  .r-den.dr,.r-den.rc{background:linear-gradient(90deg,#ff6b9a,#b197fc,#4dabf7,#69db7c);color:#fff;text-shadow:0 0 2px rgba(0,0,0,.4)}
+  .zukan-cell.got.r-den{background:conic-gradient(from var(--hue),#ffd6e8,#fff3bf,#d3f9d8,#d0ebff,#e5dbff,#ffd6e8);box-shadow:inset 0 0 0 2px #ff8cc6,0 0 7px rgba(255,140,198,.9);animation:hueSpin 3s linear infinite}
   .r-kaga.dr,.r-kaga.rc{background:linear-gradient(90deg,#e0a81e,#ffd43b,#e0a81e);color:#5a3d00}
   .zukan-cell.got.r-kaga{background:radial-gradient(circle,#fff6c8,#ffe066);box-shadow:inset 0 0 0 2px #e0a81e,0 0 6px rgba(255,212,59,.8)}
   .r10-note{font-size:.85em !important;background:#fff6db;border:2px solid #ffd43b;border-radius:12px;padding:6px 10px;color:#7a5200;line-height:1.5 !important}
@@ -950,7 +971,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.6</span>
+      <span class="version-badge">v3.7</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -966,7 +987,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.6</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.7</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -1027,6 +1048,7 @@
           🐣 つぎの日 いこうに <b>下り</b>で 正解すると うまれる!<br>
           ✨ さらに つぎの日 いこうに <b>ランダム</b>で 正解すると しんか!<br>
           🌟 さらに つぎの日 いこうに <b>ランダム10問</b>で 正解すると かがやく!(1の段と ○×1 は 段の ランダムで)<br>
+          🌈 さらに つぎの日 いこうに <b>⚡3びょう チャレンジ</b>で 正解すると でんせつ!(1の段と ○×1 は 段の ランダムで 3びょう いないに)<br>
           上りで まちがえても にげないよ。
           ゲットした式をまちがえると、なかまが にげちゃうよ。<b>2回つづけて正解</b>でとりもどせる。<br>
           1つの段の 9ひきが そろうと、その段の ボスが あらわれる!
@@ -1543,18 +1565,24 @@
     {name:'たまご', r:'n'},
     {name:'こども', r:'kira'},
     {name:'しんか', r:'holo'},
-    {name:'かがやき', r:'kaga'}
+    {name:'かがやき', r:'kaga'},
+    {name:'でんせつ', r:'den'}
   ];
-  const lvOf = c => Math.max(0, Math.min(3, c.lv || 0));
-  // かがやき(lv3)は しんかの すがたに 光を つけて えがく
-  const monSVG = (a, b, lv) => lv >= 3 ? '<span class="kaga-wrap">' + KM.creatureSVG(a, b, 2) + '</span>' : KM.creatureSVG(a, b, lv);
-  // といかたの しゅるい:'up' 'down' 'random'(段の ランダム) 'r10'(ランダム10問) 'catch'
-  function stageMode(mode){ return mode.type === 'random' ? 'r10' : mode.type === 'catch' ? 'catch' : mode.order; }
-  // つぎの だんかいに すすめる といかたか(ランダム10問に 出ない 1の段・○×1 は、段の ランダムで かがやく)
-  function canGrow(a, b, lv, sm){
+  const MAX_LV = STAGE.length - 1;
+  const lvOf = c => Math.max(0, Math.min(MAX_LV, c.lv || 0));
+  // かがやき(lv3)は しんかの すがたに 光を つけて、でんせつ(lv4)は にじの オーラと 王冠を つけて えがく
+  const monSVG = (a, b, lv) => lv >= 4 ? '<span class="den-wrap">' + KM.creatureSVG(a, b, 2) + '<i class="den-crown">👑</i><i class="den-sp s1">✦</i><i class="den-sp s2">✦</i></span>'
+    : lv >= 3 ? '<span class="kaga-wrap">' + KM.creatureSVG(a, b, 2) + '</span>' : KM.creatureSVG(a, b, lv);
+  // といかたの しゅるい:'up' 'down' 'random'(段の ランダム) 'r10'(ランダム10問) 's3'(3びょう チャレンジ) 'catch'
+  function stageMode(mode){ return isSpeed(mode) ? 's3' : mode.type === 'random' ? 'r10' : mode.type === 'catch' ? 'catch' : mode.order; }
+  const isOneCard = (a, b) => a === 1 || b === 1;
+  // つぎの だんかいに すすめる といかたか
+  // ランダム10問・3びょうに 出ない 1の段・○×1 は、段の ランダムで かがやく/でんせつ(3びょうが ひらいたあと、3びょう いないに 正解)
+  function canGrow(a, b, lv, sm, fast){
     if(lv === 0) return sm === 'down';
-    if(lv === 1) return sm === 'random' || sm === 'r10';
-    if(lv === 2) return sm === 'r10' || (sm === 'random' && (a === 1 || b === 1));
+    if(lv === 1) return sm === 'random' || sm === 'r10' || sm === 's3';
+    if(lv === 2) return sm === 'r10' || sm === 's3' || (sm === 'random' && isOneCard(a, b));
+    if(lv === 3) return sm === 's3' || (sm === 'random' && isOneCard(a, b) && !!fast && speedOpen());
     return false;
   }
   const sealNo = (a,b) => (a-1)*9 + b;
@@ -1637,7 +1665,8 @@
   // きょうの日づけ(YYYY-MM-DD)。しんかは「まえに すすんだ日より あと」の日に 正解すると おきる
   function todayKey(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
   function gToKey(g){ if(!g) return ''; const m = String(g).split('/'); return m.length === 3 ? m[0] + '-' + m[1].padStart(2,'0') + '-' + m[2].padStart(2,'0') : ''; }
-  function recordAnswer(a, b, isCorrect, mode){
+  // fast:答えが出てから 3びょう いないに こたえたか(1の段・○×1 の でんせつに つかう)
+  function recordAnswer(a, b, isCorrect, mode, fast){
     const sm = stageMode(mode || {type:'random'});
     const z = loadZukan();
     const c = getCard(z, a, b);
@@ -1650,8 +1679,8 @@
         c.st = 'got'; c.g = todayStr(); c.lv = 0; c.d = todayKey(); ev = 'get';
       } else if(c.st === 'nige' && c.s >= NEED_RECOVER){
         c.st = 'got'; ev = 'recover';
-      } else if(c.st === 'got' && canGrow(a, b, lvOf(c), sm) && (c.d || '') < todayKey()){
-        // うまれる=下り、しんか=ランダム、かがやき=ランダム10問(どれも つぎの日 いこう)
+      } else if(c.st === 'got' && canGrow(a, b, lvOf(c), sm, fast) && (c.d || '') < todayKey()){
+        // うまれる=下り、しんか=ランダム、かがやき=ランダム10問、でんせつ=3びょう チャレンジ(どれも つぎの日 いこう)
         c.lv = lvOf(c) + 1; c.d = todayKey(); ev = 'evolve';
       }
     } else {
@@ -1674,7 +1703,7 @@
   }
 
   function zukanStats(z){
-    let got = 0, nige = [], lvN = [0,0,0,0];
+    let got = 0, nige = [], lvN = STAGE.map(() => 0);
     for(let a=1; a<=9; a++){
       for(let b=1; b<=9; b++){
         const st = getCard(z, a, b).st;
@@ -1827,7 +1856,7 @@
     } else if(r.ev === 'get'){
       showToast('🥚 たまごGET! ' + r.a + '×' + r.b + '=' + (r.a*r.b));
     } else if(r.ev === 'evolve'){
-      showToast((r.lv === 1 ? '🐣 うまれた! ' : r.lv === 2 ? '✨ しんか! ' : '🌟 かがやいた! ') + KM.name(r.a, r.b, Math.min(r.lv, 2)), 'rare');
+      showToast((r.lv === 1 ? '🐣 うまれた! ' : r.lv === 2 ? '✨ しんか! ' : r.lv === 3 ? '🌟 かがやいた! ' : '🌈 でんせつに なった! ') + KM.name(r.a, r.b, Math.min(r.lv, 2)), 'rare');
     } else if(r.ev === 'recover'){
       showToast('✨ とりもどした! ' + cardLabel(r.a, r.b, r.lv), 'recover');
     }
@@ -1916,7 +1945,7 @@
   // 条件:ランダム10問を クリア ＋ 81ひき ぜんぶ かがやき(にげている なかまは 数えない)
   function speedCond(){
     const cleared = loadBest(RANDOM_BEST_KEY).length > 0;
-    const kaga = zukanStats(loadZukan()).lvN[3];
+    const n = zukanStats(loadZukan()).lvN, kaga = n[3] + n[4];   // でんせつも かがやいている なかまに 数える
     return {cleared: cleared, kaga: kaga, ok: cleared && kaga >= TOTAL_CARDS};
   }
   function speedOpen(){
@@ -1935,6 +1964,7 @@
       speedBox.innerHTML =
         '<h3>⚡ 3びょう チャレンジ</h3>' +
         '<p style="margin:0;font-size:.9em;">1もん 3びょう いないに こたえよう!<br>まにあわないと そこで おわり。</p>' +
+        '<p class="r10-note">🌈 かがやいた モンスターの 式に、つぎの日 いこうに ここで 正解すると <b>でんせつ</b>に なるよ!</p>' +
         '<button class="big-btn" id="startSpeedBtn">⚡ スタート</button>' +
         '<div class="best-box"><h3>🏆 3びょう チャレンジ ベスト3</h3><ul class="best-list" id="speedBestList"></ul></div>';
       renderBestList(document.getElementById('speedBestList'), SPEED_BEST_KEY);
@@ -2029,7 +2059,9 @@
       choicesEl.appendChild(btn);
     });
     if(isSpeed(currentMode) && !isBossQuestion()) startQTimer();
+    qShownAt = Date.now();   // 段の ランダムには ぬしが 出ないので、ここからの 時間で はかる
   }
+  let qShownAt = 0;
 
   function handleAnswer(selected, correctAnswer, btnEl){
     if(finished) return;
@@ -2039,7 +2071,8 @@
     const cur = questions[currentIndex];
     const isCorrect = (selected === correctAnswer);
     // 上りは れんしゅう用:モンスターの きろくは すすめない(まちがえても にげない)
-    handleCardEvent(recordAnswer(cur.a, cur.b, isCorrect, currentMode));
+    const fast = Date.now() - qShownAt <= SPEED_MS;
+    handleCardEvent(recordAnswer(cur.a, cur.b, isCorrect, currentMode, fast));
 
     // とりもどしミッション:まちがえても終わらず、正しい答えを見せて次へ進む
     if(currentMode.type === 'catch'){
@@ -2231,9 +2264,12 @@
     const wait = (c.d || '') >= todayKey();   // きょうは もう すすめない
     let t;
     if(c.st === 'got'){
-      const how = lv === 0 ? '下りで' : lv === 1 ? 'ランダムで' : (a === 1 || b === 1) ? 'ランダムで' : 'ランダム10問で';
-      const next = lv === 3 ? '🌟 かがやいている! かんぺき!' :
-        (wait ? 'あした いこうに ' : 'つぎに ') + how + ' ' + a + '×' + b + ' に 正解すると ' + ['うまれるよ', 'しんかするよ', 'かがやくよ'][lv];
+      const one = isOneCard(a, b);
+      const how = lv === 0 ? '下りで' : lv === 1 ? 'ランダムで' : lv === 2 ? (one ? 'ランダムで' : 'ランダム10問で')
+        : (one ? 'ランダムで 3びょう いないに' : '⚡3びょう チャレンジで');
+      const next = lv === 4 ? '🌈 でんせつの モンスター! さいこうの すがた!' :
+        lv === 3 && !speedOpen() ? '🌟 かがやいている! ⚡3びょう チャレンジが ひらくと、もっと 先が あるよ' :
+        (wait ? 'あした いこうに ' : 'つぎに ') + how + ' ' + a + '×' + b + ' に 正解すると ' + ['うまれるよ', 'しんかするよ', 'かがやくよ', 'でんせつに なるよ'][lv];
       t = '<b class="dn">' + monName(a, b, lv) + '</b><span class="dr r-' + S.r + '">' + S.name + '</span>' +
         '<span class="dt">' + q + (c.g ? '<br>' + c.g + 'に ゲット' : '') + '<br>' + next + '</span>';
     } else if(c.st === 'nige'){

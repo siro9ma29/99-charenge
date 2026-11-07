@@ -929,6 +929,20 @@
   .r-kaga.dr,.r-kaga.rc{background:linear-gradient(90deg,#e0a81e,#ffd43b,#e0a81e);color:#5a3d00}
   .zukan-cell.got.r-kaga{background:radial-gradient(circle,#fff6c8,#ffe066);box-shadow:inset 0 0 0 2px #e0a81e,0 0 6px rgba(255,212,59,.8)}
   .r10-note{font-size:.85em !important;background:#fff6db;border:2px solid #ffd43b;border-radius:12px;padding:6px 10px;color:#7a5200;line-height:1.5 !important}
+  /* v3.6 ⚡ 3びょう チャレンジ */
+  .qtimer{display:flex;align-items:center;gap:8px;margin:-4px 0 12px}
+  .qtimer.hidden{display:none}
+  .qtimer-l{font-size:1.3em;line-height:1}
+  .qtimer-bar{flex:1;height:16px;background:#eee;border-radius:999px;overflow:hidden;border:2px solid #ddd}
+  .qtimer-bar i{display:block;height:100%;width:100%;background:#ffb74d}
+  .qtimer.warn .qtimer-bar i{background:var(--wrong);animation:qtBlink .3s infinite alternate}
+  @keyframes qtBlink{to{opacity:.45}}
+  .speed-box{margin-top:16px;border-radius:16px;padding:12px 14px;text-align:center}
+  .speed-box.locked{border:3px dashed #c9b8a0;background:#faf6f0;color:#8a7a66}
+  .speed-box.open{border:3px solid #ffd43b;background:linear-gradient(#fff9e0,#fff)}
+  .speed-box h3{margin:0 0 6px;font-size:1.1em}
+  .speed-box .sp-cond{list-style:none;padding:0;margin:6px 0 0;font-size:.9em;line-height:1.7}
+  .speed-box .big-btn{background:#ff9f1c;box-shadow:0 5px 0 #c97500}
 </style>
 </head>
 <body>
@@ -936,7 +950,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.5</span>
+      <span class="version-badge">v3.6</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -952,7 +966,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.5</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.6</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -975,6 +989,7 @@
           <h3>🏆 じぶんのベスト3</h3>
           <ul class="best-list" id="startBestList"></ul>
         </div>
+        <div class="speed-box" id="speedBox"></div>
       </div>
 
       <!-- 段をえらぶモード -->
@@ -1032,6 +1047,7 @@
       <div class="qnum" id="qnum">第1問 / 10問</div>
       <div class="question-text" id="questionText">3 × 4 = ?</div>
     </div>
+    <div class="qtimer hidden" id="qTimer"><span class="qtimer-l">⏰</span><div class="qtimer-bar"><i id="qTimerBar"></i></div></div>
     <div class="choices" id="choices"></div>
   </div>
 
@@ -1127,9 +1143,19 @@
   const zukanNigeCount = document.getElementById('zukanNigeCount');
   const startCatchBtn = document.getElementById('startCatchBtn');
 
+  const qTimerEl = document.getElementById('qTimer');
+  const qTimerBar = document.getElementById('qTimerBar');
+  const speedBox = document.getElementById('speedBox');
+
   const RANDOM_TOTAL = 10;
   const MAX_BEST = 3;
   const RANDOM_BEST_KEY = 'kuku_challenge_best3_v1'; // 既存データとの互換性を維持
+  // v3.6 ⚡ 3びょう チャレンジ(ランダム10問 ＋ 1問ごとに 3びょう)
+  const SPEED_MS = 3000;
+  const SPEED_WARN_MS = 1000;   // のこり この時間で バーが赤く点滅
+  const SPEED_BEST_KEY = 'kuku_challenge_best3_v1_speed3';
+  const SPEED_OPEN_KEY = 'kuku_speed3_open_v1'; // 一度ひらいたら ずっと ひらいたまま
+  const isSpeed = mode => mode.type === 'random' && !!mode.speed;
 
   let allProblems = [];
   for(let a=1; a<=9; a++){
@@ -1165,6 +1191,7 @@
   }
 
   function stampKeyFor(mode){
+    if(isSpeed(mode)) return 'kuku_challenge_stamp_v1_speed3';
     if(mode.type === 'random') return 'kuku_challenge_stamp_v1_random';
     return 'kuku_challenge_stamp_v1_dan' + mode.dan + '_' + mode.order;
   }
@@ -1684,11 +1711,13 @@
   }
 
   function bestKeyFor(mode){
+    if(isSpeed(mode)) return SPEED_BEST_KEY;
     if(mode.type === 'random') return RANDOM_BEST_KEY;
     return 'kuku_challenge_best3_v1_dan' + mode.dan + '_' + mode.order;
   }
 
   function modeTitleFor(mode){
+    if(isSpeed(mode)) return '⚡ 3びょう チャレンジ';
     if(mode.type === 'random') return 'ランダム10問';
     if(mode.type === 'catch') return 'とりもどしミッション';
     return mode.dan + 'の段(' + ORDER_LABEL[mode.order] + ')';
@@ -1847,6 +1876,82 @@
     return Date.now() - startTime;
   }
 
+  // ===== v3.6 1問ごとの 3びょう タイマー(答えが出た瞬間から、タップまで) =====
+  let qTimerId = null;
+  function startQTimer(){
+    stopQTimer();
+    const t0 = Date.now();
+    qTimerEl.classList.remove('hidden', 'warn');
+    qTimerBar.style.width = '100%';
+    qTimerId = setInterval(() => {
+      const left = SPEED_MS - (Date.now() - t0);
+      qTimerBar.style.width = Math.max(0, left / SPEED_MS * 100) + '%';
+      qTimerEl.classList.toggle('warn', left <= SPEED_WARN_MS);
+      if(left <= 0){ stopQTimer(); onQTimeout(); }
+    }, 50);
+  }
+  function stopQTimer(){
+    if(qTimerId){ clearInterval(qTimerId); qTimerId = null; }
+  }
+  // 時間切れ:正しい答えを光らせて終了。図鑑の記録は つけない(まちがいに 数えない・にげない)
+  function onQTimeout(){
+    if(finished) return;
+    finished = true;
+    const q = questions[currentIndex];
+    choicesEl.querySelectorAll('.choice-btn').forEach(b => {
+      b.disabled = true;
+      if(parseInt(b.textContent, 10) === q.answer) b.classList.add('correct');
+    });
+    stopTimer();
+    showToast('⏰ じかんぎれ!');
+    const bossLost = isBossQuestion();
+    if(bossLost){
+      const fig = bossStageEl.querySelector('.boss-figure');
+      if(fig){ fig.classList.remove('enter'); fig.classList.add('win'); }
+    }
+    setTimeout(() => showFail(q, null, bossLost, true), bossLost ? 1300 : 1100);
+  }
+
+  // ===== v3.6 3びょう チャレンジの 解放 =====
+  // 条件:ランダム10問を クリア ＋ 81ひき ぜんぶ かがやき(にげている なかまは 数えない)
+  function speedCond(){
+    const cleared = loadBest(RANDOM_BEST_KEY).length > 0;
+    const kaga = zukanStats(loadZukan()).lvN[3];
+    return {cleared: cleared, kaga: kaga, ok: cleared && kaga >= TOTAL_CARDS};
+  }
+  function speedOpen(){
+    try{ return localStorage.getItem(SPEED_OPEN_KEY) === '1'; }catch(e){ return false; }
+  }
+  // 条件を みたしていれば ひらく。今 はじめて ひらいたときは true
+  function checkSpeedOpen(){
+    if(speedOpen() || !speedCond().ok) return false;
+    try{ localStorage.setItem(SPEED_OPEN_KEY, '1'); }catch(e){}
+    return true;
+  }
+  function renderSpeedBox(){
+    checkSpeedOpen();
+    if(speedOpen()){
+      speedBox.className = 'speed-box open';
+      speedBox.innerHTML =
+        '<h3>⚡ 3びょう チャレンジ</h3>' +
+        '<p style="margin:0;font-size:.9em;">1もん 3びょう いないに こたえよう!<br>まにあわないと そこで おわり。</p>' +
+        '<button class="big-btn" id="startSpeedBtn">⚡ スタート</button>' +
+        '<div class="best-box"><h3>🏆 3びょう チャレンジ ベスト3</h3><ul class="best-list" id="speedBestList"></ul></div>';
+      renderBestList(document.getElementById('speedBestList'), SPEED_BEST_KEY);
+      document.getElementById('startSpeedBtn').addEventListener('click', () => startQuiz({type:'random', speed:true}));
+    } else {
+      const c = speedCond();
+      speedBox.className = 'speed-box locked';
+      speedBox.innerHTML =
+        '<h3>🔒 ⚡ 3びょう チャレンジ</h3>' +
+        '<p style="margin:0;font-size:.9em;">つぎの 2つが できると ひらくよ</p>' +
+        '<ul class="sp-cond">' +
+          '<li>' + (c.cleared ? '✅' : '⬜') + ' ランダム10問を クリア</li>' +
+          '<li>' + (c.kaga >= TOTAL_CARDS ? '✅' : '⬜') + ' 🌟 81ぴき ぜんぶ かがやく(いま ' + c.kaga + ' / ' + TOTAL_CARDS + ')</li>' +
+        '</ul>';
+    }
+  }
+
   function showScreen(screen){
     [startScreen, quizScreen, resultScreen].forEach(s => s.classList.remove('active'));
     screen.classList.add('active');
@@ -1892,18 +1997,20 @@
       questionBoxEl.classList.add('boss-q', 'waiting');
       choicesEl.classList.add('hidden');
       const pausedAt = pauseTimer();
+      if(isSpeed(currentMode)){ qTimerBar.style.width = '100%'; qTimerEl.classList.remove('warn'); }
       const myQ = q;
       setTimeout(() => {
         if(finished || questions[currentIndex] !== myQ) return;
         questionBoxEl.classList.remove('waiting');
         choicesEl.classList.remove('hidden');
         resumeTimer(pausedAt);
+        if(isSpeed(currentMode)) startQTimer();   // 3びょうは ぬしが 出おわってから
       }, BOSS_INTRO_MS);
     } else {
       clearBossStage();
     }
     qnumEl.textContent = '第' + (currentIndex+1) + '問 / ' + totalQuestions + '問';
-    if(currentMode.type !== 'random'){
+    if(currentMode.type !== 'random' || isSpeed(currentMode)){
       modeLabelEl.style.display = 'block';
       modeLabelEl.textContent = modeTitleFor(currentMode);
     } else {
@@ -1921,10 +2028,12 @@
       btn.addEventListener('click', () => handleAnswer(opt, q.answer, btn));
       choicesEl.appendChild(btn);
     });
+    if(isSpeed(currentMode) && !isBossQuestion()) startQTimer();
   }
 
   function handleAnswer(selected, correctAnswer, btnEl){
     if(finished) return;
+    stopQTimer();
     const allBtns = choicesEl.querySelectorAll('.choice-btn');
     allBtns.forEach(b => b.disabled = true);
     const cur = questions[currentIndex];
@@ -2241,6 +2350,7 @@
     renderCover();
     renderBestList(startBestList, RANDOM_BEST_KEY);
     renderStampRow(randomStampRow, {type:'random'});
+    renderSpeedBox();
     renderDanBestPreview();
     renderZukan();
   }
@@ -2283,6 +2393,7 @@
       (currentMode.type === 'random' ? bossResultHTML(questions[totalQuestions - 1].a, true) : '') +
       (unlockNow ? '<div class="unlock-box">🔓 ' + currentMode.dan + 'の段の <b>' + ORDER_LABEL[nextOrder] + '</b>が ひらいた!' +
         '<button class="next-order" data-dan="' + currentMode.dan + '" data-order="' + nextOrder + '">' + (nextOrder === 'down' ? '⬇️' : '🔀') + ' ' + ORDER_LABEL[nextOrder] + 'に すすむ</button></div>' : '') +
+      (checkSpeedOpen() ? '<div class="unlock-box">🔓 <b>⚡ 3びょう チャレンジ</b>が ひらいた!<br>メニューの 🎲 ランダム10問から あそべるよ</div>' : '') +
       cardEventsHtml();
     retryBtn.classList.remove('hidden');
     resultBestBox.style.display = 'block';
@@ -2300,16 +2411,16 @@
       (won ? '👑 ' + bossLabel(a) + 'に かった!' : '👑 ' + bossLabel(a) + 'は つよかった…') + note + '</div></div>';
   }
 
-  function showFail(q, selected, bossLost){
+  function showFail(q, selected, bossLost, timeout){
     resultBestBox.style.display = 'none';
-    resultEmoji.textContent = '😢';
-    resultTitle.textContent = '残念、終了です';
+    resultEmoji.textContent = timeout ? '⏰' : '😢';
+    resultTitle.textContent = timeout ? 'じかんぎれ' : '残念、終了です';
     resultTitle.className = 'result-title fail';
     resultBody.innerHTML =
       '<p style="color:#a87a4a;font-weight:bold;margin:0 0 4px;">' + modeTitleFor(currentMode) + '</p>' +
       '<div class="fail-detail">' +
         '<div class="q">' + q.a + ' × ' + q.b + ' = ' + q.answer + '</div>' +
-        'あなたの答え: ' + selected +
+        (timeout ? '3びょう いないに こたえられなかったよ' : 'あなたの答え: ' + selected) +
       '</div>' +
       (bossLost ? bossResultHTML(q.a, false) : '') +
       '<p>タイムの記録は残りません。もう一度チャレンジしてみよう!</p>' +
@@ -2339,6 +2450,8 @@
   }
 
   function startQuiz(mode){
+    stopQTimer();
+    qTimerEl.classList.add('hidden');
     currentMode = mode;
     finished = false;
     currentIndex = 0;

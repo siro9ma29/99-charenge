@@ -936,14 +936,9 @@
   .seal.r-den.sweep{animation:sweep 1.3s .55s ease-out 1,hueSpin 3s linear infinite}
   .seal.r-den .seal-name{background:linear-gradient(90deg,#ff6b9a,#b197fc,#4dabf7,#69db7c,#ffd43b);color:#fff;text-shadow:0 0 2px rgba(0,0,0,.5)}
   .den-wrap{position:relative;display:block;width:100%;height:100%}
-  .den-wrap::before{content:"";position:absolute;inset:-6%;border-radius:50%;z-index:0;
-    background:conic-gradient(from var(--hue),#ff6b9a,#ffd43b,#69db7c,#4dabf7,#b197fc,#ff6b9a);filter:blur(5px);opacity:.75;animation:hueSpin 3s linear infinite}
-  .den-wrap svg{position:relative;z-index:1;width:100%;height:100%;filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 6px #ffd43b)}
-  .den-wrap .den-crown{position:absolute;left:50%;top:-14%;transform:translateX(-50%);z-index:2;font-size:.55em;line-height:1;filter:drop-shadow(0 0 2px #fff)}
+  .den-wrap svg{position:relative;z-index:1;width:100%;height:100%;filter:drop-shadow(0 0 2px #fff)}
   .den-wrap .den-sp{position:absolute;z-index:2;color:#fff;text-shadow:0 0 4px #ff8cc6;font-size:.8em;animation:twinkle .9s ease-in-out infinite alternate}
   .den-wrap .den-sp.s1{left:2%;top:12%} .den-wrap .den-sp.s2{right:4%;top:28%;animation-delay:.45s}
-  .zukan-cell .den-wrap .den-crown{font-size:.7em;top:-18%}
-  .seal-art .den-wrap .den-crown{top:4%;font-size:.42em}
   .pack.r-den{--glow:#ff8cc6}
   .r-den.dr,.r-den.rc{background:linear-gradient(90deg,#ff6b9a,#b197fc,#4dabf7,#69db7c);color:#fff;text-shadow:0 0 2px rgba(0,0,0,.4)}
   .zukan-cell.got.r-den{background:conic-gradient(from var(--hue),#ffd6e8,#fff3bf,#d3f9d8,#d0ebff,#e5dbff,#ffd6e8);box-shadow:inset 0 0 0 2px #ff8cc6,0 0 7px rgba(255,140,198,.9);animation:hueSpin 3s linear infinite}
@@ -971,7 +966,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.7</span>
+      <span class="version-badge">v3.8</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -987,7 +982,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.7</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.8</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -1278,7 +1273,7 @@
   function cardLabel(a,b,lv){ return monName(a, b, lv || 0) + ' ' + a + '×' + b + '=' + (a*b); }
 
   // ===== 九九モンスター（すべて この アプリの ための オリジナルの いきもの） =====
-  // creatureSVG(a, b, stage)  stage: 0=たまご 1=こども 2=しんか
+  // creatureSVG(a, b, stage)  stage: 0=たまご 1=こども 2=しんか 3=でんせつ
   // bossSVG(a)                a の段の ボス
   const KM = (() => {
     const INK = "#2b2b3a";
@@ -1538,6 +1533,95 @@
         <path d="M34 50 Q38 44 44 44" stroke="#fff" stroke-width="3" fill="none" opacity=".55" stroke-linecap="round"/>
         ${eyes(S.ey, F, opt.sleepy)}${mouth(S.ey + 10, F, opt.fang, opt.nomouth)}${opt.beak ? `<path d="M47 ${S.ey + 6} L53 ${S.ey + 6} L50 ${S.ey + 11}Z" ${st("#f2a33c", 1.6)}/>` : ""}${Fr}</g>`;
     }
+    /* ===== v3.8 でんせつ(3つ目の すがた):すみかの 力を まとう ===== */
+    // 2つの いろを まぜる
+    const blend = (h1, h2, t) => { const p = h => [0, 2, 4].map(i => parseInt(h.slice(1).substr(i, 2), 16)), A = p(h1), B = p(h2);
+      return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join(""); };
+    const rot = (s, x, y, deg) => `<g transform="rotate(${deg.toFixed(1)} ${x} ${y})">${s}</g>`;
+    const around = (n, fn, off = 0) => { let s = ""; for (let k = 0; k < n; k++) s += fn(off + 360 * k / n, k); return s; };
+    const leaf = (len, w, col) => `<path d="M0 0 Q${len / 2} ${-w} ${len} 0 Q${len / 2} ${w} 0 0Z" ${st(col, 1.6)}/>` + ln(`M2 0 L${len - 3} 0`, "rgba(255,255,255,.6)", 1.2);
+    const flameP = (h, w, col, inner) => `<path d="M0 0 Q${-w} ${-h * .45} 0 ${-h} Q${w} ${-h * .45} 0 0Z" ${st(col, 1.6)}/>` + (inner ? `<path d="M0 -2 Q${-w * .45} ${-h * .4} 0 ${-h * .65} Q${w * .45} ${-h * .4} 0 -2Z" fill="${inner}"/>` : "");
+    const gem = (h, w, col) => `<path d="M0 0 L${-w} ${-h * .3} L0 ${-h} L${w} ${-h * .3}Z" ${st(col, 1.6)}/>` + ln(`M0 0 L0 ${-h}`, "rgba(255,255,255,.7)", 1.2);
+    const flk = (x, y, r, col, w) => [0, 60, 120].map(a => { const c = Math.cos(a * Math.PI / 180) * r, s = Math.sin(a * Math.PI / 180) * r;
+      return ln(`M${(x - c).toFixed(1)} ${(y - s).toFixed(1)} L${(x + c).toFixed(1)} ${(y + s).toFixed(1)}`, col, w); }).join("");
+    // あたまの うしろに 生える たてがみ(上向きに かいた fn を、あたまの 下を 中心に おうぎ形に ならべる)
+    // からだの 中心から 外へ 生やし、からだの ふちから 先だけが 見える
+    const fan = (S, n, span, fn) => { const cx = 50, cy = 62, r0 = Math.max(18, 62 - S.top - 8); let s = "";
+      for (let k = 0; k < n; k++) { const d = -span / 2 + span * k / (n - 1); s += rot(`<g transform="translate(${cx} ${cy - r0})">${fn(k)}</g>`, cx, cy, d); } return s; };
+    // すみかごと:hab=まとう いろ、eye=目の 光、b=うしろ、mark=おなかの しるし、f=まえ
+    const LEG = [
+      { hab: "#3fa34d", eye: "#7dff8a", // 1 もり:はっぱの わ と つる
+        b: () => `<circle cx="50" cy="60" r="42" fill="#d3f9d8"/>`,
+        w: S => fan(S, 7, 150, k => rot(leaf(30, 8, k % 2 ? "#8fd18f" : "#3fa34d"), 0, 0, -90)),
+        mark: y => `<g transform="translate(43 ${y + 1}) rotate(-30)">${leaf(14, 5, "#7bc96f")}</g>`,
+        f: () => ln("M18 84 Q30 76 26 66 Q22 58 30 54", "#4f9c6a", 3) + `<g transform="translate(30 54) rotate(-60)">${leaf(9, 4, "#8fd18f")}</g>` +
+          `<circle cx="80" cy="80" r="3.4" ${st("#ff9fb2", 1.4)}/><circle cx="80" cy="80" r="1.3" fill="#ffd43b"/>` },
+      { hab: "#f5b301", eye: "#ffe066", // 2 くさはら:大きな 花 と かぜ
+        b: () => `<circle cx="50" cy="60" r="40" fill="#fff3bf"/>` + [[12, 22], [88, 26], [8, 80], [92, 82]].map(p => around(5, d => rot(`<ellipse cx="${p[0]}" cy="${p[1] - 4}" rx="3" ry="4.6" fill="#ff9fb2" stroke="${INK}" stroke-width="1"/>`, p[0], p[1], d)) + `<circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="#ffd43b"/>`).join(""),
+        w: S => fan(S, 9, 170, k => `<ellipse cx="0" cy="-20" rx="7.5" ry="16" ${st(k % 2 ? "#ffd95a" : "#ff9fb2", 2)}/>`),
+        mark: y => around(5, d => rot(`<ellipse cx="50" cy="${y - 4}" rx="2.6" ry="4" fill="#ff9fb2"/>`, 50, y, d)) + `<circle cx="50" cy="${y}" r="2.6" fill="#ffd43b"/>`,
+        f: () => ln("M6 50 Q16 44 24 50", "#8ce99a", 3) + ln("M4 60 Q14 54 22 60", "#8ce99a", 3) + ln("M78 40 Q86 34 96 40", "#8ce99a", 3) },
+      { hab: "#1c7ed6", eye: "#66d9ff", // 3 うみ:なみの かんむり と あわ
+        b: () => `<circle cx="50" cy="60" r="42" fill="#a5d8ff" opacity=".55"/>` +
+          `<path d="M8 84 Q18 76 28 84 T48 84 T68 84 T88 84 L92 92 L8 92Z" ${st("#4dabf7", 1.8)}/>`,
+        w: S => fan(S, 5, 140, k => `<path d="M-7 0 Q-10 -18 0 -30 Q4 -22 10 -24 Q6 -12 7 0Z" ${st(k % 2 ? "#74c0fc" : "#1c7ed6", 2)}/>` + ln("M-2 -4 Q-4 -16 1 -24", "#e7f5ff", 1.6)),
+        mark: y => ln(`M41 ${y - 2} Q45.5 ${y - 6} 50 ${y - 2} T59 ${y - 2}`, "#1c7ed6", 2.2) + ln(`M41 ${y + 3} Q45.5 ${y - 1} 50 ${y + 3} T59 ${y + 3}`, "#4dabf7", 2.2),
+        f: () => [[14, 40, 4], [20, 28, 2.6], [86, 50, 3.6], [82, 36, 2.4]].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="${p[2]}" fill="rgba(255,255,255,.7)" stroke="#1c7ed6" stroke-width="1.4"/>`).join("") },
+      { hab: "#74c0fc", eye: "#e7f5ff", // 4 そら:大きな つばさ と くも
+        b: () => both(`<path d="M30 58 Q14 30 2 26 Q6 36 4 40 Q10 42 8 48 Q14 50 12 56 Q18 58 18 64 Q24 64 30 66Z" ${st("#ffffff", 2)}/>` +
+          ln("M26 56 Q14 40 6 34", "#a5d8ff", 1.6) + ln("M26 60 Q16 50 10 46", "#a5d8ff", 1.6)) +
+          `<path d="M14 90 Q12 80 22 80 Q24 72 34 76 Q40 70 48 76 Q56 70 64 76 Q74 72 78 80 Q88 80 86 90Z" fill="#fff" stroke="#a5d8ff" stroke-width="2"/>`,
+        w: S => fan(S, 5, 110, k => `<path d="M0 0 Q-8 -16 0 -30 Q8 -16 0 0Z" ${st(k % 2 ? "#d0ebff" : "#ffffff", 2)}/>` + ln("M0 -2 L0 -26", "#74c0fc", 1.4)),
+        mark: y => `<path d="M44 ${y + 5} Q50 ${y - 8} 58 ${y - 6} Q54 ${y + 2} 44 ${y + 5}Z" ${st("#fff", 1.4)}/>` + ln(`M46 ${y + 3} L56 ${y - 5}`, "#74c0fc", 1.2),
+        f: () => ln("M80 20 Q86 16 92 20", "#fff", 2.4) + ln("M10 18 Q16 14 22 18", "#fff", 2.4) },
+      { hab: "#f03e3e", eye: "#ffd43b", // 5 かざん:ほのおの わ と ひのこ
+        b: () => `<circle cx="50" cy="60" r="42" fill="#ffc9a8" opacity=".7"/>`,
+        w: S => fan(S, 7, 150, k => flameP(k === 3 ? 38 : k % 2 ? 26 : 32, 10, k % 2 ? "#ff922b" : "#f03e3e", "#ffd43b")),
+        mark: y => `<g transform="translate(50 ${y + 6})">${flameP(13, 6, "#ff6b35", "#ffd43b")}</g>`,
+        f: () => [[16, 30], [86, 26], [10, 64], [90, 70], [26, 14]].map((p, k) => `<circle cx="${p[0]}" cy="${p[1]}" r="${k % 2 ? 2 : 2.6}" fill="#ffd43b" stroke="#ff6b35" stroke-width="1"/>`).join("") },
+      { hab: "#4dabf7", eye: "#d0f4ff", // 6 ゆきやま:こおりの けっしょう
+        b: () => around(6, d => rot(`<path d="M50 60 L50 6" stroke="#a5d8ff" stroke-width="7" stroke-linecap="round"/><path d="M50 60 L50 6" stroke="#e7f5ff" stroke-width="3" stroke-linecap="round"/>` +
+          ln("M50 20 L40 12 M50 20 L60 12 M50 32 L42 26 M50 32 L58 26", "#a5d8ff", 3), 50, 60, d)) + `<circle cx="50" cy="60" r="30" fill="#e7f5ff" opacity=".7"/>`,
+        w: S => fan(S, 7, 140, k => `<path d="M-6 0 L0 ${k === 3 ? -36 : k % 2 ? -22 : -28} L6 0Z" ${st(k % 2 ? "#e7f5ff" : "#a5d8ff", 2)}/>` + ln(`M0 -3 L0 ${k === 3 ? -30 : -18}`, "#fff", 1.6)),
+        mark: y => flk(50, y, 6, "#4dabf7", 2),
+        f: () => flk(14, 26, 5, "#fff", 2) + flk(88, 30, 4, "#fff", 2) + flk(90, 76, 3.4, "#fff", 1.8) },
+      { hab: "#5f3dc4", eye: "#ffe066", // 7 よぞら:つきの わ と ほしの わ
+        b: () => `<circle cx="50" cy="60" r="44" fill="#3b2f7a" opacity=".55"/><path d="M14 34 A40 40 0 1 0 82 24 A33 33 0 1 1 14 34Z" ${st("#ffe066", 2)}/>`,
+        w: S => `<path d="M30 ${S.top + 14} Q8 60 14 92 Q32 86 50 92 Q68 86 86 92 Q92 60 70 ${S.top + 14}Z" ${st("#3b2f7a", 2.2)}/>` +
+          `<path d="M32 ${S.top + 18} Q14 60 19 86 Q34 81 50 86 Q66 81 81 86 Q86 60 68 ${S.top + 18}Z" fill="#5f3dc4"/>` + star(22, 74, 3.4, "#fff6a8") + star(78, 70, 3, "#fff6a8") + star(26, 52, 2.4, "#fff6a8") +
+          fan(S, 5, 120, k => star(0, k === 2 ? -30 : -24, k === 2 ? 6 : 4.4, "#ffe066")),
+        mark: y => star(50, y, 6, "#ffe066"),
+        f: () => `<ellipse cx="50" cy="66" rx="46" ry="10" fill="none" stroke="#fff6a8" stroke-width="1.6" stroke-dasharray="2 5"/>` +
+          star(8, 64, 4.4, "#fff6a8") + star(92, 70, 4, "#fff6a8") + star(84, 14, 3.4, "#fff6a8") + star(18, 16, 3, "#fff6a8") },
+      { hab: "#f08c00", eye: "#fff3bf", // 8 さばく:たいようの わ と すなの うず
+        b: () => `<circle cx="50" cy="60" r="42" fill="#fff3bf"/>`,
+        w: S => fan(S, 9, 170, k => `<path d="M-6 0 L0 ${k % 2 ? -22 : -30} L6 0Z" ${st(k % 2 ? "#ffd43b" : "#ff922b", 1.8)}/>`) ,
+        mark: y => `<circle cx="50" cy="${y}" r="4.4" ${st("#ffd43b", 1.6)}/>` + around(8, d => rot(ln(`M50 ${y - 6} L50 ${y - 8.5}`, "#f08c00", 1.6), 50, y, d)),
+        f: () => ln("M4 86 Q20 78 34 86", "#e2b56b", 3.4) + ln("M66 88 Q80 80 96 88", "#e2b56b", 3.4) + ln("M10 74 Q16 70 22 74", "#e2b56b", 2.6) },
+      { hab: "#ae3ec9", eye: "#63e6be", // 9 どうくつ:ほうせきの わ
+        b: () => `<circle cx="50" cy="60" r="42" fill="#e5dbff" opacity=".7"/>`,
+        w: S => fan(S, 7, 150, k => gem(k === 3 ? 36 : k % 2 ? 24 : 30, k === 3 ? 9 : 7, ["#cc5de8", "#4dabf7", "#63e6be", "#ff6b9a"][k % 4])),
+        mark: y => `<g transform="translate(50 ${y + 6})">${gem(12, 6, "#63e6be")}</g>`,
+        f: () => [[12, 30], [88, 22], [90, 74], [10, 76]].map((p, k) => star(p[0], p[1], k % 2 ? 3 : 3.8, "#ffd43b")).join("") }
+    ];
+    function legEyes(y, col, hab) {
+      const e = x => `<ellipse cx="${x}" cy="${y}" rx="4.8" ry="5.8" fill="${INK}"/><ellipse cx="${x}" cy="${y + 2}" rx="3" ry="2.6" fill="${hab}"/>` +
+        `<ellipse cx="${x}" cy="${y + 2.2}" rx="2" ry="1.6" fill="${col}"/><circle cx="${x + 1.6}" cy="${y - 2.2}" r="1.9" fill="#fff"/>`;
+      return e(41) + e(59) + both(ln(`M35 ${y - 10} L46 ${y - 7}`, INK, 2.8));
+    }
+    // でんせつ:しんかの パーツは そのまま、からだの いろ・目・しるし・まわりに すみかの 力
+    function drawLegend(a, b, color, shape, feats, opt) {
+      const L = LEG[a - 1], c = pal(color), S = SH[shape], id = "dg" + a + b;
+      let B = "", M = "", Fr = "";
+      feats.forEach(k => { const r = FT[k](S.top, true, c, S); B += r.b || ""; M += r.m || ""; Fr += r.f || ""; });
+      const grad = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${blend(color, "#ffffff", .25)}"/>` +
+        `<stop offset=".55" stop-color="${color}"/><stop offset="1" stop-color="${blend(color, L.hab, .55)}"/></linearGradient></defs>`;
+      const belly = S.by ? `<ellipse cx="50" cy="${S.by}" rx="15" ry="10" fill="${c[2]}" opacity=".9"/>` + L.mark(S.by) : "";
+      return grad + L.b() + `<ellipse cx="50" cy="92" rx="28" ry="4" fill="${L.hab}" opacity=".35"/>
+        <g transform="translate(50 64) scale(.82) translate(-50 -64)">${L.w(S)}${B}${S.p}${st(`url(#${id})`, 2.8)}/>${belly}${M}
+        <path d="M34 50 Q38 44 44 44" stroke="#fff" stroke-width="3" fill="none" opacity=".7" stroke-linecap="round"/>
+        ${opt.sleepy ? eyes(S.ey, true, true) : legEyes(S.ey, L.eye, L.hab)}${mouth(S.ey + 10, true, opt.fang, opt.nomouth)}${opt.beak ? `<path d="M47 ${S.ey + 6} L53 ${S.ey + 6} L50 ${S.ey + 11}Z" ${st("#f2a33c", 1.6)}/>` : ""}${Fr}</g>` + L.f();
+    }
     const svg = inner => `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
     function egg(color) {
       const c = pal(color);
@@ -1554,6 +1638,7 @@
       creatureSVG(a, b, stage) {
         const r = R[a - 1][b - 1];
         if (stage === 0) return svg(egg(r[2]));
+        if (stage === 3) return svg(drawLegend(a, b, r[2], r[3], r[4], r[5] || {}));
         return svg(draw(r[2], r[3], r[4], stage === 2, r[5] || {}, stage === 2 ? 1 : .86));
       },
       bossSVG(a) { const r = BOSS[a - 1]; return svg(draw(r[1], r[2], ["aura"].concat(r[3]), true, { fang: 1 }, .92)); }
@@ -1570,8 +1655,8 @@
   ];
   const MAX_LV = STAGE.length - 1;
   const lvOf = c => Math.max(0, Math.min(MAX_LV, c.lv || 0));
-  // かがやき(lv3)は しんかの すがたに 光を つけて、でんせつ(lv4)は にじの オーラと 王冠を つけて えがく
-  const monSVG = (a, b, lv) => lv >= 4 ? '<span class="den-wrap">' + KM.creatureSVG(a, b, 2) + '<i class="den-crown">👑</i><i class="den-sp s1">✦</i><i class="den-sp s2">✦</i></span>'
+  // かがやき(lv3)は しんかの すがたに 光を つけて、でんせつ(lv4)は 3つ目の すがた(すみかの 力を まとう)で えがく
+  const monSVG = (a, b, lv) => lv >= 4 ? '<span class="den-wrap">' + KM.creatureSVG(a, b, 3) + '<i class="den-sp s1">✦</i><i class="den-sp s2">✦</i></span>'
     : lv >= 3 ? '<span class="kaga-wrap">' + KM.creatureSVG(a, b, 2) + '</span>' : KM.creatureSVG(a, b, lv);
   // といかたの しゅるい:'up' 'down' 'random'(段の ランダム) 'r10'(ランダム10問) 's3'(3びょう チャレンジ) 'catch'
   function stageMode(mode){ return isSpeed(mode) ? 's3' : mode.type === 'random' ? 'r10' : mode.type === 'catch' ? 'catch' : mode.order; }

@@ -1043,6 +1043,18 @@
   .lb-waza.st-den{font-size:1.55em;background:linear-gradient(90deg,#ff8cc6,#ffe066,#8ce99a,#74c0fc);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 2px 0 #2a1f52)}
   .lb-ans{margin-top:84px;font-size:1.6em;font-weight:900;background:#fff;color:var(--text);display:inline-block;border-radius:14px;padding:2px 14px;animation:lbPopIn .3s ease .3s both}
   .lb-ans b{color:#2b8a3e}
+  .lb-dmg{margin-top:4px;font-weight:900;font-size:1.5em;color:#ffe066;text-shadow:0 2px 0 #2a1f52,0 0 6px #ff6b2e;animation:lbPopIn .3s ease .35s both}
+  .lb-dmg.st-den{font-size:1.9em;color:#fff;text-shadow:0 2px 0 #2a1f52,0 0 10px #ff8cc6,0 0 16px #74c0fc}
+  .lb-dmg.hurt{color:#ffc9c9;font-size:1.25em}
+  .lb-dmg small{display:block;font-size:.55em;color:#ffe3ee}
+  .lb-team{display:flex;justify-content:center;gap:4px;margin:6px auto 0;max-width:360px;width:100%}
+  .lb-team span{flex:1 1 0;background:rgba(255,255,255,.12);border-radius:10px;padding:3px 1px;font-size:.72em;font-weight:bold;line-height:1.3;white-space:nowrap}
+  .lb-team b{font-size:1.45em;margin:0 1px 0 3px}
+  .lb-team small{display:block;color:#ffe08a}
+  .lb-team .lv4{background:linear-gradient(135deg,rgba(255,140,198,.35),rgba(116,192,252,.35))}
+  .lb-est{font-weight:bold;margin:4px 0}
+  .lb-est b{font-size:1.35em;color:#ffe08a}
+  .lb-grow{margin:8px auto;max-width:340px;background:#f3ecff;color:#5b2fa8;border-radius:12px;padding:6px 10px;font-weight:bold;line-height:1.6}
   .lb-sub{margin:6px auto 0;display:inline-block;font-weight:bold;font-size:.9em;color:#ffe3ee;line-height:1.5;background:rgba(20,12,50,.85);border-radius:12px;padding:3px 12px}
   .lb-join{margin-top:8px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.95);color:#5b2fa8;font-weight:900;border-radius:14px;padding:4px 12px 4px 4px;animation:lbPopIn .3s ease .3s both}
   .lb-join i{width:58px;height:58px;display:block}
@@ -1066,11 +1078,11 @@
   .lb-combo b{display:block;font-size:1.8em}
   #lbScreen .qtimer{margin:0 0 10px}
   #lbScreen .qtimer.off,#lbScreen .choices.off{visibility:hidden}
-  .lb-ov{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;background:rgba(15,10,40,.94)}
+  .lb-ov{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;justify-content:safe center;overflow-y:auto;text-align:center;padding:20px;background:rgba(15,10,40,.94)}
   .lb-ov h2{color:#ffe08a;margin:6px 0;font-size:1.5em}
   .lb-ov p{line-height:1.7;margin:4px 0}
   .lb-ov .lb-rule{font-size:.88em;background:rgba(255,255,255,.1);border-radius:12px;padding:6px 12px;text-align:left}
-  .lb-ov .wsd-big{width:190px;height:190px;animation:bossEnter 1.1s cubic-bezier(.2,1.4,.4,1) both}
+  .lb-ov .wsd-big{width:min(190px,22vh);height:min(190px,22vh);flex:none;animation:bossEnter 1.1s cubic-bezier(.2,1.4,.4,1) both}
   .lb-ov .wsd-big svg{width:100%;height:100%;overflow:visible}
   .lb-ov .secondary-btn{background:transparent;color:#fff;border-color:#fff}
   /* けっか */
@@ -1169,7 +1181,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.10</span>
+      <span class="version-badge">v3.11</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1185,7 +1197,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.10</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.11</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -2953,6 +2965,9 @@
   const LB_FX = ['🍃','🌸','💧','🪶','🔥','❄️','⭐','☀️','💎'];
   const LB_WAZA = ['はっぱ カッター','はなびら ふぶき','みずでっぽう','はねの かぜ','ほのおの いき','こおりの つぶて','ほしの ひかり','たいようの ひかり','ほうせきの ひかり'];
   const LB_DEN = ['もりの いかり','はなの あらし','だいつなみ','そらの たつまき','だいふんか','ぜったい れいど','りゅうせいぐん','たいようの ほのお','ほうせきの にじ'];
+  // v3.11 こうげき力は すがたで かわる。1つの 段の HP は 45(でんせつ 9ひきなら ちょうど 1しゅう)
+  const LB_ATK = [2, 2, 3, 4, 5];          // lv 0(たまご。ふつうは 出ない)・こども・しんか・かがやき・でんせつ
+  const LB_DAN_HP = 45, LB_HP = LB_DAN_HP * 9;
   const lbScreen = document.getElementById('lbScreen');
   const lbBox = document.getElementById('lbBox');
   const $lb = id => document.getElementById(id);
@@ -3112,16 +3127,53 @@
   function lbNew(){
     const keys = [];
     for(let a=1; a<=9; a++) for(let b=1; b<=9; b++) keys.push(cardKey(a, b));
-    return {main:shuffle(keys), rev:[], solved:[], hearts:LB_HEARTS, inj:[], rec:[], turn:0, heal:0, combo:0, maxCombo:0, miss:0, time:0, recent:[], date:todayKey()};
+    return {main:shuffle(keys), dmg:[0,0,0,0,0,0,0,0,0], round:1, rev:[], solved:[], hearts:LB_HEARTS, inj:[], rec:[], turn:0, heal:0, combo:0, maxCombo:0, miss:0, time:0, recent:[], date:todayKey()};
   }
   function lbSaveState(){ const d = lbLoad(); d.save = LB; lbStore(d); }
   function lbClearSave(){ const d = lbLoad(); delete d.save; lbStore(d); }
-  function lbSolvedIn(a){ let n = 0; for(let b=1; b<=9; b++) if(LB.solved.indexOf(cardKey(a, b)) !== -1) n++; return n; }
-  const lbLeft = () => TOTAL_CARDS - LB.solved.length;
+  function lbAtkOf(k){ return LB_ATK[lbCard(k).lv] || LB_ATK[1]; }
+  function lbDanAtk(a){ let s = 0; for(let b=1; b<=9; b++) s += lbAtkOf(cardKey(a, b)); return s; }
+  // v3.10 までの 中断データは、正解した 式の こうげき力で HP を 計算しなおす
+  function lbFix(S){
+    if(!Array.isArray(S.dmg)){
+      S.dmg = [0,0,0,0,0,0,0,0,0];
+      (S.solved || []).forEach(k => { const a = lbKa(k)[0]; S.dmg[a-1] = Math.min(LB_DAN_HP, S.dmg[a-1] + lbAtkOf(k)); });
+      (S.rec || []).forEach(a => { S.dmg[a-1] = LB_DAN_HP; });
+    }
+    if(!S.round) S.round = 1;
+    return S;
+  }
+  const lbHpOf = S => LB_HP - S.dmg.reduce((t, x) => t + Math.min(LB_DAN_HP, x), 0);
+  // たおすまでの めやすの 問題数(のこりの HP を、その段の なかまの へいきんの こうげき力で わる)
+  function lbEstimate(dmg){
+    let n = 0;
+    for(let a=1; a<=9; a++){
+      const left = LB_DAN_HP - Math.min(LB_DAN_HP, dmg ? dmg[a-1] : 0); if(left <= 0) continue;
+      const S = lbDanAtk(a), r = Math.floor(left / S), rem = left - r * S;
+      n += r * 9 + (rem > 0 ? Math.ceil(rem * 9 / S) : 0);
+    }
+    return n;
+  }
+  function lbTeamHTML(dmg){
+    const t = [0,0,0,0,0];
+    for(let a=1; a<=9; a++) for(let b=1; b<=9; b++) t[lbCard(cardKey(a, b)).lv]++;
+    return '<div class="lb-team">' + [['🐣 こども',1],['✨ しんか',2],['🌟 かがやき',3],['🌈 でんせつ',4]].map(x =>
+      '<span class="lv' + x[1] + '">' + x[0] + '<br><b>' + t[x[1]] + '</b>ひき<small>こうげき ' + LB_ATK[x[1]] + '</small></span>').join('') + '</div>' +
+      '<p class="lb-est">ワスレドンを たおすまで やく <b>' + lbEstimate(dmg) + '</b>問</p>';
+  }
+  // こうげき力が ひくい 段(そだてると はやく たおせる)
+  function lbGrowHTML(){
+    const ds = []; let all = true;
+    for(let a=1; a<=9; a++){ const s = lbDanAtk(a); if(s < 9 * LB_ATK[4]) all = false; ds.push({a:a, s:s}); }
+    if(all) return '<p class="lb-grow">🌈 81ぴき ぜんぶ でんせつ! さいきょうの チームだ!</p>';
+    ds.sort((x, y) => x.s - y.s);
+    return '<p class="lb-grow">💡 なかまを そだてると、もっと はやく たおせるよ。<br>こうげき力が ひくい 段:' +
+      ds.slice(0, 2).filter(x => x.s < 9 * LB_ATK[4]).map(x => '<b>' + x.a + 'の段</b>').join('・') + '</p>';
+  }
 
   function lbStart(resume){
     const d = lbLoad();
-    LB = resume && d.save && Array.isArray(d.save.main) ? d.save : lbNew();
+    LB = resume && d.save && Array.isArray(d.save.main) ? lbFix(d.save) : lbNew();
     currentMode = {type:'lastboss'};
     runEvents = [];
     lbStopTimer(); clearTimeout(lbFxTimer); lbFxEnd = null;
@@ -3140,8 +3192,8 @@
     LBE.intro.className = 'lb-ov';
     LBE.intro.innerHTML = '<div class="wsd-big">' + wasureSVG() + '</div>' +
       (fresh ? '<h2>ワスレドンが あらわれた!</h2><p>九九を わすれさせる やみの まおう。<br>9つの すみかの 光を うばってしまった…</p>' +
-        '<p class="lb-rule">⚔️ 正解すると、その式の なかまが こうげき!<br>🌟 1つの 段を ぜんぶ 正解で すみかが もどる<br>❤️ ハートは 3つ。まちがえると 1つ へる<br>🔥 3問 つづけて 正解で 1つ もどる<br>⏰ 1問 5びょう</p>'
-        : '<h2>つづきから</h2><p>とりもどした すみか <b>' + LB.rec.length + '</b> / 9<br>のこり ' + lbLeft() + '問</p>') +
+        '<p class="lb-rule">⚔️ 正解すると、その式の なかまが こうげき!<br>💪 そだった なかまほど つよい(下の 数)<br>🌟 1つの 段の HPを 0に すると すみかが もどる<br>❤️ ハートは 3つ。まちがえると 1つ へる<br>🩹 けがの なかまは 力が はんぶん<br>🔥 3問 つづけて 正解で 1つ もどる<br>⏰ 1問 5びょう</p>' + lbTeamHTML(null)
+        : '<h2>つづきから</h2><p>とりもどした すみか <b>' + LB.rec.length + '</b> / 9<br>ワスレドンの HP ' + lbHpOf(LB) + ' / ' + LB_HP + '</p>' + lbTeamHTML(LB.dmg)) +
       '<button class="big-btn" id="lbGo">⚔️ ' + (fresh ? 'なかまと たたかう!' : 'つづける') + '</button>' +
       (fresh ? '<button class="lb-story-btn" id="lbStoryAgain">📜 ものがたりを もう一度 見る</button>' : '');
     $lb('lbGo').addEventListener('click', () => { LBE.intro.classList.add('hidden'); lbSaveState(); lbNext(); });
@@ -3151,10 +3203,10 @@
   function lbRenderAll(hold){
     LBE.hearts.innerHTML = '❤️'.repeat(Math.max(0, LB.hearts)) + '🤍'.repeat(LB_HEARTS - Math.max(0, LB.hearts)) +
       '<small>' + (LB.hearts < LB_HEARTS || LB.inj.length ? '💖 かいふく まで <i>' + '●'.repeat(LB.heal) + '○'.repeat(LB_HEAL_N - LB.heal) + '</i>' : '&nbsp;') + '</small>';
-    LBE.count.innerHTML = 'とりもどした すみか ' + LB.rec.length + ' / 9<small>のこり ' + lbLeft() + '問</small>';
+    LBE.count.innerHTML = 'とりもどした すみか ' + LB.rec.length + ' / 9<small>' + (LB.round > 1 ? LB.round + 'しゅうめ　' : '') + 'HP ' + lbHpOf(LB) + ' / ' + LB_HP + '</small>';
     let s = '', h = '';
     for(let a=1; a<=9; a++){
-      const n = lbSolvedIn(a), got = LB.rec.indexOf(a) !== -1 && a !== hold;
+      const n = Math.min(LB_DAN_HP, LB.dmg[a-1]) / LB_DAN_HP * 9, got = LB.rec.indexOf(a) !== -1 && a !== hold;
       s += '<div class="lb-s' + (got ? ' got' : '') + '" data-d="' + a + '" style="--c:' + LB_COL[a-1] + '">' + lbUniq(sceneSVG(a-1)) +
         '<span class="lb-sn">' + a + '</span>' + (got ? '<span class="lb-nushi">' + lbUniq(KM.bossSVG(a)) + '</span>' : '<span class="lb-sp"><i style="width:' + (n / 9 * 100) + '%"></i></span>') + '</div>';
       h += '<i class="' + (got ? 'gone' : '') + '" style="--c:' + LB_COL[a-1] + '"><b style="width:' + ((9 - n) / 9 * 100) + '%"></b></i>';
@@ -3166,6 +3218,12 @@
   }
   function lbHideQ(off){ LBE.choices.classList.toggle('off', off); LBE.timer.classList.toggle('off', off); }
   function lbPick(){
+    // 1しゅう(81問)で たおせなかったら、まだ とりもどして いない 段の 式で つぎの しゅう
+    if(!LB.main.length && LB.rec.length < 9){
+      const keys = [];
+      for(let a=1; a<=9; a++) if(LB.rec.indexOf(a) === -1) for(let b=1; b<=9; b++) keys.push(cardKey(a, b));
+      LB.main = shuffle(keys); LB.round++; LB.newRound = true;
+    }
     let i = LB.rev.findIndex(r => r.due <= LB.turn);
     if(i < 0 && LB.main.length) return {k:LB.main[0], rev:false};
     if(i < 0 && LB.rev.length){ i = 0; LB.rev.forEach((r, j) => { if(r.due < LB.rev[i].due) i = j; }); }
@@ -3178,6 +3236,7 @@
     lbCur = lbPick();
     if(!lbCur){ lbWin(); return; }
     const ab = lbKa(lbCur.k), a = ab[0], b = ab[1];
+    if(LB.newRound){ delete LB.newRound; lbSaveState(); showToast('🔁 ' + LB.round + 'しゅうめ! のこりの すみかを とりもどそう', 'boss'); }
     lbRenderAll();
     LBE.who.innerHTML = lbMonSVG(lbCur.k);
     LBE.who.classList.toggle('hurt', LB.inj.indexOf(lbCur.k) !== -1);
@@ -3225,9 +3284,13 @@
     if(rev){ const i = LB.rev.findIndex(r => r.k === k); if(i >= 0) LB.rev.splice(i, 1); }
     else { const i = LB.main.indexOf(k); if(i >= 0) LB.main.splice(i, 1); }
     LB.turn++;
-    const ev = {k:k, rev:rev, wasNige:wasNige, heart:false, healed:null, revHeal:false, sumika:null, combo:null, final:false};
+    const ev = {k:k, rev:rev, wasNige:wasNige, heart:false, healed:null, revHeal:false, sumika:null, combo:null, final:false, atk:0, hurt:false};
     if(ok){
       if(LB.solved.indexOf(k) === -1) LB.solved.push(k);
+      // こうげき力:今の すがた(この 正解で そだったら 新しい すがた)。けがの なかまは はんぶん
+      ev.hurt = LB.inj.indexOf(k) !== -1;
+      ev.atk = ev.hurt ? Math.ceil(lbAtkOf(k) / 2) : lbAtkOf(k);
+      LB.dmg[a-1] = Math.min(LB_DAN_HP, LB.dmg[a-1] + ev.atk);
       LB.combo++; LB.maxCombo = Math.max(LB.maxCombo, LB.combo);
       LB.heal++;
       const ii = LB.inj.indexOf(k); if(ii >= 0){ LB.inj.splice(ii, 1); ev.revHeal = true; }
@@ -3239,7 +3302,10 @@
       // れんぞく 5・10・20…問で がったい こうげき(5は 2ひき、10からは 3びき)
       if(LB.combo === 5 || (LB.combo >= 10 && LB.combo % 10 === 0)) ev.combo = LB.recent.filter(x => x !== k).slice(LB.combo >= 10 ? -2 : -1);
       LB.recent.push(k); if(LB.recent.length > 6) LB.recent.shift();
-      if(LB.rec.indexOf(a) === -1 && lbSolvedIn(a) === 9){ LB.rec.push(a); ev.sumika = a; }
+      if(LB.rec.indexOf(a) === -1 && LB.dmg[a-1] >= LB_DAN_HP){
+        LB.rec.push(a); ev.sumika = a;
+        LB.main = LB.main.filter(x => lbKa(x)[0] !== a);   // とりもどした 段の のこりの 式は 出さない
+      }
       ev.final = LB.rec.length === 9;
     } else {
       LB.miss++; LB.combo = 0; LB.heal = 0; LB.hearts--;
@@ -3283,7 +3349,8 @@
     if(ev.combo) label = '🔥 ' + LB.combo + 'れんぞく! がったい こうげき!';
     const waza = st === 'den' ? LB_DEN[a-1] : (st === 'kaga' ? 'きんいろの ' : '') + LB_WAZA[a-1];
     LBE.msg.innerHTML = (label ? '<div class="lb-label">' + label + '</div>' : '<div class="lb-label" style="visibility:hidden">.</div>') +
-      '<div class="lb-waza st-' + st + '">' + waza + '!</div>';
+      '<div class="lb-waza st-' + st + '">' + waza + '!</div>' +
+      '<div class="lb-dmg st-' + st + (ev.hurt ? ' hurt' : '') + '">' + ev.atk + ' ダメージ!' + (ev.hurt ? '<small>🩹 けがで はんぶん</small>' : '') + '</div>';
     setTimeout(() => {
       if(!LB) return;
       lbBossFx(st === 'n' && !ev.combo && !ev.rev ? 'hit' : 'big-hit');
@@ -3368,7 +3435,8 @@
       (first ? '<div class="unlock-box">📖 図鑑の ボスの ならびに <b>ワスレドン</b>の シールが はいったよ!</div>' : '') +
       (newBest && !first ? '<div class="new-record-badge">🏅 ベストタイム こうしん!</div>' : '') +
       '<div class="lb-stats"><span>⏱ こたえた 時間<b>' + lbTime(S.time) + '</b></span><span>🏆 たおした かいすう<b>' + b.clear + '</b></span>' +
-      '<span>🔥 さいだい れんぞく<b>' + S.maxCombo + '</b></span><span>🩹 けがを した かいすう<b>' + S.miss + '</b></span></div>' +
+      '<span>🔥 さいだい れんぞく<b>' + S.maxCombo + '</b></span><span>🩹 けがを した かいすう<b>' + S.miss + '</b></span>' +
+      '<span>📝 こたえた 問題<b>' + S.turn + '問</b></span></div>' + lbGrowHTML() +
       cardEventsHtml();
     retryBtn.classList.remove('hidden');
     showScreen(resultScreen);
@@ -3388,7 +3456,7 @@
       '<p style="font-size:1.2em;font-weight:bold;margin:6px 0">すみかを <b>' + n + 'つ</b> とりもどした!</p>' +
       (n > prev && prev > 0 ? '<div class="new-record-badge">🏅 まえより ' + (n - prev) + 'つ おおく とりもどせた!</div>'
         : prev > 0 ? '<p>これまでの さいこう:' + prev + 'つ</p>' : '') +
-      '<p>81問の うち <b>' + S.solved.length + '問</b> 正解したよ。<br>ワスレドンは よわって いる。つぎは きっと たおせる!</p>' +
+      '<p>ワスレドンの HPを <b>' + (LB_HP - lbHpOf(lbFix(S))) + '</b> へらしたよ。<br>ワスレドンは よわって いる。つぎは きっと たおせる!</p>' + lbGrowHTML() +
       cardEventsHtml();
     retryBtn.classList.remove('hidden');
     showScreen(resultScreen);

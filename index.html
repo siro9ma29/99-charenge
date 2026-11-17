@@ -1086,6 +1086,64 @@
   .lb-stats b{display:block;font-size:1.35em;color:#3a2e2a}
   .lb-rstrip{display:grid;grid-template-columns:repeat(9,1fr);gap:3px;margin:8px 0}
   .lb-rstrip .lb-s{box-shadow:0 0 0 1.5px rgba(0,0,0,.15)}
+  /* ===== v3.10 オープニング(すみかが うばわれる ものがたり) ===== */
+  .lb-ov.story{justify-content:flex-start;padding:12px 12px 14px;background:linear-gradient(#1b1640,#2a2160)}
+  .st-stage{position:relative;width:100%;max-width:340px;height:410px;margin:0 auto;border-radius:18px;overflow:hidden;flex:none;
+    background:linear-gradient(#8fd3ff,#e3f6ff);transition:background 1.2s}
+  .st-stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 18%,rgba(122,92,196,.55),transparent 60%);opacity:0;transition:opacity 1.2s}
+  .st-stage:not([data-s="0"]){background:linear-gradient(#120d2e,#3e2c7a)}
+  .st-stage:not([data-s="0"])::after{opacity:1}
+  .st-stage[data-s="5"]{background:linear-gradient(#3e2c7a,#ff9ec7 85%,#ffe08a)}
+  .st-boss{position:absolute;left:50%;top:4px;width:122px;height:122px;z-index:3;opacity:0;transform:translate(-50%,-150px) scale(.6);
+    transition:transform 1.1s cubic-bezier(.2,1.3,.4,1) .3s,opacity .8s .3s}
+  .st-boss svg{width:100%;height:100%;overflow:visible}
+  .st-stage:not([data-s="0"]) .st-boss{opacity:1;transform:translate(-50%,0) scale(1)}
+  .st-stage[data-s="2"] .st-boss,.st-stage[data-s="3"] .st-boss{transform:translate(-50%,0) scale(1.18);transition-delay:3.6s,0s}
+  .st-stage[data-s="3"] .st-boss{animation:stLaugh .5s ease-in-out 3 .2s;transition-delay:0s}
+  .st-stage[data-s="5"] .st-boss{transform:translate(-50%,0) scale(.88);filter:brightness(.85)}
+  .st-grid{position:absolute;left:50%;top:58px;width:270px;transform:translateX(-50%);display:grid;grid-template-columns:repeat(3,1fr);gap:6px;z-index:1;transition:top .8s,opacity .6s}
+  .st-stage:not([data-s="0"]) .st-grid{top:136px}
+  .st-stage[data-s="4"] .st-grid,.st-stage[data-s="5"] .st-grid{opacity:0}
+  .st-t{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,.9);transition:filter .7s}
+  .st-t .scene{position:absolute;inset:0;width:100%;height:100%}
+  .st-t .nu{position:absolute;left:14%;right:14%;top:20%;bottom:0;transition:filter .7s,opacity .7s}
+  .st-t .nu svg{width:100%;height:100%}
+  .st-t .zz{position:absolute;right:4px;top:2px;font-size:1.1em;opacity:0;transition:opacity .5s .6s}
+  .st-stage[data-s="0"] .st-t .nu{animation:lbHop .55s ease-in-out infinite alternate;animation-delay:calc(var(--i) * -.13s)}
+  .st-stage[data-s="2"] .st-t{filter:grayscale(1) brightness(.33);transition-delay:calc(.7s + var(--i) * .4s)}
+  .st-stage[data-s="3"] .st-t{filter:grayscale(1) brightness(.33)}
+  .st-stage[data-s="3"] .st-t .nu{filter:grayscale(1);opacity:.55}
+  .st-stage[data-s="3"] .st-t .zz{opacity:1}
+  .st-orb{position:absolute;z-index:2;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;left:var(--x);top:var(--y);opacity:0;
+    background:radial-gradient(circle,#fff 0,var(--c) 45%,transparent 70%)}
+  .st-stage[data-s="2"] .st-orb{animation:stOrb .9s ease-in forwards;animation-delay:calc(.5s + var(--i) * .4s)}
+  .st-eq{position:absolute;z-index:4;font-weight:900;font-size:1.05em;color:#fff;text-shadow:0 1px 3px #000;opacity:0;white-space:nowrap}
+  .st-eq b,.st-eq i{font-style:normal}
+  .st-eq i{position:absolute;right:0;top:0;opacity:0;color:#ff8cc6}
+  .st-stage[data-s="3"] .st-eq{animation:stIn .4s ease forwards;animation-delay:var(--d)}
+  .st-stage[data-s="3"] .st-eq b{animation:stForget 1s ease forwards;animation-delay:calc(var(--d) + .8s)}
+  .st-stage[data-s="3"] .st-eq i{animation:stIn .5s ease forwards;animation-delay:calc(var(--d) + 1.5s)}
+  .st-mons{position:absolute;left:50%;top:128px;width:270px;transform:translateX(-50%);display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:1px;z-index:2;opacity:0;transition:opacity .3s}
+  .st-mons::before{content:"";position:absolute;inset:-20px;z-index:-1;border-radius:50%;background:radial-gradient(rgba(255,224,138,.75),transparent 65%)}
+  .st-mons i{aspect-ratio:1;display:block;opacity:0;min-width:0;overflow:hidden}
+  .st-mons svg{width:100%;height:100%;display:block}
+  .st-stage[data-s="4"] .st-mons,.st-stage[data-s="5"] .st-mons{opacity:1}
+  .st-stage[data-s="4"] .st-mons i{animation:lbPopIn .35s ease forwards;animation-delay:var(--d)}
+  .st-stage[data-s="5"] .st-mons i{opacity:1;animation:lbHop .45s ease-in-out infinite alternate;animation-delay:var(--d)}
+  .st-text{width:100%;max-width:340px;min-height:104px;margin:10px auto 0;background:rgba(255,255,255,.96);color:#3a2e2a;border-radius:14px;
+    padding:10px 14px;font-weight:bold;line-height:1.75;text-align:left;font-size:1.02em;animation:lbPopIn .3s ease both}
+  .st-text .who{display:inline-block;background:#3e2c7a;color:#ffe08a;border-radius:8px;padding:0 8px;margin-right:4px;font-size:.85em}
+  .st-nav{display:flex;align-items:center;gap:8px;justify-content:space-between;width:100%;max-width:340px;margin:10px auto 0}
+  .st-nav .st-pg{color:#c9c4ff;font-weight:bold;font-size:.85em}
+  .st-nav button{font:inherit;font-weight:900;border:none;border-radius:20px;padding:10px 18px;cursor:pointer}
+  .st-nav .st-skip{background:transparent;color:#c9c4ff;border:2px solid rgba(201,196,255,.5);padding:8px 12px}
+  .st-nav .st-next{background:#ff6b9a;color:#fff;box-shadow:0 3px 0 #c2255c}
+  .lb-box button.lk{background:transparent;color:#e1dcff;box-shadow:none;border:1.5px solid rgba(225,220,255,.5);padding:7px 10px;font-size:.85em}
+  .lb-ov .lb-story-btn{margin-top:4px;background:transparent;border:none;color:#c9c4ff;font:inherit;font-weight:bold;text-decoration:underline;cursor:pointer}
+  @keyframes stOrb{0%{opacity:0;transform:none}15%{opacity:1;transform:scale(1.3)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.4)}}
+  @keyframes stIn{to{opacity:1}}
+  @keyframes stForget{to{opacity:0;filter:blur(4px)}}
+  @keyframes stLaugh{0%,100%{transform:translate(-50%,0) scale(1.18)}50%{transform:translate(-50%,-6px) scale(1.24) rotate(-3deg)}}
   @keyframes lbJump{0%{transform:translate(-50%,40px) scale(.6);opacity:0}25%{transform:translate(-50%,0) scale(1);opacity:1}55%{transform:translate(-50%,-46px) scale(1.12)}100%{transform:translate(-50%,0) scale(1);opacity:1}}
   @keyframes lbShot{0%{transform:translate(-50%,0) scale(.6);opacity:0}15%{opacity:1}100%{transform:translate(calc(-50% + var(--dx,0px)),-150px) scale(1.3);opacity:.9}}
   @keyframes lbHit{0%,100%{transform:none;filter:none}20%{transform:translateX(-8px) rotate(-4deg);filter:brightness(2.4)}50%{transform:translateX(7px) rotate(3deg)}75%{transform:translateX(-3px)}}
@@ -1111,7 +1169,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.9</span>
+      <span class="version-badge">v3.10</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1127,7 +1185,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.9</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.10</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -2970,9 +3028,10 @@
       (b.clear ? '<div class="lb-best">🏆 たおした かいすう ' + b.clear + '　ベスト ' + lbTime(b.time) + '</div>'
         : b.sumika ? '<div class="lb-best">これまでの さいこう:すみか ' + b.sumika + ' / 9</div>' : '') +
       '<div class="lb-btns">' + (sv ? '<button id="lbContBtn">▶ つづきから(' + sv.rec.length + '/9)</button><button class="sub" id="lbNewBtn">はじめから</button>'
-        : '<button id="lbNewBtn">⚔️ いどむ</button>') + '</div></div>';
+        : '<button id="lbNewBtn">⚔️ いどむ</button>') + (d.story ? '<button class="lk" id="lbStoryBtn">📜 ものがたり</button>' : '') + '</div></div>';
     $lb('lbNewBtn').addEventListener('click', () => lbStart(false));
     if(sv) $lb('lbContBtn').addEventListener('click', () => lbStart(true));
+    if(d.story) $lb('lbStoryBtn').addEventListener('click', lbStoryOnly);
   }
   function lbSealHTML(w, sil){
     const nm = sil ? '？？？' : 'ワスレドン';
@@ -2991,6 +3050,58 @@
     slot.addEventListener('click', () => showDetail(lbSealHTML(112, !got) + '<div class="dinfo"><b class="dn">' + (got ? 'ワスレドン' : '？？？') +
       '</b><span class="dr r-legend">ラスボス</span><span class="dt">' + (got ? '九九を わすれさせる やみ<br>' + lbDate(b.date) + 'に はじめて たおした' : '81問チャレンジで<br>たおすと はいる') + '</span></div>'));
     return slot;
+  }
+
+  // ===== v3.10 オープニング:すみかが うばわれる ものがたり(はじめて いどむとき。メニューから いつでも 見られる) =====
+  const LB_STORY = [
+    'むかし むかし、9つの すみかには 光が あふれ、ぬしと なかまたちが なかよく くらしていました。',
+    'ある日、空が まっくらに なりました。やみの 中から あらわれたのは、九九を わすれさせる まおう <b>ワスレドン</b>!',
+    'ワスレドンは「わすれの のろい」で、すみかの 光を 1つ、また 1つと うばって いきました。',
+    '<span class="who">ワスレドン</span>「ドッドッド! 光の きえた すみかでは、ぬしも ねむり、だれも 九九を おもいだせないのだ!」',
+    'でも、だいじょうぶ。きみには、いっしょに そだててきた <b>81ぴきの なかま</b>が いる!',
+    '九九を 1つ おもいだす たびに、なかまの 力が ワスレドンに とどく。さあ、9つの すみかの 光を とりもどそう!'
+  ];
+  function lbStoryStage(){
+    const W = 340, GL = (W - 270) / 2, T = 92, BX = W / 2, BY = 66;
+    let tiles = '', orbs = '', mons = '';
+    for(let i=0; i<9; i++){
+      tiles += '<div class="st-t" style="--i:' + i + '">' + lbUniq(sceneSVG(i)) + '<span class="nu">' + lbUniq(KM.bossSVG(i+1)) + '</span><span class="zz">💤</span></div>';
+      const x = GL + (i % 3) * T + 43, y = 136 + Math.floor(i / 3) * T + 43;
+      orbs += '<i class="st-orb" style="--i:' + i + ';--c:' + LB_COL[i] + ';--x:' + x + 'px;--y:' + y + 'px;--dx:' + (BX - x) + 'px;--dy:' + (BY - y) + 'px"></i>';
+    }
+    for(let a=1; a<=9; a++) for(let b=1; b<=9; b++) mons += '<i style="--d:' + (((a - 1) * 9 + b - 1) * .018).toFixed(3) + 's">' + lbMonSVG(cardKey(a, b)) + '</i>';
+    const eqs = [[3,7,'18%','40%',0],[8,6,'58%','46%',.3],[4,9,'14%','70%',.6],[6,8,'56%','76%',.9]].map(e =>
+      '<span class="st-eq" style="left:' + e[2] + ';top:' + e[3] + ';--d:' + e[4] + 's">' + e[0] + '×' + e[1] + '=<b>' + (e[0] * e[1]) + '</b><i>？</i></span>').join('');
+    return '<div class="st-stage" id="stStage" data-s="0"><div class="st-boss">' + wasureSVG() + '</div><div class="st-grid">' + tiles + '</div>' + orbs + eqs +
+      '<div class="st-mons">' + mons + '</div></div>';
+  }
+  // done:さいごまで 見たら(スキップしても)よぶ
+  function lbStory(done){
+    const ov = LBE.intro;
+    ov.className = 'lb-ov story';
+    ov.innerHTML = lbStoryStage() + '<div class="st-text" id="stText"></div>' +
+      '<div class="st-nav"><button class="st-skip" id="stSkip">スキップ ⏭</button><span class="st-pg" id="stPg"></span><button class="st-next" id="stNext">つぎへ ▶</button></div>';
+    let n = -1;
+    const finish = () => { ov.className = 'lb-ov hidden'; const d = lbLoad(); d.story = 1; lbStore(d); done(); };
+    const go = () => {
+      n++;
+      if(n >= LB_STORY.length){ finish(); return; }
+      $lb('stStage').dataset.s = n;
+      const t = $lb('stText'); t.innerHTML = LB_STORY[n]; t.style.animation = 'none'; void t.offsetWidth; t.style.animation = '';
+      $lb('stPg').textContent = (n + 1) + ' / ' + LB_STORY.length;
+      $lb('stNext').textContent = n === LB_STORY.length - 1 ? '⚔️ たちむかう!' : 'つぎへ ▶';
+      if(n === 1) setTimeout(() => { if(ov.classList.contains('story') && $lb('stStage') && $lb('stStage').dataset.s === '1') lbShake(); }, 700);
+    };
+    $lb('stNext').addEventListener('click', go);
+    $lb('stSkip').addEventListener('click', finish);
+    go();
+  }
+  // メニューの「📜 ものがたり」から 見るとき
+  function lbStoryOnly(){
+    LB = null;
+    showScreen(lbScreen);
+    LBE.confirm.classList.add('hidden');
+    lbStory(() => { refreshMenu(); showScreen(startScreen); });
   }
 
   // ----- たたかい -----
@@ -3023,13 +3134,18 @@
     lbHideQ(true);
     showScreen(lbScreen);
     const fresh = LB.turn === 0;
+    if(fresh && !d.story) lbStory(() => lbShowIntro(true)); else lbShowIntro(fresh);
+  }
+  function lbShowIntro(fresh){
+    LBE.intro.className = 'lb-ov';
     LBE.intro.innerHTML = '<div class="wsd-big">' + wasureSVG() + '</div>' +
       (fresh ? '<h2>ワスレドンが あらわれた!</h2><p>九九を わすれさせる やみの まおう。<br>9つの すみかの 光を うばってしまった…</p>' +
         '<p class="lb-rule">⚔️ 正解すると、その式の なかまが こうげき!<br>🌟 1つの 段を ぜんぶ 正解で すみかが もどる<br>❤️ ハートは 3つ。まちがえると 1つ へる<br>🔥 3問 つづけて 正解で 1つ もどる<br>⏰ 1問 5びょう</p>'
         : '<h2>つづきから</h2><p>とりもどした すみか <b>' + LB.rec.length + '</b> / 9<br>のこり ' + lbLeft() + '問</p>') +
-      '<button class="big-btn" id="lbGo">⚔️ ' + (fresh ? 'なかまと たたかう!' : 'つづける') + '</button>';
-    LBE.intro.classList.remove('hidden');
+      '<button class="big-btn" id="lbGo">⚔️ ' + (fresh ? 'なかまと たたかう!' : 'つづける') + '</button>' +
+      (fresh ? '<button class="lb-story-btn" id="lbStoryAgain">📜 ものがたりを もう一度 見る</button>' : '');
     $lb('lbGo').addEventListener('click', () => { LBE.intro.classList.add('hidden'); lbSaveState(); lbNext(); });
+    if(fresh) $lb('lbStoryAgain').addEventListener('click', () => lbStory(() => lbShowIntro(true)));
   }
   // hold:この 段は まだ とりもどす まえの すがたで かく(えんしゅつの とちゅう)
   function lbRenderAll(hold){

@@ -1077,6 +1077,12 @@
   .lb-qtext{font-size:2.3em;font-weight:900;letter-spacing:2px;line-height:1.2}
   .lb-combo{width:52px;flex:none;text-align:center;font-weight:900;color:#e8590c;font-size:.8em;line-height:1.1}
   .lb-combo b{display:block;font-size:1.8em}
+  .lb-gauge{display:flex;gap:2px;justify-content:center;margin-top:4px}
+  .lb-gauge i{width:7px;height:12px;border-radius:3px;background:#e2dcf5;border:1px solid #b9aee0}
+  .lb-gauge i.on{background:linear-gradient(#ffd43b,#ff922b);border-color:#e8590c}
+  .lb-gauge.full i{animation:lbGauge .6s ease-in-out infinite alternate}
+  @keyframes lbGauge{to{box-shadow:0 0 6px #ff922b;transform:translateY(-2px)}}
+  @media (prefers-reduced-motion: reduce){.lb-gauge.full i{animation:none}}
   #lbScreen .qtimer{margin:0 0 10px}
   #lbScreen .qtimer.off,#lbScreen .choices.off{visibility:hidden}
   .lb-ov{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;justify-content:safe center;overflow-y:auto;text-align:center;padding:20px;background:rgba(15,10,40,.94)}
@@ -2969,6 +2975,7 @@
   // v3.11 こうげき力は すがたで かわる。1つの 段の HP は 45(でんせつ 9ひきなら ちょうど 1しゅう)
   const LB_ATK = [2, 2, 3, 4, 5];          // lv 0(たまご。ふつうは 出ない)・こども・しんか・かがやき・でんせつ
   const LB_DAN_HP = 45, LB_HP = LB_DAN_HP * 9;
+  const LB_GAUGE = 5, LB_QUICK_MS = 2000;   // がったいゲージ 5マス。2びょう いないの 正解は 2マス
   const lbScreen = document.getElementById('lbScreen');
   const lbBox = document.getElementById('lbBox');
   const $lb = id => document.getElementById(id);
@@ -3132,6 +3139,7 @@
   }
   function lbSaveState(){ const d = lbLoad(); d.save = LB; lbStore(d); }
   function lbClearSave(){ const d = lbLoad(); delete d.save; lbStore(d); }
+  function lbSolvedIn(a){ let n = 0; for(let b=1; b<=9; b++) if(LB.solved.indexOf(cardKey(a, b)) !== -1) n++; return n; }
   function lbAtkOf(k){ return LB_ATK[lbCard(k).lv] || LB_ATK[1]; }
   function lbDanAtk(a){ let s = 0; for(let b=1; b<=9; b++) s += lbAtkOf(cardKey(a, b)); return s; }
   // v3.10 までの 中断データは、正解した 式の こうげき力で HP を 計算しなおす
@@ -3193,7 +3201,7 @@
     LBE.intro.className = 'lb-ov';
     LBE.intro.innerHTML = '<div class="wsd-big">' + wasureSVG() + '</div>' +
       (fresh ? '<h2>ワスレドンが あらわれた!</h2><p>九九を わすれさせる やみの まおう。<br>9つの すみかの 光を うばってしまった…</p>' +
-        '<p class="lb-rule">⚔️ 正解すると、その式の なかまが こうげき!<br>💪 そだった なかまほど つよい(下の 数)<br>🌟 1つの 段の HPを 0に すると すみかが もどる<br>❤️ ハートは 3つ。まちがえると 1つ へる<br>🩹 けがの なかまは 力が はんぶん<br>🔥 3問 つづけて 正解で 1つ もどる<br>⏰ 1問 5びょう</p>' + lbTeamHTML(null)
+        '<p class="lb-rule">⚔️ 正解すると、その式の なかまが こうげき!<br>💪 そだった なかまほど つよい(下の 数)<br>🌟 1つの 段の HPを 0に すると すみかが もどる<br>❤️ ハートは 3つ。まちがえると 1つ へる<br>🩹 けがの なかまは 力が はんぶん<br>🔥 3問 つづけて 正解で 1つ もどる<br>🤝 ゲージが たまると 同じ段の なかまと がったい!(すばやく 答えると 2マス)<br>⏰ 1問 5びょう</p>' + lbTeamHTML(null)
         : '<h2>つづきから</h2><p>とりもどした すみか <b>' + LB.rec.length + '</b> / 9<br>ワスレドンの HP ' + lbHpOf(LB) + ' / ' + LB_HP + '</p>' + lbTeamHTML(LB.dmg)) +
       '<button class="big-btn" id="lbGo">⚔️ ' + (fresh ? 'なかまと たたかう!' : 'つづける') + '</button>' +
       (fresh ? '<button class="lb-story-btn" id="lbStoryAgain">📜 ものがたりを もう一度 見る</button>' : '');
@@ -3215,7 +3223,9 @@
     LBE.strip.innerHTML = s; LBE.hp.innerHTML = h;
     const w = LBE.boss.querySelector('.wsd-s'); if(w) w.style.setProperty('--s', (.78 + .22 * (9 - LB.rec.length) / 9).toFixed(3));
     LBE.inj.innerHTML = LB.inj.length ? '🩹 けがの なかま' + LB.inj.map(k => '<span class="im">' + lbMonSVG(k) + '</span>').join('') : '';
-    LBE.combo.innerHTML = LB.combo >= 2 ? '🔥<b>' + LB.combo + '</b>れんぞく' : '';
+    const g = Math.min(LB_GAUGE, LB.gauge || 0);
+    LBE.combo.innerHTML = (LB.combo >= 2 ? '🔥<b>' + LB.combo + '</b>れんぞく' : '') +
+      '<span class="lb-gauge' + (g >= LB_GAUGE ? ' full' : '') + '" title="がったいゲージ">' + '<i class="on"></i>'.repeat(g) + '<i></i>'.repeat(LB_GAUGE - g) + '</span>';
   }
   function lbHideQ(off){ LBE.choices.classList.toggle('off', off); LBE.timer.classList.toggle('off', off); }
   function lbPick(){
@@ -3276,7 +3286,8 @@
     lbBusy = true; lbStopTimer();
     const k = lbCur.k, rev = lbCur.rev, ab = lbKa(k), a = ab[0], ans = a * ab[1];
     const timeout = sel === null, ok = sel === ans;
-    LB.time += Math.min(LB_MS, Date.now() - lbShownAt);   // こたえた 時間だけ(えんしゅつは ふくめない)
+    const took = Date.now() - lbShownAt;
+    LB.time += Math.min(LB_MS, took);   // こたえた 時間だけ(えんしゅつは ふくめない)
     LBE.choices.querySelectorAll('.choice-btn').forEach(x => { x.disabled = true; if(+x.textContent === ans) x.classList.add('correct'); });
     if(btn && !ok) btn.classList.add('wrong');
     LBE.timer.classList.add('off');
@@ -3292,15 +3303,19 @@
       ev.hurt = LB.inj.indexOf(k) !== -1;
       ev.atk = ev.hurt ? Math.ceil(lbAtkOf(k) / 2) : lbAtkOf(k);
       LB.combo++; LB.maxCombo = Math.max(LB.maxCombo, LB.combo);
-      // れんぞく 5・10・20…問で がったい こうげきの じゅんび。こどもは がったい できないので、
-      // しんか いじょうの なかまが 正解するまで まつ(まちがえると なくなる)
-      if(LB.combo === 5 || (LB.combo >= 10 && LB.combo % 10 === 0)) LB.comboReady = LB.combo >= 10 ? 2 : 1;
-      if(LB.comboReady && lbCard(k).lv >= 2){
-        const mates = LB.recent.filter(x => x !== k && lbCard(x).lv >= 2);
-        const pick = mates.filter((x, i) => mates.indexOf(x) === i).slice(-LB.comboReady);
-        if(pick.length){
-          ev.combo = pick; delete LB.comboReady;
-          ev.bonus = pick.reduce((t, x) => t + lbAtkOf(x), 0);   // ボーナス:いっしょに 出た なかまの こうげき力
+      // がったいゲージ:正解で 1マス、2びょう いないなら 2マス。まんたんで がったい こうげき
+      ev.quick = took < LB_QUICK_MS;
+      LB.gauge = Math.min(LB_GAUGE, (LB.gauge || 0) + (ev.quick ? 2 : 1));
+      // こどもは がったい できない。答えた なかまと 同じ 段の しんか いじょうの なかま(けがを して いない)と がったい
+      if(LB.gauge >= LB_GAUGE && lbCard(k).lv >= 2){
+        const mates = [];
+        for(let b=1; b<=9; b++){ const x = cardKey(a, b); if(x !== k && lbCard(x).lv >= 2 && LB.inj.indexOf(x) === -1) mates.push(x); }
+        if(mates.length){
+          const top = Math.max.apply(null, mates.map(x => lbCard(x).lv));
+          const best = mates.filter(x => lbCard(x).lv === top), m = best[Math.floor(Math.random() * best.length)];
+          ev.combo = [m]; LB.gauge = 0;
+          ev.legend = lbCard(k).lv >= 4 && top >= 4;              // でんせつ どうしは「でんせつ がったい」で 2ばい
+          ev.bonus = lbAtkOf(m) * (ev.legend ? 2 : 1);              // ボーナス:いっしょに 出た なかまの こうげき力
           ev.atk += ev.bonus;
         }
       }
@@ -3314,13 +3329,15 @@
       }
       // れんぞく 5・10・20…問で がったい こうげき(5は 2ひき、10からは 3びき)
       LB.recent.push(k); if(LB.recent.length > 6) LB.recent.shift();
-      if(LB.rec.indexOf(a) === -1 && LB.dmg[a-1] >= LB_DAN_HP){
+      // HP が 0 でも、その 段の 9問を ぜんぶ 1回は 正解するまでは とりもどせない(81問は かならず ぜんぶ 出す)
+      if(LB.rec.indexOf(a) === -1 && LB.dmg[a-1] >= LB_DAN_HP && lbSolvedIn(a) === 9){
         LB.rec.push(a); ev.sumika = a;
         LB.main = LB.main.filter(x => lbKa(x)[0] !== a);   // とりもどした 段の のこりの 式は 出さない
       }
       ev.final = LB.rec.length === 9;
     } else {
-      LB.miss++; LB.combo = 0; LB.heal = 0; LB.hearts--; delete LB.comboReady;
+      LB.miss++; LB.combo = 0; LB.heal = 0; LB.hearts--;
+      LB.gauge = Math.floor((LB.gauge || 0) / 2);   // まちがえても ゲージは はんぶん のこる
       if(LB.inj.indexOf(k) === -1) LB.inj.push(k);
       LB.rev.push({k:k, due:LB.turn + 5 + Math.floor(Math.random() * 4)});   // 5〜8問 あとに もう一度
     }
@@ -3358,12 +3375,14 @@
     });
     LBE.fx.innerHTML = html;
     let label = ev.rev ? '🩹 リベンジ!' : ev.wasNige ? '👣 もどってきた!' : '';
-    if(ev.combo) label = '🔥 ' + LB.combo + 'れんぞく! がったい こうげき!';
-    else if(LB.comboReady) label = '🔥 がったいの じゅんび OK!<small>しんか いじょうの なかまで はつどう</small>';
+    if(ev.legend) label = '🌈 でんせつ がったい!';
+    else if(ev.combo) label = '🔥 ' + (lbKa(ev.k)[0]) + 'の段の なかまと がったい!';
+    else if(LB.gauge >= LB_GAUGE) label = '🔥 がったい じゅんび OK!<small>同じ段の しんか いじょう 2ひきで はつどう</small>';
+    else if(ev.quick && !label) label = '⚡ すばやい! ゲージ +2';
     const waza = st === 'den' ? LB_DEN[a-1] : (st === 'kaga' ? 'きんいろの ' : '') + LB_WAZA[a-1];
     LBE.msg.innerHTML = (label ? '<div class="lb-label">' + label + '</div>' : '<div class="lb-label" style="visibility:hidden">.</div>') +
       '<div class="lb-waza st-' + st + '">' + waza + '!</div>' +
-      '<div class="lb-dmg st-' + st + (ev.hurt ? ' hurt' : '') + '">' + ev.atk + ' ダメージ!' + (ev.bonus ? '<small>🔥 がったい ボーナス +' + ev.bonus + '</small>' : '') + (ev.hurt ? '<small>🩹 けがで はんぶん</small>' : '') + '</div>';
+      '<div class="lb-dmg st-' + st + (ev.hurt ? ' hurt' : '') + '">' + ev.atk + ' ダメージ!' + (ev.bonus ? '<small>' + (ev.legend ? '🌈 でんせつ ボーナス ×2 +' : '🔥 がったい ボーナス +') + ev.bonus + '</small>' : '') + (ev.hurt ? '<small>🩹 けがで はんぶん</small>' : '') + '</div>';
     setTimeout(() => {
       if(!LB) return;
       lbBossFx(st === 'n' && !ev.combo && !ev.rev ? 'hit' : 'big-hit');

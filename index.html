@@ -1188,7 +1188,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.11</span>
+      <span class="version-badge">v3.12</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1204,7 +1204,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.11</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.12</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -2967,7 +2967,7 @@
   // 81の式を 1回ずつ。1つの段の 9問に すべて 正解すると その すみかを とりもどす。9つで ワスレドンを たおす
   const LB_KEY = 'kuku_lastboss_v1';
   const LB_MS = 5000, LB_WARN_MS = 2000;   // 1問 5びょう。のこり 2びょうで バーが 赤く 点滅
-  const LB_HEARTS = 3, LB_HEAL_N = 3;      // ハート3つ。3問 つづけて 正解で 1つ もどる
+  const LB_HEARTS = 3, LB_HEAL_N = 3;      // ハート3つ(v3.12 から もどらない)。3問 つづけて 正解で けがの なかまが 1ぴき なおる
   const LB_COL = ['#4caf50','#9ccc3c','#2b8fd6','#6cc4f5','#ff6b2e','#a9c4e6','#7a5cd6','#e8a83c','#c06cff'];
   const LB_FX = ['🍃','🌸','💧','🪶','🔥','❄️','⭐','☀️','💎'];
   const LB_WAZA = ['はっぱ カッター','はなびら ふぶき','みずでっぽう','はねの かぜ','ほのおの いき','こおりの つぶて','ほしの ひかり','たいようの ひかり','ほうせきの ひかり'];
@@ -3201,7 +3201,7 @@
     LBE.intro.className = 'lb-ov';
     LBE.intro.innerHTML = '<div class="wsd-big">' + wasureSVG() + '</div>' +
       (fresh ? '<h2>ワスレドンが あらわれた!</h2><p>九九を わすれさせる やみの まおう。<br>9つの すみかの 光を うばってしまった…</p>' +
-        '<p class="lb-rule">⚔️ 正解すると、その式の なかまが こうげき!<br>💪 そだった なかまほど つよい(下の 数)<br>🌟 1つの 段の HPを 0に すると すみかが もどる<br>❤️ ハートは 3つ。まちがえると 1つ へる<br>🩹 けがの なかまは 力が はんぶん<br>🔥 3問 つづけて 正解で 1つ もどる<br>🤝 ゲージが たまると 同じ段の なかまと がったい!(すばやく 答えると 2マス)<br>⏰ 1問 5びょう</p>' + lbTeamHTML(null)
+        '<p class="lb-rule">⚔️ 正解すると、その式の なかまが こうげき!<br>💪 そだった なかまほど つよい(下の 数)<br>🌟 1つの 段の HPを 0に すると すみかが もどる<br>❤️ ハートは 3つ。まちがえると 1つ へり、もどらない<br>🩹 けがの なかまは 力が はんぶん<br>🔥 3問 つづけて 正解で けがの なかまが なおる<br>🤝 ゲージが たまると 同じ段の なかまと がったい!(すばやく 答えると 2マス)<br>⏰ 1問 5びょう</p>' + lbTeamHTML(null)
         : '<h2>つづきから</h2><p>とりもどした すみか <b>' + LB.rec.length + '</b> / 9<br>ワスレドンの HP ' + lbHpOf(LB) + ' / ' + LB_HP + '</p>' + lbTeamHTML(LB.dmg)) +
       '<button class="big-btn" id="lbGo">⚔️ ' + (fresh ? 'なかまと たたかう!' : 'つづける') + '</button>' +
       (fresh ? '<button class="lb-story-btn" id="lbStoryAgain">📜 ものがたりを もう一度 見る</button>' : '');
@@ -3211,7 +3211,7 @@
   // hold:この 段は まだ とりもどす まえの すがたで かく(えんしゅつの とちゅう)
   function lbRenderAll(hold){
     LBE.hearts.innerHTML = '❤️'.repeat(Math.max(0, LB.hearts)) + '🤍'.repeat(LB_HEARTS - Math.max(0, LB.hearts)) +
-      '<small>' + (LB.hearts < LB_HEARTS || LB.inj.length ? '💖 かいふく まで <i>' + '●'.repeat(LB.heal) + '○'.repeat(LB_HEAL_N - LB.heal) + '</i>' : '&nbsp;') + '</small>';
+      '<small>' + (LB.inj.length ? '🩹 なかまの かいふく まで <i>' + '●'.repeat(LB.heal) + '○'.repeat(LB_HEAL_N - LB.heal) + '</i>' : '&nbsp;') + '</small>';
     LBE.count.innerHTML = 'とりもどした すみか ' + LB.rec.length + ' / 9<small>' + (LB.round > 1 ? LB.round + 'しゅうめ　' : '') + 'HP ' + lbHpOf(LB) + ' / ' + LB_HP + '</small>';
     let s = '', h = '';
     for(let a=1; a<=9; a++){
@@ -3324,7 +3324,6 @@
       const ii = LB.inj.indexOf(k); if(ii >= 0){ LB.inj.splice(ii, 1); ev.revHeal = true; }
       if(LB.heal >= LB_HEAL_N){
         LB.heal = 0;
-        if(LB.hearts < LB_HEARTS){ LB.hearts++; ev.heart = true; }
         if(LB.inj.length) ev.healed = LB.inj.shift();
       }
       // れんぞく 5・10・20…問で がったい こうげき(5は 2ひき、10からは 3びき)
@@ -3397,9 +3396,7 @@
     if(!LB) return;
     LBE.fx.innerHTML = ''; LBE.msg.innerHTML = '';
     const healName = ev.revHeal ? lbName(ev.k) : ev.healed ? lbName(ev.healed) : '';
-    if(ev.heart && healName) showToast('💖 ハート かいふく! ' + healName + 'も げんきに!', 'recover');
-    else if(ev.heart) showToast('💖 ハートが 1つ もどった!', 'recover');
-    else if(healName) showToast('🩹 ' + healName + 'が げんきに なった!', 'recover');
+    if(healName) showToast('🩹 ' + healName + 'が げんきに なった!', 'recover');
     lbRenderAll(ev.sumika);
     if(ev.sumika) lbPlaySumika(ev);
     else lbNext();

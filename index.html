@@ -1085,6 +1085,18 @@
   @media (prefers-reduced-motion: reduce){.lb-gauge.full i{animation:none}}
   #lbScreen .qtimer{margin:0 0 10px}
   #lbScreen .qtimer.off,#lbScreen .choices.off{visibility:hidden}
+  /* v3.13 がめんの みかた */
+  .lb-tour{position:absolute;inset:0;z-index:40}
+  .lb-tour-hole{position:absolute;border-radius:14px;box-shadow:0 0 0 3px #ffe08a,0 0 0 2000px rgba(15,10,40,.78);transition:all .25s ease;pointer-events:none}
+  .lb-tour-box{position:absolute;left:12px;right:12px;background:#fffdf4;color:#2a2160;border-radius:16px;padding:10px 14px 12px;box-shadow:0 4px 0 #0b0e24;text-align:left}
+  .lb-tour-n{font-size:.75em;color:#8a7fc0;font-weight:bold}
+  .lb-tour-box h3{margin:2px 0 4px;font-size:1.2em}
+  .lb-tour-box p{margin:0;line-height:1.6;font-size:.95em}
+  .lb-tour-btns{display:flex;justify-content:space-between;margin-top:8px}
+  .lb-tour-btns button{font:inherit;font-weight:bold;font-size:1.05em;border-radius:12px;padding:8px 16px;cursor:pointer;border:2px solid #6c5ce7}
+  .lb-tour-back{background:#fff;color:#6c5ce7}
+  .lb-tour-next{background:#6c5ce7;color:#fff}
+  @media (prefers-reduced-motion: reduce){.lb-tour-hole{transition:none}}
   .lb-ov{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;justify-content:safe center;overflow-y:auto;text-align:center;padding:20px;background:rgba(15,10,40,.94)}
   .lb-ov h2{color:#ffe08a;margin:6px 0;font-size:1.5em}
   .lb-ov p{line-height:1.7;margin:4px 0}
@@ -1188,7 +1200,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.12</span>
+      <span class="version-badge">v3.13</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1204,7 +1216,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.12</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.13</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -2967,7 +2979,7 @@
   // 81の式を 1回ずつ。1つの段の 9問に すべて 正解すると その すみかを とりもどす。9つで ワスレドンを たおす
   const LB_KEY = 'kuku_lastboss_v1';
   const LB_MS = 5000, LB_WARN_MS = 2000;   // 1問 5びょう。のこり 2びょうで バーが 赤く 点滅
-  const LB_HEARTS = 3, LB_HEAL_N = 3;      // ハート3つ(v3.12 から もどらない)。3問 つづけて 正解で けがの なかまが 1ぴき なおる
+  const LB_HEARTS = 3, LB_HEAL_N = 3;      // ハート3つ。すみかを 1つ とりもどすと 1つ もどる(v3.13)。3問 つづけて 正解で けがの なかまが 1ぴき なおる
   const LB_COL = ['#4caf50','#9ccc3c','#2b8fd6','#6cc4f5','#ff6b2e','#a9c4e6','#7a5cd6','#e8a83c','#c06cff'];
   const LB_FX = ['🍃','🌸','💧','🪶','🔥','❄️','⭐','☀️','💎'];
   const LB_WAZA = ['はっぱ カッター','はなびら ふぶき','みずでっぽう','はねの かぜ','ほのおの いき','こおりの つぶて','ほしの ひかり','たいようの ひかり','ほうせきの ひかり'];
@@ -3201,13 +3213,77 @@
     LBE.intro.className = 'lb-ov';
     LBE.intro.innerHTML = '<div class="wsd-big">' + wasureSVG() + '</div>' +
       (fresh ? '<h2>ワスレドンが あらわれた!</h2><p>九九を わすれさせる やみの まおう。<br>9つの すみかの 光を うばってしまった…</p>' +
-        '<p class="lb-rule">⚔️ 正解すると、その式の なかまが こうげき!<br>💪 そだった なかまほど つよい(下の 数)<br>🌟 1つの 段の HPを 0に すると すみかが もどる<br>❤️ ハートは 3つ。まちがえると 1つ へり、もどらない<br>🩹 けがの なかまは 力が はんぶん<br>🔥 3問 つづけて 正解で けがの なかまが なおる<br>🤝 ゲージが たまると 同じ段の なかまと がったい!(すばやく 答えると 2マス)<br>⏰ 1問 5びょう</p>' + lbTeamHTML(null)
+        '<p class="lb-rule">⚔️ 正解すると、その式の なかまが こうげき!<br>💪 そだった なかまほど つよい(下の 数)<br>🌟 1つの 段の HPを 0に すると すみかが もどる<br>❤️ ハートは 3つ。まちがえると 1つ へる。すみかを とりもどすと 1つ もどる<br>🩹 けがの なかまは 力が はんぶん<br>🔥 3問 つづけて 正解で けがの なかまが なおる<br>🤝 ゲージが たまると 同じ段の なかまと がったい!(すばやく 答えると 2マス)<br>⏰ 1問 5びょう</p>' + lbTeamHTML(null)
         : '<h2>つづきから</h2><p>とりもどした すみか <b>' + LB.rec.length + '</b> / 9<br>ワスレドンの HP ' + lbHpOf(LB) + ' / ' + LB_HP + '</p>' + lbTeamHTML(LB.dmg)) +
       '<button class="big-btn" id="lbGo">⚔️ ' + (fresh ? 'なかまと たたかう!' : 'つづける') + '</button>' +
+      '<button class="lb-story-btn" id="lbTourBtn">🔍 がめんの みかた</button>' +
       (fresh ? '<button class="lb-story-btn" id="lbStoryAgain">📜 ものがたりを もう一度 見る</button>' : '');
-    $lb('lbGo').addEventListener('click', () => { LBE.intro.classList.add('hidden'); lbSaveState(); lbNext(); });
+    const go = () => { LBE.intro.classList.add('hidden'); lbSaveState(); lbNext(); };
+    // v3.13 はじめて たたかう ときは、さきに がめんの みかたを 見る
+    $lb('lbGo').addEventListener('click', () => { if(!lbLoad().tour){ LBE.intro.classList.add('hidden'); lbTour(go); } else go(); });
+    $lb('lbTourBtn').addEventListener('click', () => { LBE.intro.classList.add('hidden'); lbTour(() => lbShowIntro(fresh)); });
     if(fresh) $lb('lbStoryAgain').addEventListener('click', () => lbStory(() => lbShowIntro(true)));
   }
+
+  // ===== v3.13 がめんの みかた(本番の がめんで 1つずつ 光らせて せつめい。問題は はじまらない) =====
+  const LB_TOUR = [
+    {el:'lbHearts', t:'❤️ ハート', d:'まちがえると 1つ へるよ。0に なると いったん おわり。<br>すみかを 1つ とりもどすと 1つ もどる!<br>下の ●○○ は、けがの なかまが なおるまでの 正解の 数'},
+    {el:'lbCount', t:'🏠 とりもどした すみか', d:'9つ とりもどすと かち!<br>下の 数は ワスレドンの のこりの HP'},
+    {el:'lbStrip', t:'🌄 9つの すみか', d:'左から 1の段 〜 9の段。<br>下の バーは その段の すすみぐあい。<br>HPを 0に して、その段の 9問を ぜんぶ 正解すると とりもどせる'},
+    {el:'lbBoss', t:'👿 ワスレドン', d:'すみかを とりもどすほど 小さく なるよ'},
+    {el:'lbHp', t:'📊 ワスレドンの HP', d:'9色は 1〜9の段の HP。<br>その段の 式に 正解すると へるよ'},
+    {el:'lbWho', t:'⚔️ こうげきする なかま', d:'この 式の なかまが こうげき!<br>そだった なかまほど つよい。<br>けがを して いると 🩹 が つき、力が はんぶん'},
+    {el:'lbQText', t:'✏️ 問題', d:'九九の 式。<br>「🩹 リベンジ!」と 出たら、まえに まちがえた 式だよ'},
+    {el:'lbCombo', t:'🤝 がったいゲージ', d:'正解で 1マス、すばやく(2びょう いないに) 答えると 2マス たまる。<br>まんたんで 同じ段の なかまと がったい こうげき!<br>まちがえると はんぶんに なる。<br>🔥 は れんぞく 正解の 数'},
+    {el:'lbTimer', t:'⏰ 5びょうの バー', d:'なくなると ワスレドンの のろいで けがを するよ'},
+    {el:'lbChoices', t:'👆 答えを えらぶ', d:'4つの 中から 答えを タッチ!'},
+    {el:'lbQuit', t:'⏸ やすむ', d:'とちゅうで やめても、つぎは つづきから できるよ'}
+  ];
+  function lbTour(done){
+    const demo = cardKey(3, 4), g0 = LB.gauge;
+    LBE.who.innerHTML = lbMonSVG(demo); LBE.who.classList.remove('hurt');
+    LBE.tag.className = 'lb-tag'; LBE.tag.textContent = lbName(demo);
+    LBE.qtext.textContent = '3 × 4 = ?';
+    LBE.choices.innerHTML = makeChoices(12).map(o => '<button class="choice-btn" tabindex="-1">' + o + '</button>').join('');
+    LB.gauge = 3; lbRenderAll(); LB.gauge = g0;      // ゲージは 見本で 3マス
+    LBE.timer.querySelector('i').style.width = '70%';
+    lbHideQ(false);
+    const ov = document.createElement('div'); ov.className = 'lb-tour';
+    ov.innerHTML = '<div class="lb-tour-hole"></div><div class="lb-tour-box"><div class="lb-tour-n"></div><h3></h3><p></p>' +
+      '<div class="lb-tour-btns"><button class="lb-tour-back">◀ もどる</button><button class="lb-tour-next"></button></div></div>';
+    lbScreen.appendChild(ov);
+    const hole = ov.querySelector('.lb-tour-hole'), box = ov.querySelector('.lb-tour-box');
+    let i = 0;
+    const show = () => {
+      const st = LB_TOUR[i], el = $lb(st.el), sr = lbScreen.getBoundingClientRect(), r = el.getBoundingClientRect(), pad = 6;
+      const top = r.top - sr.top - pad, h = r.height + pad * 2;
+      hole.style.cssText = 'left:' + (r.left - sr.left - pad) + 'px;top:' + top + 'px;width:' + (r.width + pad * 2) + 'px;height:' + h + 'px';
+      box.querySelector('.lb-tour-n').textContent = (i + 1) + ' / ' + LB_TOUR.length;
+      box.querySelector('h3').textContent = st.t;
+      box.querySelector('p').innerHTML = st.d;
+      box.querySelector('.lb-tour-back').style.visibility = i ? 'visible' : 'hidden';
+      box.querySelector('.lb-tour-next').textContent = i < LB_TOUR.length - 1 ? 'つぎへ ▶' : '⚔️ わかった!';
+      // 光らせた ところの 下が あいて いれば 下、なければ 上に 出す
+      const below = top + h + 12, sh = sr.height;
+      box.style.top = ''; box.style.bottom = '';
+      if(below + box.offsetHeight <= sh - 8) box.style.top = below + 'px';
+      else if(top - 12 - box.offsetHeight >= 8) box.style.top = (top - 12 - box.offsetHeight) + 'px';
+      else box.style.bottom = '10px';
+    };
+    const finish = () => {
+      ov.remove(); window.removeEventListener('resize', show);
+      const d = lbLoad(); d.tour = 1; lbStore(d);
+      LBE.who.innerHTML = ''; LBE.tag.textContent = ''; LBE.qtext.textContent = '？ × ？'; LBE.choices.innerHTML = '';
+      LBE.timer.querySelector('i').style.width = '';
+      lbHideQ(true); lbRenderAll();
+      done();
+    };
+    box.querySelector('.lb-tour-next').addEventListener('click', () => { if(i < LB_TOUR.length - 1){ i++; show(); } else finish(); });
+    box.querySelector('.lb-tour-back').addEventListener('click', () => { if(i > 0){ i--; show(); } });
+    window.addEventListener('resize', show);
+    show();
+  }
+
   // hold:この 段は まだ とりもどす まえの すがたで かく(えんしゅつの とちゅう)
   function lbRenderAll(hold){
     LBE.hearts.innerHTML = '❤️'.repeat(Math.max(0, LB.hearts)) + '🤍'.repeat(LB_HEARTS - Math.max(0, LB.hearts)) +
@@ -3331,6 +3407,7 @@
       // HP が 0 でも、その 段の 9問を ぜんぶ 1回は 正解するまでは とりもどせない(81問は かならず ぜんぶ 出す)
       if(LB.rec.indexOf(a) === -1 && LB.dmg[a-1] >= LB_DAN_HP && lbSolvedIn(a) === 9){
         LB.rec.push(a); ev.sumika = a;
+        if(LB.hearts < LB_HEARTS){ LB.hearts++; ev.heart = true; }   // v3.13 すみかを とりもどすと ハートが 1つ もどる
         LB.main = LB.main.filter(x => lbKa(x)[0] !== a);   // とりもどした 段の のこりの 式は 出さない
       }
       ev.final = LB.rec.length === 9;
@@ -3396,7 +3473,8 @@
     if(!LB) return;
     LBE.fx.innerHTML = ''; LBE.msg.innerHTML = '';
     const healName = ev.revHeal ? lbName(ev.k) : ev.healed ? lbName(ev.healed) : '';
-    if(healName) showToast('🩹 ' + healName + 'が げんきに なった!', 'recover');
+    if(ev.heart) showToast('💖 すみかの 光で ハートが 1つ もどった!' + (healName ? ' ' + healName + 'も げんきに!' : ''), 'recover');
+    else if(healName) showToast('🩹 ' + healName + 'が げんきに なった!', 'recover');
     lbRenderAll(ev.sumika);
     if(ev.sumika) lbPlaySumika(ev);
     else lbNext();

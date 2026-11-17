@@ -1046,6 +1046,7 @@
   .lb-dmg{margin-top:4px;font-weight:900;font-size:1.5em;color:#ffe066;text-shadow:0 2px 0 #2a1f52,0 0 6px #ff6b2e;animation:lbPopIn .3s ease .35s both}
   .lb-dmg.st-den{font-size:1.9em;color:#fff;text-shadow:0 2px 0 #2a1f52,0 0 10px #ff8cc6,0 0 16px #74c0fc}
   .lb-dmg.hurt{color:#ffc9c9;font-size:1.25em}
+  .lb-label small{display:block;font-size:.7em;color:#7a5aa8}
   .lb-dmg small{display:block;font-size:.55em;color:#ffe3ee}
   .lb-team{display:flex;justify-content:center;gap:4px;margin:6px auto 0;max-width:360px;width:100%}
   .lb-team span{flex:1 1 0;background:rgba(255,255,255,.12);border-radius:10px;padding:3px 1px;font-size:.72em;font-weight:bold;line-height:1.3;white-space:nowrap}
@@ -3290,8 +3291,20 @@
       // こうげき力:今の すがた(この 正解で そだったら 新しい すがた)。けがの なかまは はんぶん
       ev.hurt = LB.inj.indexOf(k) !== -1;
       ev.atk = ev.hurt ? Math.ceil(lbAtkOf(k) / 2) : lbAtkOf(k);
-      LB.dmg[a-1] = Math.min(LB_DAN_HP, LB.dmg[a-1] + ev.atk);
       LB.combo++; LB.maxCombo = Math.max(LB.maxCombo, LB.combo);
+      // れんぞく 5・10・20…問で がったい こうげきの じゅんび。こどもは がったい できないので、
+      // しんか いじょうの なかまが 正解するまで まつ(まちがえると なくなる)
+      if(LB.combo === 5 || (LB.combo >= 10 && LB.combo % 10 === 0)) LB.comboReady = LB.combo >= 10 ? 2 : 1;
+      if(LB.comboReady && lbCard(k).lv >= 2){
+        const mates = LB.recent.filter(x => x !== k && lbCard(x).lv >= 2);
+        const pick = mates.filter((x, i) => mates.indexOf(x) === i).slice(-LB.comboReady);
+        if(pick.length){
+          ev.combo = pick; delete LB.comboReady;
+          ev.bonus = pick.reduce((t, x) => t + lbAtkOf(x), 0);   // ボーナス:いっしょに 出た なかまの こうげき力
+          ev.atk += ev.bonus;
+        }
+      }
+      LB.dmg[a-1] = Math.min(LB_DAN_HP, LB.dmg[a-1] + ev.atk);
       LB.heal++;
       const ii = LB.inj.indexOf(k); if(ii >= 0){ LB.inj.splice(ii, 1); ev.revHeal = true; }
       if(LB.heal >= LB_HEAL_N){
@@ -3300,7 +3313,6 @@
         if(LB.inj.length) ev.healed = LB.inj.shift();
       }
       // れんぞく 5・10・20…問で がったい こうげき(5は 2ひき、10からは 3びき)
-      if(LB.combo === 5 || (LB.combo >= 10 && LB.combo % 10 === 0)) ev.combo = LB.recent.filter(x => x !== k).slice(LB.combo >= 10 ? -2 : -1);
       LB.recent.push(k); if(LB.recent.length > 6) LB.recent.shift();
       if(LB.rec.indexOf(a) === -1 && LB.dmg[a-1] >= LB_DAN_HP){
         LB.rec.push(a); ev.sumika = a;
@@ -3308,7 +3320,7 @@
       }
       ev.final = LB.rec.length === 9;
     } else {
-      LB.miss++; LB.combo = 0; LB.heal = 0; LB.hearts--;
+      LB.miss++; LB.combo = 0; LB.heal = 0; LB.hearts--; delete LB.comboReady;
       if(LB.inj.indexOf(k) === -1) LB.inj.push(k);
       LB.rev.push({k:k, due:LB.turn + 5 + Math.floor(Math.random() * 4)});   // 5〜8問 あとに もう一度
     }
@@ -3347,10 +3359,11 @@
     LBE.fx.innerHTML = html;
     let label = ev.rev ? '🩹 リベンジ!' : ev.wasNige ? '👣 もどってきた!' : '';
     if(ev.combo) label = '🔥 ' + LB.combo + 'れんぞく! がったい こうげき!';
+    else if(LB.comboReady) label = '🔥 がったいの じゅんび OK!<small>しんか いじょうの なかまで はつどう</small>';
     const waza = st === 'den' ? LB_DEN[a-1] : (st === 'kaga' ? 'きんいろの ' : '') + LB_WAZA[a-1];
     LBE.msg.innerHTML = (label ? '<div class="lb-label">' + label + '</div>' : '<div class="lb-label" style="visibility:hidden">.</div>') +
       '<div class="lb-waza st-' + st + '">' + waza + '!</div>' +
-      '<div class="lb-dmg st-' + st + (ev.hurt ? ' hurt' : '') + '">' + ev.atk + ' ダメージ!' + (ev.hurt ? '<small>🩹 けがで はんぶん</small>' : '') + '</div>';
+      '<div class="lb-dmg st-' + st + (ev.hurt ? ' hurt' : '') + '">' + ev.atk + ' ダメージ!' + (ev.bonus ? '<small>🔥 がったい ボーナス +' + ev.bonus + '</small>' : '') + (ev.hurt ? '<small>🩹 けがで はんぶん</small>' : '') + '</div>';
     setTimeout(() => {
       if(!LB) return;
       lbBossFx(st === 'n' && !ev.combo && !ev.rev ? 'hit' : 'big-hit');

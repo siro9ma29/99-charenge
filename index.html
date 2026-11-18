@@ -1097,6 +1097,17 @@
   .lb-tour-back{background:#fff;color:#6c5ce7}
   .lb-tour-next{background:#6c5ce7;color:#fff}
   @media (prefers-reduced-motion: reduce){.lb-tour-hole{transition:none}}
+  .lb-tg{display:block;margin:6px 0;background:#f3f0ff;border-radius:10px;padding:6px 8px}
+  .lb-tg small{display:block;font-size:.8em;color:#6c5ce7;font-weight:bold;margin-bottom:2px}
+  .lb-tg-r{display:flex;align-items:center;gap:6px;font-size:.88em;line-height:1.5}
+  .lb-tg-l{width:7.4em;flex:none;font-weight:bold;white-space:nowrap}
+  .lb-tg-a{width:2.4em;flex:none;color:#e8590c;font-weight:bold}
+  .lb-tg-b{flex:1;height:12px;background:#e2dcf5;border-radius:999px;overflow:hidden}
+  .lb-tg-b i{display:block;height:100%;background:#a29bfe;border-radius:999px}
+  .lb-tg-r.lv4 .lb-tg-b i{background:linear-gradient(90deg,#ff8cc6,#74c0fc)}
+  .lb-tg-r.me{margin-top:3px;padding-top:3px;border-top:1px dashed #b9aee0}
+  .lb-tg-r.me .lb-tg-b i{background:linear-gradient(90deg,#ffd43b,#ff922b)}
+  .lb-tg-r b{width:3.4em;flex:none;text-align:right}
   .lb-ov{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;justify-content:safe center;overflow-y:auto;text-align:center;padding:20px;background:rgba(15,10,40,.94)}
   .lb-ov h2{color:#ffe08a;margin:6px 0;font-size:1.5em}
   .lb-ov p{line-height:1.7;margin:4px 0}
@@ -1200,7 +1211,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.13</span>
+      <span class="version-badge">v3.14</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1216,7 +1227,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.13</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.14</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -3233,12 +3244,25 @@
     {el:'lbBoss', t:'👿 ワスレドン', d:'すみかを とりもどすほど 小さく なるよ'},
     {el:'lbHp', t:'📊 ワスレドンの HP', d:'9色は 1〜9の段の HP。<br>その段の 式に 正解すると へるよ'},
     {el:'lbWho', t:'⚔️ こうげきする なかま', d:'この 式の なかまが こうげき!<br>そだった なかまほど つよい。<br>けがを して いると 🩹 が つき、力が はんぶん'},
+    {el:'lbHp', t:'💪 そだてるほど はやく たおせる', d:lbTourGrowHTML},
     {el:'lbQText', t:'✏️ 問題', d:'九九の 式。<br>「🩹 リベンジ!」と 出たら、まえに まちがえた 式だよ'},
     {el:'lbCombo', t:'🤝 がったいゲージ', d:'正解で 1マス、すばやく(2びょう いないに) 答えると 2マス たまる。<br>まんたんで 同じ段の なかまと がったい こうげき!<br>まちがえると はんぶんに なる。<br>🔥 は れんぞく 正解の 数'},
     {el:'lbTimer', t:'⏰ 5びょうの バー', d:'なくなると ワスレドンの のろいで けがを するよ'},
     {el:'lbChoices', t:'👆 答えを えらぶ', d:'4つの 中から 答えを タッチ!'},
     {el:'lbQuit', t:'⏸ やすむ', d:'とちゅうで やめても、つぎは つづきから できるよ'}
   ];
+  // v3.14 すがたごとの「たおすまでの 問の 数」を バーで くらべる(1つの 段 HP45 を その すがたの 9ひきで けずる)
+  function lbTourGrowHTML(){
+    const per = lv => { const S = 9 * LB_ATK[lv], r = Math.floor(LB_DAN_HP / S), rem = LB_DAN_HP - r * S; return 9 * (r * 9 + (rem > 0 ? Math.ceil(rem * 9 / S) : 0)); };
+    const max = per(1), now = lbEstimate(LB.dmg);
+    const row = (lb, atk, n, cls) => '<span class="lb-tg-r' + (cls ? ' ' + cls : '') + '"><span class="lb-tg-l">' + lb + '</span><span class="lb-tg-a">' + (atk ? '⚔️' + atk : '') +
+      '</span><span class="lb-tg-b"><i style="width:' + (n / max * 100) + '%"></i></span><b>' + n + '問</b></span>';
+    return '1つの 段の HPは ' + LB_DAN_HP + '。そだった なかまほど 1回の こうげきが つよいので、<b>少ない 問で たおせる</b>よ。' +
+      '<span class="lb-tg">' + '<small>81ぴき ぜんぶ その すがたなら、たおすまで やく…</small>' +
+      [['🐣 こども',1],['✨ しんか',2],['🌟 かがやき',3],['🌈 でんせつ',4]].map(x => row(x[0], LB_ATK[x[1]], per(x[1]), 'lv' + x[1])).join('') +
+      row('⭐ いまの チーム', 0, Math.min(now, max), 'me') + '</span>' +
+      'たたかう 前に なかまを そだてると、もっと はやく たおせる!';
+  }
   function lbTour(done){
     const demo = cardKey(3, 4), g0 = LB.gauge;
     LBE.who.innerHTML = lbMonSVG(demo); LBE.who.classList.remove('hurt');
@@ -3260,7 +3284,7 @@
       hole.style.cssText = 'left:' + (r.left - sr.left - pad) + 'px;top:' + top + 'px;width:' + (r.width + pad * 2) + 'px;height:' + h + 'px';
       box.querySelector('.lb-tour-n').textContent = (i + 1) + ' / ' + LB_TOUR.length;
       box.querySelector('h3').textContent = st.t;
-      box.querySelector('p').innerHTML = st.d;
+      box.querySelector('p').innerHTML = typeof st.d === 'function' ? st.d() : st.d;
       box.querySelector('.lb-tour-back').style.visibility = i ? 'visible' : 'hidden';
       box.querySelector('.lb-tour-next').textContent = i < LB_TOUR.length - 1 ? 'つぎへ ▶' : '⚔️ わかった!';
       // 光らせた ところの 下が あいて いれば 下、なければ 上に 出す

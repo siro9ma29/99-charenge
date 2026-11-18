@@ -969,7 +969,7 @@
   .lb-box.locked .lb-fig svg{filter:brightness(0) opacity(.75)}
   .lb-box.open{box-shadow:0 0 0 2px #ff8cc6,0 0 14px rgba(255,140,198,.55),0 3px 0 #0b0e24}
   .lb-box .lb-tx{flex:1;min-width:0}
-  .lb-box h3{margin:0;font-size:1.05em;color:#ffe08a}
+  .lb-box h3{margin:0;font-size:1.05em;color:#ffe08a;word-break:keep-all}
   .start-screen .lb-box p{margin:2px 0 0;font-size:.82em;line-height:1.5;color:#e1dcff}
   .lb-box .lb-bar{height:8px;background:rgba(255,255,255,.18);border-radius:6px;overflow:hidden;margin-top:5px}
   .lb-box .lb-bar i{display:block;height:100%;background:linear-gradient(90deg,#ffd43b,#ff8cc6)}
@@ -1221,7 +1221,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.16</span>
+      <span class="version-badge">v3.17</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1237,7 +1237,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.16</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.17</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -3056,7 +3056,7 @@
   }
   function lbOpen(){ return lbLoad().open === 1; }
   function checkLbOpen(){ if(lbOpen() || !lbCond().ok) return false; const d = lbLoad(); d.open = 1; lbStore(d); return true; }
-  function lbUnlockHTML(){ return checkLbOpen() ? '<div class="unlock-box">🔓 <b>⚔️ 81問チャレンジ</b>が ひらいた!<br>メニューの すみかの 下から ワスレドンに いどめるよ</div>' : ''; }
+  function lbUnlockHTML(){ return checkLbOpen() ? '<div class="unlock-box">🔓 <b>⚔️ 九九 ぜんぶ チャレンジ</b>が ひらいた!<br>メニューの すみかの 下から ワスレドンに いどめるよ</div>' : ''; }
   const lbKa = k => k.split('x').map(Number);
   function lbCard(k){ const ab = lbKa(k), c = getCard(loadZukan(), ab[0], ab[1]); return {a:ab[0], b:ab[1], lv:lvOf(c), nige:c.st === 'nige', got:c.st === 'got' || c.st === 'nige'}; }
   // 今の すがた(にげている なかまも、さいごに そだった すがたで)
@@ -3072,14 +3072,14 @@
     if(!lbOpen()){
       const c = lbCond();
       lbBox.className = 'lb-box locked';
-      lbBox.innerHTML = fig + '<div class="lb-tx"><h3>🔒 81問チャレンジ</h3>' +
+      lbBox.innerHTML = fig + '<div class="lb-tx"><h3>🔒 九九 ぜんぶ チャレンジ</h3>' +
         '<p>🐣 81ぴき ぜんぶ うまれると、ラスボス <b>ワスレドン</b>に いどめるよ</p>' +
         '<div class="lb-bar"><i style="width:' + (c.n / TOTAL_CARDS * 100) + '%"></i></div><p>いま <b>' + c.n + '</b> / ' + TOTAL_CARDS + '</p></div>';
       return;
     }
     const sv = d.save && Array.isArray(d.save.main) ? d.save : null;
     lbBox.className = 'lb-box open';
-    lbBox.innerHTML = fig + '<div class="lb-tx"><h3>⚔️ 81問チャレンジ</h3>' +
+    lbBox.innerHTML = fig + '<div class="lb-tx"><h3>⚔️ 九九 ぜんぶ チャレンジ</h3>' +
       '<p>9つの すみかを とりもどし、9ひきの ぬしの 力で ラスボス <b>ワスレドン</b>を ふういんしよう!</p>' +
       (b.clear ? '<div class="lb-best">🏆 ふういんした かいすう ' + b.clear + '　ベスト ' + lbTime(b.time) + '</div>'
         : b.sumika ? '<div class="lb-best">これまでの さいこう:すみか ' + b.sumika + ' / 9</div>' : '') +
@@ -3104,7 +3104,7 @@
     if(got) slot.innerHTML = wasureSVG(); else slot.textContent = '？';
     slot.title = got ? 'ワスレドン' : 'ラスボス';
     slot.addEventListener('click', () => showDetail(lbSealHTML(112, !got) + '<div class="dinfo"><b class="dn">' + (got ? 'ワスレドン' : '？？？') +
-      '</b><span class="dr r-legend">ラスボス</span><span class="dt">' + (got ? '九九を わすれさせる やみ<br>' + lbDate(b.date) + 'に はじめて ふういんした' : '81問チャレンジで<br>ふういんすると はいる') + '</span></div>'));
+      '</b><span class="dr r-legend">ラスボス</span><span class="dt">' + (got ? '九九を わすれさせる やみ<br>' + lbDate(b.date) + 'に はじめて ふういんした' : '九九 ぜんぶ チャレンジで<br>ふういんすると はいる') + '</span></div>'));
     return slot;
   }
 
@@ -3582,7 +3582,7 @@
     resultEmoji.textContent = '🏆';
     resultTitle.textContent = 'ワスレドンを ふういん!';
     resultTitle.className = 'result-title clear';
-    resultBody.innerHTML = '<p style="color:#a87a4a;font-weight:bold;margin:0 0 4px;">⚔️ 81問チャレンジ</p>' +
+    resultBody.innerHTML = '<p style="color:#a87a4a;font-weight:bold;margin:0 0 4px;">⚔️ 九九 ぜんぶ チャレンジ</p>' +
       '<p style="margin:2px 0">9つの すみかに 光が もどり、9ひきの ぬしの 力で ワスレドンを ふういんした!</p>' + lbParadeHTML() +
       '<div class="lb-credit"><small>スタッフ</small>きみと 81ぴきの なかま</div>' +
       (first ? '<div class="unlock-box">📖 図鑑の ボスの ならびに <b>ワスレドン</b>の シールが はいったよ!</div>' : '') +
@@ -3604,7 +3604,7 @@
     resultEmoji.textContent = '🌙';
     resultTitle.textContent = 'いったん すみかに もどろう';
     resultTitle.className = 'result-title fail';
-    resultBody.innerHTML = '<p style="color:#a87a4a;font-weight:bold;margin:0 0 4px;">⚔️ 81問チャレンジ</p>' +
+    resultBody.innerHTML = '<p style="color:#a87a4a;font-weight:bold;margin:0 0 4px;">⚔️ 九九 ぜんぶ チャレンジ</p>' +
       lbStripHTML(S.rec) +
       '<p style="font-size:1.2em;font-weight:bold;margin:6px 0">すみかを <b>' + n + 'つ</b> とりもどした!</p>' +
       (n > prev && prev > 0 ? '<div class="new-record-badge">🏅 まえより ' + (n - prev) + 'つ おおく とりもどせた!</div>'

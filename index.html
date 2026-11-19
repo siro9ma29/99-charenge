@@ -1250,6 +1250,8 @@
   #ubScreen.shake{animation:lbShake .45s}
   .ub-boss{position:absolute;left:0;right:0;top:42px;height:300px;overflow:hidden;z-index:0;pointer-events:none}
   .ub-bs{position:absolute;left:50%;top:-16%;width:124%;transform:translateX(-50%)}
+  /* v3.24 ククドラの 顔が HPゲージに かからないように 下げる(だい2けいたいは 下の ph2 で べつに きめる) */
+  #ubScreen:not(.ph2) .ub-bs{top:8%}
   .ub-bs svg{display:block;width:100%;height:auto}
   #ubScreen.ph2 .ub-boss{top:0;bottom:0;height:auto}
   #ubScreen.ph2 .ub-bs{width:150%;top:-3%}
@@ -1443,7 +1445,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.23</span>
+      <span class="version-badge">v3.24</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1459,7 +1461,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.23</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.24</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -3329,7 +3331,7 @@
     lbBox.className = 'lb-box open';
     lbBox.innerHTML = fig + '<div class="lb-tx"><h3>⚔️ 九九 ぜんぶ チャレンジ</h3>' +
       '<p>9つの すみかを とりもどし、9ひきの ぬしの 力で ラスボス <b>ワスレドン</b>を ふういんしよう!</p>' +
-      (b.clear ? '<div class="lb-best">🏆 ふういんした かいすう ' + b.clear + '　ベスト ' + lbTime(b.time) + '</div>'
+      (b.clear ? '<div class="lb-best">🏆 ふういんした かいすう ' + b.clear + (b.time ? '　ベスト ' + lbTime(b.time) : '') + '</div>'
         : b.sumika ? '<div class="lb-best">これまでの さいこう:すみか ' + b.sumika + ' / 9</div>' : '') +
       '<div class="lb-btns">' + (sv ? '<button id="lbContBtn">▶ つづきから(' + sv.rec.length + '/9)</button><button class="sub" id="lbNewBtn">はじめから</button>'
         : '<button id="lbNewBtn">⚔️ いどむ</button>') + (d.story ? '<button class="lk" id="lbStoryBtn">📜 ものがたり</button>' : '') + '</div></div>';
@@ -3958,7 +3960,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     ubBox.className = 'lb-box ub-box open';
     ubBox.innerHTML = '<div class="lb-fig ub-fig">' + ubBossImg(b.clear ? 'tk' : 'kd') + '</div><div class="lb-tx"><h3>🐉 うらボス' + (d.evo ? ' ククドラ' : '') + '</h3>' +
       '<p>しんの すがたの ぬし 9ひきで いどもう!<br>1回でも まちがえたら おわり。</p>' +
-      (b.clear ? '<div class="lb-best">🏆 たおした かいすう ' + b.clear + '　ベスト ' + lbTime(b.time) + '</div>' : '') +
+      (b.clear ? '<div class="lb-best">🏆 たおした かいすう ' + b.clear + (b.time ? '　ベスト ' + lbTime(b.time) : '') + '</div>' : '') +
       '<div class="lb-btns"><button id="ubGoBtn">⚔️ ' + (d.p2 ? 'だい2けいたいから' : 'いどむ') + '</button>' +
       (d.evo ? '<button class="lk" id="ubEvoBtn">🎬 おはなし</button>' : '') + '</div></div>';
     $lb('ubGoBtn').addEventListener('click', ubStart);

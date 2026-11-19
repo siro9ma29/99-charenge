@@ -1383,7 +1383,39 @@
   @keyframes ubBreak{0%{opacity:1;transform:none}100%{opacity:0;transform:scale(1.35)}}
   @keyframes ubGlow{from{box-shadow:0 0 0 2px rgba(255,255,255,.4)}to{box-shadow:0 0 0 3px #fff,0 0 18px #ffe08a}}
   @media (max-width:430px){.ub-tm{width:34px;height:33px}.ub-field{height:260px}#ubScreen.ph2 .ub-field{height:280px}.ub-boss{height:262px}.choices.ub-pad .choice-btn{padding:11px 0;font-size:1.3em}}
-  @media (prefers-reduced-motion: reduce){#ubScreen.shake,.ub-eg .ub-ec{animation:none}}
+  .ub-eg[data-s="g"] .old{opacity:0}
+  .ub-eg[data-s="g"] .new{opacity:1;filter:brightness(1.3) drop-shadow(0 0 8px #fff)}
+  .ub-eg[data-s="g"] .ub-ec{animation:ubGlow .8s ease-in-out infinite alternate;animation-delay:calc(var(--i) * -.09s)}
+  /* v3.21 段ごとの しんの すがた */
+  .ub-eg.one{grid-template-columns:1fr;max-width:230px}
+  .ub-eg.two{grid-template-columns:repeat(2,1fr);max-width:300px}
+  .ubc-ov.shin{justify-content:flex-start;justify-content:safe center}
+  .ubc-ov.shin h2{font-size:1.25em}
+  .shin-legs{display:flex;justify-content:center;gap:2px;flex-wrap:wrap;max-width:340px;margin:8px auto 0}
+  .shin-legs>*{width:34px;flex:none}
+  .shin-legs svg{width:100%;height:auto}
+  .shin-prog{display:grid;grid-template-columns:repeat(9,1fr);gap:3px;width:100%;max-width:340px;margin:10px auto 0}
+  .shin-prog .ub-img{position:absolute;left:1px;top:1px;width:calc(100% - 2px);height:calc(100% - 2px)}
+  .shin-prog span{position:relative;aspect-ratio:1;border-radius:8px;background:rgba(255,255,255,.1)}
+  .shin-prog span.on{background:radial-gradient(circle,rgba(255,224,138,.45),rgba(255,255,255,.06));box-shadow:0 0 0 1.5px #ffe08a}
+  .shin-prog span.nw{animation:lbPopIn .6s ease both .2s}
+  .shin-prog i{position:absolute;left:2px;top:0;font-style:normal;font-size:.62em;font-weight:900;text-shadow:0 1px 2px #000}
+  .shin-box{background:linear-gradient(135deg,#2a1650,#14365c);box-shadow:0 0 0 2px rgba(255,224,138,.55),0 3px 0 #0b0e24;flex-direction:column;align-items:stretch}
+  .shin-box.all{box-shadow:0 0 0 2px #ffd43b,0 0 14px rgba(255,212,59,.55),0 3px 0 #0b0e24}
+  .shin-box .shin-hd{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .shin-box .shin-row{display:grid;grid-template-columns:repeat(9,1fr);gap:3px;margin-top:6px}
+  .shin-box .shin-c{position:relative;font:inherit;border:none;padding:0;cursor:pointer;aspect-ratio:1/1.12;border-radius:9px;background:rgba(255,255,255,.1);box-shadow:none;color:#fff}
+  .shin-box .shin-c:active{transform:none}
+  .shin-box .shin-c.on{background:radial-gradient(circle,rgba(255,224,138,.4),rgba(255,255,255,.05));box-shadow:0 0 0 1.5px #ffe08a}
+  .shin-box .shin-c .ub-img{position:absolute;left:1px;top:3px;width:calc(100% - 2px);height:calc(100% - 15px)}
+  .shin-box .shin-c i{position:absolute;left:3px;top:0;font-style:normal;font-size:.62em;font-weight:900;text-shadow:0 1px 2px #000}
+  .shin-box .shin-c small{position:absolute;left:0;right:0;bottom:1px;font-size:.56em;font-weight:900;color:#c9c4ff}
+  .shin-box .shin-c.on small{color:#ffe08a}
+  .start-screen .shin-box p.shin-msg{min-height:1.5em;margin-top:5px;text-align:center}
+  .shin-res{margin:10px auto;max-width:340px;border-radius:14px;padding:10px;background:linear-gradient(135deg,#2a1650,#14365c);color:#fff;box-shadow:0 0 0 2px #ffd43b,0 0 14px rgba(255,212,59,.55);animation:ubGlow 1s ease-in-out infinite alternate}
+  .shin-res b{color:#ffe08a}
+  .shin-res button{display:block;margin:8px auto 0;font:inherit;font-weight:900;font-size:1.1em;border:none;border-radius:22px;padding:10px 22px;cursor:pointer;background:#ff6b9a;color:#fff;box-shadow:0 3px 0 #c2255c}
+  @media (prefers-reduced-motion: reduce){#ubScreen.shake,.ub-eg .ub-ec,.shin-res{animation:none}}
   @media (prefers-reduced-motion: reduce){#lbScreen.shake,.lb-flash,.wsd .wsd-q text,.lb-parade .pr i{animation:none}}
 </style>
 </head>
@@ -1392,7 +1424,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.20</span>
+      <span class="version-badge">v3.21</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1408,11 +1440,12 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.20</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.21</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
         <div class="lb-box" id="lbBox"></div>
+        <div class="lb-box shin-box hidden" id="shinBox"></div>
         <div class="lb-box ub-box hidden" id="ubBox"></div>
       </div>
       <p class="menu-note">1問でも間違えると終了になるよ。</p>
@@ -2546,6 +2579,8 @@
     appEl.classList.toggle('menu', screen === startScreen);
     appEl.classList.toggle('battle', screen === lbScreen || screen === ubScreen);
     if(screen !== quizScreen) ghostRow.classList.add('hidden');
+    if(screen === resultScreen) shinResultBox();                 // v3.21 段ごとの しんの すがた
+    if(screen === startScreen) setTimeout(shinAuto, 350);
   }
 
   function updateProgress(){
@@ -2949,6 +2984,7 @@
     renderStampRow(randomStampRow, {type:'random'});
     renderSpeedBox();
     renderLbBox();
+    renderShinBox();
     renderUbBox();
     renderDanBestPreview();
     renderZukan();
@@ -3905,9 +3941,8 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
       '<p>しんの すがたの ぬし 9ひきで いどもう!<br>1回でも まちがえたら おわり。</p>' +
       (b.clear ? '<div class="lb-best">🏆 たおした かいすう ' + b.clear + '　ベスト ' + lbTime(b.time) + '</div>' : '') +
       '<div class="lb-btns"><button id="ubGoBtn">⚔️ ' + (d.p2 ? 'だい2けいたいから' : 'いどむ') + '</button>' +
-      (d.evo ? '<button class="lk" id="ubEvoBtn">🌟 しんの すがた</button><button class="lk" id="ubCardBtn">🃏 カード</button>' : '') + '</div></div>';
+      (d.evo ? '<button class="lk" id="ubEvoBtn">🎬 おはなし</button>' : '') + '</div></div>';
     $lb('ubGoBtn').addEventListener('click', ubStart);
-    if(d.evo) $lb('ubCardBtn').addEventListener('click', ubAlbum);
     if(d.evo) $lb('ubEvoBtn').addEventListener('click', () => { ubOpenScreen(); ubEvolve(() => { refreshMenu(); showScreen(startScreen); }); });
   }
   // 図鑑の ボスの ならび(ワスレドンの つぎ)
@@ -3930,12 +3965,13 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
   const UBC_KEYS = ['1','2','3','4','5','6','7','8','9','kd','tk','sei'];
   function ubCards(){
     const d = ubLoad(), c = Object.assign({}, d.card || {});
-    if(d.evo) c.shin = 1;
+    if(d.evo || c.shin) for(let a=1; a<=9; a++) c[a] = 1;   // まえの バージョンで いっせい しんか した 子
+    ubShin(d).forEach(a => { c[a] = 1; });
     if(d.p2) c.kd = 1;                                   // まえの バージョンで だい2けいたいに 入った 子
     if((d.best || {}).clear){ c.kd = 1; c.tk = 1; c.sei = 1; }   // まえの バージョンで たおした 子
     return c;
   }
-  const ubHasCard = (c, k) => /^\d$/.test(k) ? !!c.shin : !!c[k];
+  const ubHasCard = (c, k) => !!c[k];
   function ubGiveCard(ks){ const d = ubLoad(); d.card = d.card || {}; ks.forEach(k => { d.card[k] = 1; }); ubStore(d); }
   function ubcInfo(k){
     if(/^\d$/.test(k)){ const a = +k, u = UB_ULT[a - 1];
@@ -3985,7 +4021,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     nx.addEventListener('click', () => { ov.remove(); done && done(); });
   }
   // カードの アルバム(メニューの「🃏 カード」)
-  const UBC_HINT = {shin:'うらボスに はじめて いどむと もらえる', kd:'ククドラを たおすと もらえる', tk:'トキクイを たおすと もらえる', sei:'トキクイを たおすと もらえる'};
+  const UBC_HINT = {kd:'ククドラを たおすと もらえる', tk:'トキクイを たおすと もらえる', sei:'トキクイを たおすと もらえる'};
   function ubAlbum(){
     const c = ubCards(), ov = ubcOverlay('album'), w = ubcGridW(4);
     const n = UBC_KEYS.filter(k => ubHasCard(c, k)).length;
@@ -3995,9 +4031,104 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     const msg = ov.querySelector('.ubc-msg');
     ov.querySelectorAll('.ubc-slot').forEach(b => b.addEventListener('click', () => {
       const k = b.dataset.k;
-      if(ubHasCard(c, k)) ubcZoom(k); else msg.textContent = '🔒 ' + UBC_HINT[/^\d$/.test(k) ? 'shin' : k];
+      if(ubHasCard(c, k)) ubcZoom(k); else msg.textContent = '🔒 ' + (/^\d$/.test(k) ? k + 'の段の 9ひきを ぜんぶ でんせつに すると もらえる' : UBC_HINT[k]);
     }));
     ov.querySelector('.ubc-close').addEventListener('click', () => ov.remove());
+  }
+
+  // ----- v3.21 しんの すがたは 段ごとに:その段の 9ひきが ぜんぶ でんせつ → その段の ぬしが しんか＋カード1まい -----
+  // ワスレドンを ふういんする まえからでも おこる。データ:UB_KEY の shin(しんか した 段)。evo(まえの いっせい しんか)は 9ひき しんか ずみ
+  const ubShin = d => (d = d || ubLoad()).evo ? [1,2,3,4,5,6,7,8,9] : (Array.isArray(d.shin) ? d.shin.filter(a => a >= 1 && a <= 9) : []);
+  function shinLeg(z, a){ let n = 0; for(let b=1; b<=9; b++){ const c = getCard(z, a, b); if((c.st === 'got' || c.st === 'nige') && lvOf(c) >= 4) n++; } return n; }
+  function shinPending(){ const z = loadZukan(), done = ubShin(), r = []; for(let a=1; a<=9; a++) if(done.indexOf(a) === -1 && shinLeg(z, a) >= 9) r.push(a); return r; }
+  const shinDanText = list => list.length >= 9 ? '9つの 段 ぜんぶ' : list.join('・') + 'の段';
+  let shinBusy = false;
+
+  // しんかの 演出(list:しんか する 段。いくつでも いっしょに)
+  function shinEvolve(list, done){
+    shinBusy = true;
+    const ov = ubcOverlay('shin'), one = list.length === 1, nm = one ? KM.bossName(list[0]) : 'ぬしたち';
+    const cells = list.map((a, i) => '<div class="ub-ec" style="--i:' + (i + 1) + '"><span class="old">' + lbUniq(KM.bossSVG(a)) + '</span><span class="new">' + shinImg(a) + '</span><b>' + a + '</b></div>').join('');
+    const legs = one ? '<div class="shin-legs">' + [1,2,3,4,5,6,7,8,9].map(b => sealHTML(list[0], b, 'got', 34, 4)).join('') + '</div>' : '';
+    ov.innerHTML = '<h2>🌟 しんの すがた</h2><div class="ub-eg' + (one ? ' one' : list.length === 2 ? ' two' : '') + '" data-s="0">' + cells + '</div>' + legs +
+      '<div class="st-text"></div><div class="st-nav"><button type="button" class="st-skip">スキップ ⏭</button><span class="st-pg"></span><button type="button" class="st-next">つぎへ ▶</button></div>';
+    const eg = ov.querySelector('.ub-eg'), tx = ov.querySelector('.st-text'), pg = ov.querySelector('.st-pg'), nx = ov.querySelector('.st-next'), sk = ov.querySelector('.st-skip');
+    const T = [
+      '<b>' + shinDanText(list) + '</b>の なかまが ' + (one ? '9ひき' : 'それぞれ 9ひき') + ' みんな <b>でんせつ</b>に なった!',
+      'すると、' + nm + 'の からだが まぶしく 光りはじめた…!',
+      nm + 'が <b>「しんの すがた」</b>に しんかした!'
+    ];
+    const flash = () => { const f = document.createElement('div'); f.className = 'lb-flash white'; f.style.position = 'fixed'; ov.appendChild(f); setTimeout(() => f.remove(), 750); };
+    // しんかを きろくして カードを わたす(スキップしても わたす)
+    const save = () => { const d = ubLoad(), s = ubShin(d); list.forEach(a => { if(s.indexOf(a) === -1) s.push(a); }); d.shin = s.sort(); ubStore(d);
+      ubGiveCard(list.map(String)); return s.length; };
+    let n = -1, saved = false;
+    const end = () => { ov.remove(); shinBusy = false; refreshMenu(); done && done(); };
+    const card = then => { if(saved) return; saved = true; const cnt = save(); ub_hideNav(); ubCardGet(list.map(String), () => then(cnt)); };
+    const ub_hideNav = () => { nx.disabled = true; sk.disabled = true; };
+    // さいごの ページ:いま なんびき そろったか
+    const last = cnt => {
+      nx.disabled = false; sk.classList.add('hidden'); pg.textContent = '';
+      eg.remove(); const lg = ov.querySelector('.shin-legs'); if(lg) lg.remove();
+      const prog = document.createElement('div'); prog.className = 'shin-prog';
+      const s = ubShin();
+      prog.innerHTML = [1,2,3,4,5,6,7,8,9].map(a => '<span class="' + (s.indexOf(a) !== -1 ? 'on' : '') + (list.indexOf(a) !== -1 ? ' nw' : '') + '">' +
+        (s.indexOf(a) !== -1 ? shinImg(a) : '') + '<i>' + a + '</i></span>').join('');
+      ov.insertBefore(prog, tx);
+      let t = 'しんの すがた <b>' + cnt + ' / 9</b>';
+      if(cnt < 9) t += '<br>ほかの ぬしも、その段の 9ひきを ぜんぶ でんせつに すると しんかするよ!';
+      else if(ubSeen()){ const d = ubLoad(); d.evo = 1; ubStore(d);
+        t += '<br>9ひきの ぬしが そろった! そのとき、ふかい やみの そこで <b>うらボス</b>が めを さました…!<br>メニューから いどもう!'; }
+      else t += '<br>9ひきの ぬしが そろった! <b>ワスレドン</b>を ふういんすると、なにかが おこる…';
+      tx.innerHTML = t; nx.textContent = 'とじる'; nx.onclick = end;
+      if(cnt >= 9) flash();
+    };
+    const go = () => {
+      n++;
+      if(n >= T.length){ card(last); return; }
+      eg.dataset.s = n;
+      tx.innerHTML = T[n]; tx.style.animation = 'none'; void tx.offsetWidth; tx.style.animation = '';
+      pg.textContent = (n + 1) + ' / ' + T.length;
+      if(n === 2){ flash(); const lg = ov.querySelector('.shin-legs'); if(lg) lg.style.visibility = 'hidden'; }
+    };
+    nx.onclick = go;
+    sk.onclick = () => card(last);
+    go();
+  }
+  // メニューに もどったとき、まだ 見ていない しんかが あれば 見せる
+  function shinAuto(){
+    if(shinBusy || !startScreen.classList.contains('active') || document.querySelector('.ubc-ov')) return;
+    const p = shinPending(); if(p.length) shinEvolve(p);
+  }
+  // けっか画面:しんかが おきたら おしらせ(タッチで 見る。見ないで もどっても メニューで 見せる)
+  function shinResultBox(){
+    const old = resultBody.querySelector('.shin-res'); if(old) old.remove();
+    const p = shinPending(); if(!p.length) return;
+    const el = document.createElement('div'); el.className = 'shin-res';
+    el.innerHTML = '🌟 <b>' + shinDanText(p) + '</b>の 9ひきが みんな でんせつに!<br>' + (p.length === 1 ? KM.bossName(p[0]) : 'ぬしたち') + 'の ようすが…!?<button type="button">見る ▶</button>';
+    el.querySelector('button').addEventListener('click', () => shinEvolve(p, () => el.remove()));
+    resultBody.insertBefore(el, resultBody.children[1] || null);
+  }
+  // メニューの「しんの すがた」(でんせつが 1ぴきでも いれば あらわれる)
+  const shinBox = document.getElementById('shinBox');
+  function renderShinBox(){
+    const z = loadZukan(), s = ubShin(); let leg = 0; const per = [];
+    for(let a=1; a<=9; a++){ per[a] = shinLeg(z, a); leg += per[a]; }
+    if(!leg && !s.length){ shinBox.className = 'lb-box shin-box hidden'; shinBox.innerHTML = ''; return; }
+    shinBox.className = 'lb-box shin-box' + (s.length >= 9 ? ' all' : '');
+    let row = '';
+    for(let a=1; a<=9; a++){ const on = s.indexOf(a) !== -1;
+      row += '<button type="button" class="shin-c' + (on ? ' on' : '') + '" data-a="' + a + '">' + shinImg(a, on ? '' : 'sil') + '<i>' + a + '</i><small>' + (on ? '★' : per[a] + '/9') + '</small></button>'; }
+    shinBox.innerHTML = '<div class="shin-hd"><h3>🌟 しんの すがた ' + s.length + ' / 9</h3>' +
+      '<div class="lb-btns" style="margin:0"><button type="button" class="lk" id="shinCardBtn">🃏 カード</button></div></div>' +
+      '<div class="shin-row">' + row + '</div><p class="shin-msg">' + (s.length >= 9 ? '9ひき そろった!' : 'その段の 9ひきを ぜんぶ でんせつに すると、ぬしが しんかする!') + '</p>';
+    const msg = shinBox.querySelector('.shin-msg');
+    shinBox.querySelectorAll('.shin-c').forEach(b => b.addEventListener('click', () => {
+      const a = +b.dataset.a;
+      if(s.indexOf(a) !== -1) ubcZoom(String(a));
+      else msg.innerHTML = a + 'の段の でんせつ <b>' + per[a] + ' / 9</b>ひき。' + (per[a] >= 9 ? 'もうすぐ しんか!' : 'あと ' + (9 - per[a]) + 'ひき!');
+    }));
+    $lb('shinCardBtn').addEventListener('click', ubAlbum);
   }
 
   // ----- たたかいの じょうたい -----
@@ -4077,10 +4208,11 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     ubOpenScreen();
     ubSetBoss(US.ph); ubRender();
     UBE.quit.classList.remove('off');
-    if(!d.evo) ubEvolve(() => ubIntro(US.ph)); else ubIntro(US.ph);
+    const go = () => { if(!ubLoad().evo) ubEvolve(() => ubIntro(US.ph)); else ubIntro(US.ph); };
+    if(shinPending().length) shinEvolve(shinPending(), go); else go();   // まだ 見ていない しんかが あれば さきに
   }
 
-  // ----- 9ひきの ぬしが いっせいに しんの すがたへ -----
+  // ----- うらボスが めを さます おはなし(v3.21 しんかは 段ごとに すませて あるので、9ひき そろった ところから) -----
   function ubEvolve(done){
     const ov = UBE.ov;
     ov.className = 'lb-ov ub-evo';
@@ -4090,21 +4222,20 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
       '<div class="st-nav"><button class="st-skip" id="ubEs">スキップ ⏭</button><span class="st-pg" id="ubEp"></span><button class="st-next" id="ubEn">つぎへ ▶</button></div>';
     const T = [
       'ワスレドンを ふういんし、81ぴきの なかまが みんな <b>でんせつ</b>に なった。',
-      'すると、9ひきの ぬしの からだが まぶしく 光りはじめた…!',
-      '9ひきの ぬしが <b>「しんの すがた」</b>に しんかした!',
+      '9ひきの ぬしが みんな <b>「しんの すがた」</b>に そろった!',
+      '9ひきの 力が あつまり、まぶしい 光が そらまで とどいた…!',
       'そのとき、ふかい やみの そこから、ワスレドンより ずっと つよい けはいが…。<br><b>うらボス</b>が めを さました!'
     ];
     let n = -1;
-    const finish = () => { ov.className = 'lb-ov hidden'; ov.innerHTML = ''; const d = ubLoad(), first = !d.evo; d.evo = 1; ubStore(d);
-      if(first) ubCardGet(['1','2','3','4','5','6','7','8','9'], done); else done(); };   // v3.20 はじめての ときは カード 9まい
+    const finish = () => { ov.className = 'lb-ov hidden'; ov.innerHTML = ''; const d = ubLoad(); d.evo = 1; ubStore(d); done(); };   // カードは 段ごとの しんかで わたして ある
     const go = () => {
       n++;
       if(n >= T.length){ finish(); return; }
-      $lb('ubEg').dataset.s = n;
+      $lb('ubEg').dataset.s = [2, 2, 'g', 3][n];   // さいしょから しんの すがた → 光る → くらく
       const t = $lb('ubEt'); t.innerHTML = T[n]; t.style.animation = 'none'; void t.offsetWidth; t.style.animation = '';
       $lb('ubEp').textContent = (n + 1) + ' / ' + T.length;
       $lb('ubEn').textContent = n === T.length - 1 ? '⚔️ たちむかう!' : 'つぎへ ▶';
-      if(n === 2){ ubFlash('white'); ubShake(); }
+      if(n === 2) ubFlash('white');
       if(n === 3) setTimeout(() => { if($lb('ubEg') && $lb('ubEg').dataset.s === '3') ubShake(); }, 500);
     };
     $lb('ubEn').addEventListener('click', go);
@@ -4497,6 +4628,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
 
   // 初期表示
   refreshMenu();
+  setTimeout(shinAuto, 600);   // v3.21 まだ 見ていない しんの すがたが あれば
 })();
 </script>
 </body>

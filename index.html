@@ -1292,6 +1292,19 @@
   .ub-gauge{position:absolute;left:6px;top:30px;z-index:4;align-items:center;margin:0}
   .ub-gauge span{font-size:.7em;font-weight:900;color:#ffe08a;text-shadow:0 1px 2px #000;margin-right:3px}
   .ub-gauge.full span{color:#fff;text-shadow:0 0 6px #ffd43b,0 1px 2px #000}
+  /* v3.25 ひっさつわざは ボタンで 出す(まんたんで 光る → おすと 「じゅんび」→ つぎの 正解で はつどう) */
+  .ub-gauge{font:inherit;background:none;border:none;padding:0;color:inherit;cursor:default;-webkit-tap-highlight-color:transparent}
+  .ub-gauge:disabled{opacity:1}
+  .ub-gauge.full{flex-wrap:wrap;max-width:132px;padding:6px 10px;min-height:48px;border-radius:14px;cursor:pointer;touch-action:manipulation;
+    background:linear-gradient(#ffe066,#ff922b);border:2px solid #fff;box-shadow:0 4px 0 #c2410c,0 0 14px #ffd43b;animation:ubBtnPulse .8s ease-in-out infinite alternate}
+  .ub-gauge.full span{display:block;width:100%;margin:0 0 3px;font-size:1em;color:#5a1d00;text-shadow:0 1px 0 #fff3bf}
+  .ub-gauge.full:active{transform:translateY(3px);box-shadow:0 1px 0 #c2410c,0 0 14px #ffd43b}
+  .ub-gauge.arm{background:linear-gradient(#d0bfff,#7048e8);box-shadow:0 4px 0 #3b2a8a,0 0 18px #b197fc;cursor:default;animation:ubBtnArm 1s ease-in-out infinite alternate}
+  .ub-gauge.arm span{color:#fff;text-shadow:0 1px 2px #2a1f52;font-size:.8em;line-height:1.25}
+  .ub-gauge.arm i.on{background:linear-gradient(#fff,#d0bfff);border-color:#fff}
+  @keyframes ubBtnPulse{to{transform:scale(1.07);box-shadow:0 4px 0 #c2410c,0 0 24px #ffd43b}}
+  @keyframes ubBtnArm{to{box-shadow:0 4px 0 #3b2a8a,0 0 28px #e5dbff}}
+  @media (prefers-reduced-motion: reduce){.ub-gauge.full,.ub-gauge.arm{animation:none}}
   .ub-ult-bg{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at 50% 40%,var(--c1),var(--c2) 70%);animation:ubUltBg 2.3s ease forwards}
   .ub-ult-mon{position:absolute;left:50%;bottom:-20px;width:190px;height:178px;transform:translateX(-50%);animation:ubUltMon 2.2s ease both}
   .ub-ult-mon .ub-img{filter:drop-shadow(0 0 16px #fff) drop-shadow(0 0 6px #ffe08a)}
@@ -1445,7 +1458,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.24</span>
+      <span class="version-badge">v3.25</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1461,7 +1474,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.24</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.25</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -1599,7 +1612,7 @@
     <div class="ub-top"><div class="ub-name" id="ubName"></div><button class="lb-quit" id="ubQuit">⏸ やめる</button></div>
     <div class="ub-field" id="ubField">
       <div class="lb-hp ub-hp" id="ubHp"></div>
-      <div class="lb-gauge ub-gauge" id="ubGauge" title="ひっさつゲージ"></div>
+      <button type="button" class="lb-gauge ub-gauge" id="ubGauge" title="ひっさつゲージ" disabled></button>
       <div class="lb-fx" id="ubFx"></div>
       <div class="lb-msg ub-msg" id="ubMsg"></div>
     </div>
@@ -4158,20 +4171,20 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
   }
 
   // ----- たたかいの じょうたい -----
-  let US = null;          // {ph, hp, max, fast, turn, time, recent, from, n, g(ひっさつゲージ), ult(ひっさつわざの 回数)}
+  let US = null;          // {ph, hp, max, fast, turn, time, recent, from, n, g(ひっさつゲージ), arm(ひっさつボタンを おした), ult(ひっさつわざの 回数)}
   let ubCur = null;       // いまの 問題
   let ubSel = null;       // 「□×□」で さきに えらんだ 数
   let ubTimerId = null, ubBusy = true, ubPaused = false, ubWaiting = false, ubT0 = 0, ubLimit = 0, ubUsed = 0;
   let ubFxEnd = null, ubFxTimer = null, ubSkipAt = 0;
   const ubMax = ph => ph === 1 ? UBC.hp1 : UBC.hp2;
-  function ubNew(ph){ return {ph:ph, hp:ubMax(ph), max:ubMax(ph), fast:false, turn:0, time:0, recent:[], from:ph, n:0, g:0, ult:0}; }
+  function ubNew(ph){ return {ph:ph, hp:ubMax(ph), max:ubMax(ph), fast:false, turn:0, time:0, recent:[], from:ph, n:0, g:0, arm:false, ult:0}; }
   function ubFx(ms, done){
     clearTimeout(ubFxTimer);
     ubFxEnd = () => { ubFxEnd = null; clearTimeout(ubFxTimer); done(); };
     ubFxTimer = setTimeout(() => { if(ubFxEnd) ubFxEnd(); }, ms);
   }
   ubScreen.addEventListener('pointerdown', e => {
-    if(e.target.closest('.lb-quit,.lb-ov')) return;
+    if(e.target.closest('.lb-quit,.lb-ov,.ub-gauge')) return;   // v3.25 ひっさつボタンで えんしゅつを とばさない
     if(ubFxEnd && !ubPaused && Date.now() >= ubSkipAt) ubFxEnd();
   });
   function ubShake(){ ubScreen.classList.remove('shake'); void ubScreen.offsetWidth; ubScreen.classList.add('shake'); }
@@ -4205,11 +4218,19 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     ubGaugeRender();
     ubSand();
   }
+  // v3.25 まんたんで ボタンに なる。おすと 「じゅんび」(arm)、つぎの 正解で はつどう。おさなければ とっておける
   function ubGaugeRender(){
-    const g = Math.min(UBC.gauge, US.g || 0), full = g >= UBC.gauge;
-    UBE.gauge.className = 'lb-gauge ub-gauge' + (full ? ' full' : '');
-    UBE.gauge.innerHTML = '<span>' + (full ? '✨ ひっさつ OK!' : '✨ ひっさつ') + '</span>' + '<i class="on"></i>'.repeat(g) + '<i></i>'.repeat(UBC.gauge - g);
+    const g = Math.min(UBC.gauge, US.g || 0), full = g >= UBC.gauge, arm = full && US.arm;
+    UBE.gauge.className = 'lb-gauge ub-gauge' + (arm ? ' full arm' : full ? ' full' : '');
+    UBE.gauge.disabled = !full || arm;
+    UBE.gauge.innerHTML = '<span>' + (arm ? '🔥 つぎの 正解で<br>ひっさつわざ!' : full ? '✨ ひっさつ! おす' : '✨ ひっさつ') + '</span>' + '<i class="on"></i>'.repeat(g) + '<i></i>'.repeat(UBC.gauge - g);
   }
+  UBE.gauge.addEventListener('click', () => {
+    if(!US || US.arm || US.g < UBC.gauge || US.hp <= 0 || ubPaused) return;
+    US.arm = true;
+    ubGaugeRender();
+    ubFlash('white');   // ボタンの 文字が 「つぎの 正解で ひっさつわざ!」に かわる(トーストは HPバーに かぶるので 出さない)
+  });
   function ubTeamHTML(on){
     let h = '';
     for(let a=1; a<=9; a++) h += '<span class="ub-tm' + (on && on.indexOf(a) !== -1 ? ' on' : '') + '">' + shinImg(a) + '<i>' + a + '</i></span>';
@@ -4278,15 +4299,15 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
           '<p class="lb-rule">⚔️ 正解すると、その段の ぬし(しんの すがた)が こうげき!(こうげき力 ' + UBC.atk + ')<br>' +
           '💀 ハートは ない。<b>1回でも まちがえると ゲームオーバー</b><br>' +
           '⏰ 1問 ' + (UBC.ms / 1000) + 'びょう。時間ぎれは ゲームオーバーに ならないけど、HPが ' + UBC.heal + ' もどる<br>' +
-          '✨ <b>ひっさつゲージ</b>:正解で 1マス、' + (UBC.quickMs / 1000) + 'びょう いないに 答えると 2マス。' + UBC.gauge + 'マス たまると、つぎの 正解で <b>ひっさつわざ</b>(ダメージ ' + UBC.ultMul + 'ばい)<br>' +
+          '✨ <b>ひっさつゲージ</b>:正解で 1マス、' + (UBC.quickMs / 1000) + 'びょう いないに 答えると 2マス。' + UBC.gauge + 'マス たまったら <b>ボタンを おそう</b>。つぎの 正解で <b>ひっさつわざ</b>(ダメージ ' + UBC.ultMul + 'ばい)。とっておく ことも できる<br>' +
           '🎯 HPを 0に すると…?</p>'
         : (cont ? '<h2>だい2けいたいから</h2>' : '<h2>だい2けいたい トキクイ!</h2>') +
           '<p>時を 食う からくりの りゅう。<br>いろいろな 問題を 出して くる!</p>' +
           '<p class="lb-rule">🔢 <b>□ × 3 = 12</b> … □に 入る 数を えらぶ<br>' +
           '🧩 <b>□ × □ = 12</b> … 12に なる 式を <b>ぜんぶ</b> 見つける。数を 2つ タッチして 式を つくる(2×6 と 6×2 は べつの 式)<br>' +
           '⏳ HPが はんぶんに なると、時間が ' + (UBC.fastMs / 1000) + 'びょうに なる<br>' +
-          '⏰ 時間ぎれで すなが もどり、HPが ' + UBC.heal + ' もどる(ひっさつゲージも はんぶんに なる)<br>' +
-          '✨ ひっさつゲージは そのまま つづく。' + UBC.gauge + 'マスで ひっさつわざ!<br>' +
+          '⏰ 時間ぎれで すなが もどり、HPが ' + UBC.heal + ' もどる(ひっさつゲージも はんぶんに なり、じゅんびした ひっさつも きえる)<br>' +
+          '✨ ひっさつゲージは そのまま つづく。' + UBC.gauge + 'マスで ボタンを おして ひっさつわざ!<br>' +
           '💀 まちがえたら ゲームオーバー。でも つぎは だい2けいたいから!</p>') +
       '<div class="ub-team ub-team-big">' + ubTeamHTML() + '</div>' +
       '<button class="big-btn" id="ubGo">⚔️ しんの すがたで たたかう!</button>';
@@ -4437,9 +4458,9 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
       US.n++;
       const who = q.t === 'eq' ? [...new Set(q.got.map(e => e[0]))] : [q.a];
       const k = q.t === 'eq' ? q.ans.length : 1;
-      // ひっさつゲージが まんたんなら、この 正解で ひっさつわざ。ちがえば ゲージを ためる
-      const ult = US.g >= UBC.gauge;
-      if(ult){ US.g = 0; US.ult++; }
+      // v3.25 ひっさつボタンを おして あれば、この 正解で ひっさつわざ。ちがえば ゲージを ためる(まんたんで とまる)
+      const ult = US.arm && US.g >= UBC.gauge;
+      if(ult){ US.g = 0; US.arm = false; US.ult++; }
       else US.g = Math.min(UBC.gauge, US.g + (el <= UBC.quickMs * k ? 2 : 1));
       const dmg = UBC.atk * k * (ult ? UBC.ultMul : 1);
       US.hp = Math.max(0, US.hp - dmg);
@@ -4448,7 +4469,8 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     } else if(timeout){
       US.hp = Math.min(US.max, US.hp + UBC.heal);
       US.g = Math.floor(US.g / 2);    // 時間ぎれは ゲージ はんぶん(ワスレドン戦の まちがいと 同じ)
-      ubPlayTimeout(q);
+      const lost = US.arm; US.arm = false;   // v3.25 じゅんびした ひっさつも きえる
+      ubPlayTimeout(q, lost);
     } else ubPlayLose(q);
   }
 
@@ -4521,11 +4543,11 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     if(q.t === 'eq') return '<div class="lb-ans ub-ans">' + q.ans.map(e => e[0] + '×' + e[1]).join('　') + '<small>' + q.p + 'に なる 式</small></div>';
     return '<div class="lb-ans">' + (q.t === 'mL' ? '<b>' + q.a + '</b> × ' + q.b : q.t === 'mR' ? q.a + ' × <b>' + q.b + '</b>' : q.a + ' × ' + q.b) + ' = ' + (q.t === 'n' ? '<b>' + q.p + '</b>' : q.p) + '</div>';
   }
-  function ubPlayTimeout(q){
+  function ubPlayTimeout(q, lost){
     ubRender(); ubBossFx('atk');
     if(US.ph === 1) ubNeck(q.a || 5, 'bite');
     UBE.msg.innerHTML = '<div class="lb-label dark">⏰ 時間ぎれ!</div><br>' + ubAnsHTML(q) +
-      '<div class="lb-sub">' + (US.ph === 1 ? 'ククドラが いきを ととのえた' : 'トキクイの すなが もどった') + '(HP +' + UBC.heal + ')<br>つぎは すばやく こたえよう!</div>';
+      '<div class="lb-sub">' + (US.ph === 1 ? 'ククドラが いきを ととのえた' : 'トキクイの すなが もどった') + '(HP +' + UBC.heal + ')<br>' + (lost ? 'ひっさつわざの じゅんびも きえて しまった…<br>' : '') + 'つぎは すばやく こたえよう!</div>';
     ubSkipAt = Date.now() + 1000;
     ubFx(2400, ubNext);
   }

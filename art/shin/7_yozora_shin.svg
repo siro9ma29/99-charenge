@@ -1,0 +1,350 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -24 480 444" width="480" height="444">
+<title>よぞらの ぬし しんの すがた</title>
+<style>
+  .breathe{transform-origin:240px 330px;animation:br 3.2s ease-in-out infinite}
+  @keyframes br{0%,100%{transform:scale(1)}50%{transform:scale(1.015,1.025)}}
+  .sway{transform-origin:240px 195px;animation:sw 4s ease-in-out infinite}
+  @keyframes sw{0%,100%{transform:rotate(-1.2deg)}50%{transform:rotate(1.2deg)}}
+  .flapL{transform-origin:192px 224px;animation:fl 3s ease-in-out infinite}
+  .flapR{transform-origin:288px 224px;animation:fr 3s ease-in-out infinite}
+  @keyframes fl{0%,100%{transform:rotate(0)}50%{transform:rotate(4deg)}}
+  @keyframes fr{0%,100%{transform:rotate(0)}50%{transform:rotate(-4deg)}}
+  .glow{animation:gl 2.4s ease-in-out infinite}
+  .d1{animation-delay:.6s}.d2{animation-delay:1.2s}.d3{animation-delay:1.8s}
+  @keyframes gl{0%,100%{opacity:.4}50%{opacity:1}}
+  .gspin{transform-origin:240px 285px;animation:gs 16s linear infinite}
+  @keyframes gs{to{transform:rotate(360deg)}}
+  .aur{animation:au 6s ease-in-out infinite}
+  @keyframes au{0%,100%{transform:translateX(0)}50%{transform:translateX(14px)}}
+  .tw{animation:tw 2.2s ease-in-out infinite}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:1}}
+  .shoot{animation:sh 4s ease-in infinite}
+  @keyframes sh{0%,60%{transform:translate(0,0);opacity:0}65%{opacity:1}100%{transform:translate(70px,45px);opacity:0}}
+</style>
+<defs>
+  <!-- 発光・ぼかしフィルター -->
+  <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+  <filter id="soft2" x="-30%" y="-50%" width="160%" height="200%"><feGaussianBlur stdDeviation="12"/></filter>
+  <filter id="glowStrong" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="3.5" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="eyeGlow" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="4" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+
+  <!-- 背景・オーロラ・月 -->
+  <radialGradient id="skyGrad" cx="50%" cy="35%" r="75%">
+    <stop offset="0%" stop-color="#1e224d"/>
+    <stop offset="45%" stop-color="#0f122e"/>
+    <stop offset="100%" stop-color="#050612"/>
+  </radialGradient>
+  <radialGradient id="moon7" cx="35%" cy="35%" r="65%">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="70%" stop-color="#dce4ff"/>
+    <stop offset="100%" stop-color="#9aa8d6"/>
+  </radialGradient>
+
+  <!-- 羽・一体化した体・銀河のグラデーション -->
+  <linearGradient id="fw7" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#110c30"/>
+    <stop offset="42%" stop-color="#281d66"/>
+    <stop offset="72%" stop-color="#227d7a"/>
+    <stop offset="90%" stop-color="#6246d6"/>
+    <stop offset="100%" stop-color="#a594ff"/>
+  </linearGradient>
+  <linearGradient id="covGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#16103b"/>
+    <stop offset="68%" stop-color="#37288a"/>
+    <stop offset="100%" stop-color="#6d58d6"/>
+  </linearGradient>
+  <linearGradient id="seamlessBodyGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#31247a"/>
+    <stop offset="28%" stop-color="#251b61"/>
+    <stop offset="65%" stop-color="#171042"/>
+    <stop offset="100%" stop-color="#0b0721"/>
+  </linearGradient>
+  <radialGradient id="faceGrad" cx="50%" cy="42%" r="58%">
+    <stop offset="0%" stop-color="#42329e"/>
+    <stop offset="65%" stop-color="#241a61"/>
+    <stop offset="100%" stop-color="#1f1654" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="eyeGrad" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="35%" stop-color="#ffea54"/>
+    <stop offset="75%" stop-color="#ff8c00"/>
+    <stop offset="100%" stop-color="#8a2b00"/>
+  </radialGradient>
+  <radialGradient id="gx7" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+    <stop offset="25%" stop-color="#9cb4ff" stop-opacity="0.85"/>
+    <stop offset="60%" stop-color="#5c3ec4" stop-opacity="0.4"/>
+    <stop offset="100%" stop-color="#2a186e" stop-opacity="0"/>
+  </radialGradient>
+  <!-- 耳（羽角）用グラデーション -->
+  <linearGradient id="earTuftGrad" x1="0" y1="1" x2="0" y2="0">
+    <stop offset="0%" stop-color="#22185c"/>
+    <stop offset="55%" stop-color="#4e3bc4"/>
+    <stop offset="85%" stop-color="#67e8f9"/>
+    <stop offset="100%" stop-color="#ffffff"/>
+  </linearGradient>
+  <linearGradient id="branchGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#41486b"/>
+    <stop offset="40%" stop-color="#1b1f33"/>
+    <stop offset="100%" stop-color="#090b14"/>
+  </linearGradient>
+  <!-- 体の外側の明るいふちの光 -->
+  <filter id="rim" filterUnits="userSpaceOnUse" x="-40" y="-50" width="560" height="500">
+    <feMorphology in="SourceAlpha" operator="dilate" radius="2.5" result="d"/>
+    <feGaussianBlur in="d" stdDeviation="2.2" result="b"/>
+    <feFlood flood-color="#cdbfff" flood-opacity=".95"/>
+    <feComposite in2="b" operator="in" result="rimc"/>
+    <feGaussianBlur in="SourceAlpha" stdDeviation="9" result="b2"/>
+    <feFlood flood-color="#8fd3ff" flood-opacity=".4"/>
+    <feComposite in2="b2" operator="in" result="halo"/>
+    <feMerge><feMergeNode in="halo"/><feMergeNode in="rimc"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+
+<!-- 背景：漆黒の夜空・オーロラ・満月・流れ星・遠景の山 -->
+<rect x="-10" y="-30" width="500" height="460" fill="url(#skyGrad)"/>
+
+<!-- オーロラ -->
+<g class="aur">
+  <path d="M-20 70 Q100 10 210 60 T430 35 T520 60" fill="none" stroke="#36f5a3" stroke-width="32" stroke-linecap="round" opacity=".25" filter="url(#soft2)"/>
+  <path d="M-20 95 Q100 35 210 85 T430 60 T520 85" fill="none" stroke="#38bdf8" stroke-width="28" stroke-linecap="round" opacity=".25" filter="url(#soft2)"/>
+  <path d="M-20 120 Q100 60 210 110 T430 85 T520 110" fill="none" stroke="#9333ea" stroke-width="30" stroke-linecap="round" opacity=".28" filter="url(#soft2)"/>
+</g>
+
+<!-- 満月 -->
+<circle cx="415" cy="22" r="42" fill="#a5b4fc" opacity=".35" filter="url(#soft2)" class="glow"/>
+<circle cx="415" cy="22" r="24" fill="url(#moon7)"/>
+<circle cx="408" cy="15" r="4.5" fill="#b8c4e8" opacity=".6"/>
+<circle cx="422" cy="28" r="5.5" fill="#b8c4e8" opacity=".5"/>
+<circle cx="424" cy="14" r="2.5" fill="#b8c4e8" opacity=".5"/>
+
+<!-- 流れ星 -->
+<g class="shoot">
+  <path d="M15 -10 L75 28" stroke="url(#moon7)" stroke-width="2.5" stroke-linecap="round" opacity=".85"/>
+  <circle cx="75" cy="28" r="2.8" fill="#fff" filter="url(#glowStrong)"/>
+</g>
+
+<!-- 背景の星々 -->
+<g class="tw">
+  <circle cx="80" cy="12" r="1.5" fill="#fff"/><circle cx="150" cy="-8" r="1.8" fill="#a5f3fc"/>
+  <circle cx="330" cy="-6" r="1.6" fill="#fff"/><circle cx="280" cy="25" r="1.3" fill="#fff"/>
+  <circle cx="35" cy="55" r="1.5" fill="#ddd6fe"/><circle cx="455" cy="75" r="1.4" fill="#fff"/>
+  <circle cx="195" cy="18" r="1.2" fill="#fff"/><circle cx="365" cy="58" r="1.7" fill="#a5f3fc"/>
+</g>
+
+<!-- 遠景の山並みシルエット -->
+<path d="M-10 340 L60 275 L125 320 L190 265 L260 325 L340 270 L415 310 L490 260 L490 420 L-10 420 Z" fill="#0d1126" opacity="0.85"/>
+<path d="M60 275 L82 295 L68 298 L75 308 L45 295 Z" fill="#283259" opacity="0.5"/>
+<path d="M340 270 L365 292 L350 296 L358 306 L325 292 Z" fill="#283259" opacity="0.5"/>
+
+<!-- フクロウ本体 -->
+<g filter="url(#rim)"><g class="breathe">
+  <!-- 尾羽 -->
+  <g transform="translate(240 375) rotate(68)"><path d="M0 -9 L45 -11 L78 0 L45 11 L0 9 Z" fill="#140e38" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+  <g transform="translate(240 375) rotate(79)"><path d="M0 -10 L56 -12 L94 0 L56 12 L0 10 Z" fill="#1b134a" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+  <g transform="translate(240 375) rotate(90)"><path d="M0 -10 L62 -12 L102 0 L62 12 L0 10 Z" fill="#22185c" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+  <g transform="translate(240 375) rotate(101)"><path d="M0 -10 L56 -12 L94 0 L56 12 L0 10 Z" fill="#1b134a" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+  <g transform="translate(240 375) rotate(112)"><path d="M0 -9 L45 -11 L78 0 L45 11 L0 9 Z" fill="#140e38" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+
+  <!-- 左翼 -->
+  <g class="flapL">
+    <g transform="translate(56 96) rotate(150)"><path d="M0 -9 L62 -11 L108 0 L62 11 L0 9 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M12 0 L96 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+    <g transform="translate(69 106) rotate(143.8)"><path d="M0 -9.5 L70 -11.5 L118 0 L70 11.5 L0 9.5 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M15 0 L106 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+    <g transform="translate(82 116) rotate(137.6)"><path d="M0 -10 L78 -12 L128 0 L78 12 L0 10 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M18 0 L115 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+    <g transform="translate(95 127) rotate(131.4)"><path d="M0 -10.5 L86 -12.5 L138 0 L86 12.5 L0 10.5 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M20 0 L124 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+    <g transform="translate(109 140) rotate(125.3)"><path d="M0 -11 L94 -13 L148 0 L94 13 L0 11 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M22 0 L132 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+    <g transform="translate(123 153) rotate(119.1)"><path d="M0 -11.5 L102 -13.5 L156 0 L102 13.5 L0 11.5 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M25 0 L140 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+    <g transform="translate(138 168) rotate(112.9)"><path d="M0 -12 L110 -14 L164 0 L110 14 L0 12 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M28 0 L148 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+    <g transform="translate(153 184) rotate(106.7)"><path d="M0 -12.5 L116 -14.5 L172 0 L116 14.5 L0 12.5 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M30 0 L155 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+    <g transform="translate(168 201) rotate(100.5)"><path d="M0 -13 L122 -15 L178 0 L122 15 L0 13 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M32 0 L160 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+    <g transform="translate(184 219) rotate(94.3)"><path d="M0 -13.5 L128 -15.5 L184 0 L128 15.5 L0 13.5 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M35 0 L166 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+
+    <g transform="translate(66 103) rotate(141.8)"><path d="M0 -9.5 L34 -11 L66 0 L34 11 L0 9.5 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+    <g transform="translate(81 115) rotate(135.2)"><path d="M0 -10 L38 -11.5 L70 0 L38 11.5 L0 10 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+    <g transform="translate(97 129) rotate(128.5)"><path d="M0 -10.5 L42 -12 L74 0 L42 12 L0 10.5 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+    <g transform="translate(114 144) rotate(121.8)"><path d="M0 -11 L46 -12.5 L78 0 L46 12.5 L0 11 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+    <g transform="translate(131 161) rotate(115.1)"><path d="M0 -11.5 L50 -13 L82 0 L50 13 L0 11.5 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+    <g transform="translate(149 180) rotate(108.4)"><path d="M0 -12 L54 -13.5 L86 0 L54 13.5 L0 12 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+    <g transform="translate(168 200) rotate(101.7)"><path d="M0 -12.5 L58 -14 L90 0 L58 14 L0 12.5 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+    <g transform="translate(187 222) rotate(95.0)"><path d="M0 -13 L62 -14.5 L94 0 L62 14.5 L0 13 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+
+    <path d="M196 228 Q116 135 46 88 Q106 142 184 234 Z" fill="#24195e" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M190 222 Q112 132 46 88" fill="none" stroke="#9d8fff" stroke-width="3.5" stroke-linecap="round" opacity=".9" filter="url(#glowStrong)"/>
+
+    <path d="M45 140 L72 168 L108 175 L125 212 M72 168 L58 202" fill="none" stroke="#c4b5fd" stroke-width="0.9" opacity="0.65"/>
+    <circle cx="45" cy="140" r="2" fill="#fff" filter="url(#glowStrong)"/>
+    <circle cx="72" cy="168" r="2.2" fill="#a5f3fc" filter="url(#glowStrong)"/>
+    <circle cx="108" cy="175" r="1.8" fill="#fff"/>
+    <circle cx="125" cy="212" r="2.2" fill="#fff" filter="url(#glowStrong)"/>
+    <circle cx="58" cy="202" r="1.8" fill="#fff"/>
+    <circle cx="110" cy="244" r="1.5" fill="#fff" opacity="0.8"/><circle cx="67" cy="218" r="1.2" fill="#fff" opacity="0.85"/>
+    <circle cx="164" cy="316" r="1.4" fill="#a5f3fc" opacity="0.8"/><circle cx="75" cy="261" r="1.2" fill="#fff" opacity="0.7"/>
+    <circle cx="36" cy="222" r="1.7" fill="#fff" opacity="0.8"/><circle cx="146" cy="272" r="1.5" fill="#fff" opacity="0.9"/>
+    <circle cx="130" cy="298" r="1.7" fill="#fff" opacity="0.8"/><circle cx="83" cy="230" r="1.9" fill="#fff" opacity="0.9"/>
+  </g>
+
+  <!-- 右翼 -->
+  <g class="flapR">
+    <g transform="translate(480 0) scale(-1 1)">
+      <g transform="translate(56 96) rotate(150)"><path d="M0 -9 L62 -11 L108 0 L62 11 L0 9 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M12 0 L96 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+      <g transform="translate(69 106) rotate(143.8)"><path d="M0 -9.5 L70 -11.5 L118 0 L70 11.5 L0 9.5 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M15 0 L106 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+      <g transform="translate(82 116) rotate(137.6)"><path d="M0 -10 L78 -12 L128 0 L78 12 L0 10 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M18 0 L115 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+      <g transform="translate(95 127) rotate(131.4)"><path d="M0 -10.5 L86 -12.5 L138 0 L86 12.5 L0 10.5 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M20 0 L124 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+      <g transform="translate(109 140) rotate(125.3)"><path d="M0 -11 L94 -13 L148 0 L94 13 L0 11 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M22 0 L132 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+      <g transform="translate(123 153) rotate(119.1)"><path d="M0 -11.5 L102 -13.5 L156 0 L102 13.5 L0 11.5 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M25 0 L140 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+      <g transform="translate(138 168) rotate(112.9)"><path d="M0 -12 L110 -14 L164 0 L110 14 L0 12 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M28 0 L148 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+      <g transform="translate(153 184) rotate(106.7)"><path d="M0 -12.5 L116 -14.5 L172 0 L116 14.5 L0 12.5 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M30 0 L155 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+      <g transform="translate(168 201) rotate(100.5)"><path d="M0 -13 L122 -15 L178 0 L122 15 L0 13 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M32 0 L160 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+      <g transform="translate(184 219) rotate(94.3)"><path d="M0 -13.5 L128 -15.5 L184 0 L128 15.5 L0 13.5 Z" fill="url(#fw7)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/><path d="M35 0 L166 0" stroke="#8b7aff" stroke-width="1.1" opacity=".55"/></g>
+
+      <g transform="translate(66 103) rotate(141.8)"><path d="M0 -9.5 L34 -11 L66 0 L34 11 L0 9.5 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+      <g transform="translate(81 115) rotate(135.2)"><path d="M0 -10 L38 -11.5 L70 0 L38 11.5 L0 10 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+      <g transform="translate(97 129) rotate(128.5)"><path d="M0 -10.5 L42 -12 L74 0 L42 12 L0 10.5 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+      <g transform="translate(114 144) rotate(121.8)"><path d="M0 -11 L46 -12.5 L78 0 L46 12.5 L0 11 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+      <g transform="translate(131 161) rotate(115.1)"><path d="M0 -11.5 L50 -13 L82 0 L50 13 L0 11.5 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+      <g transform="translate(149 180) rotate(108.4)"><path d="M0 -12 L54 -13.5 L86 0 L54 13.5 L0 12 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+      <g transform="translate(168 200) rotate(101.7)"><path d="M0 -12.5 L58 -14 L90 0 L58 14 L0 12.5 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+      <g transform="translate(187 222) rotate(95.0)"><path d="M0 -13 L62 -14.5 L94 0 L62 14.5 L0 13 Z" fill="url(#covGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/></g>
+
+      <path d="M196 228 Q116 135 46 88 Q106 142 184 234 Z" fill="#24195e" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M190 222 Q112 132 46 88" fill="none" stroke="#9d8fff" stroke-width="3.5" stroke-linecap="round" opacity=".9" filter="url(#glowStrong)"/>
+
+      <circle cx="110" cy="244" r="1.5" fill="#fff" opacity="0.8"/><circle cx="67" cy="218" r="1.2" fill="#fff" opacity="0.85"/>
+      <circle cx="164" cy="316" r="1.4" fill="#a5f3fc" opacity="0.8"/><circle cx="75" cy="261" r="1.2" fill="#fff" opacity="0.7"/>
+      <circle cx="36" cy="222" r="1.7" fill="#fff" opacity="0.8"/><circle cx="146" cy="272" r="1.5" fill="#fff" opacity="0.9"/>
+    </g>
+
+    <!-- 右翼の北斗七星（7の段の ひみつの かず：金色で大きく） -->
+    <path d="M432 212 L426 250 L386 256 L384 218 L432 212 M384 218 L364 190 L352 158 L334 132" fill="none" stroke="#fff3b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".9" filter="url(#glowStrong)"/>
+    <circle cx="432" cy="212" r="11" fill="#ffe680" opacity=".55" filter="url(#soft)" class="glow d0"/>
+    <circle cx="432" cy="212" r="5" fill="#fff6c8" stroke="#ffd43b" stroke-width="1.6" filter="url(#glowStrong)"/>
+    <circle cx="426" cy="250" r="11" fill="#ffe680" opacity=".55" filter="url(#soft)" class="glow d1"/>
+    <circle cx="426" cy="250" r="5" fill="#fff6c8" stroke="#ffd43b" stroke-width="1.6" filter="url(#glowStrong)"/>
+    <circle cx="386" cy="256" r="11" fill="#ffe680" opacity=".55" filter="url(#soft)" class="glow d2"/>
+    <circle cx="386" cy="256" r="5" fill="#fff6c8" stroke="#ffd43b" stroke-width="1.6" filter="url(#glowStrong)"/>
+    <circle cx="384" cy="218" r="11" fill="#ffe680" opacity=".55" filter="url(#soft)" class="glow d3"/>
+    <circle cx="384" cy="218" r="5" fill="#fff6c8" stroke="#ffd43b" stroke-width="1.6" filter="url(#glowStrong)"/>
+    <circle cx="364" cy="190" r="11" fill="#ffe680" opacity=".55" filter="url(#soft)" class="glow d0"/>
+    <circle cx="364" cy="190" r="5" fill="#fff6c8" stroke="#ffd43b" stroke-width="1.6" filter="url(#glowStrong)"/>
+    <circle cx="352" cy="158" r="11" fill="#ffe680" opacity=".55" filter="url(#soft)" class="glow d1"/>
+    <circle cx="352" cy="158" r="5" fill="#fff6c8" stroke="#ffd43b" stroke-width="1.6" filter="url(#glowStrong)"/>
+    <circle cx="334" cy="132" r="11" fill="#ffe680" opacity=".55" filter="url(#soft)" class="glow d2"/>
+    <circle cx="334" cy="132" r="5" fill="#fff6c8" stroke="#ffd43b" stroke-width="1.6" filter="url(#glowStrong)"/>
+
+  </g>
+
+  <!-- 頭部から胴体まで完全に一体化したシームレスボディ -->
+  <path d="M240 84 
+           C282 84, 314 104, 310 148 
+           C308 172, 304 188, 314 216 
+           C330 262, 322 338, 282 368 
+           C258 384, 222 384, 198 368 
+           C158 338, 150 262, 166 216 
+           C176 188, 172 172, 170 148 
+           C166 104, 198 84, 240 84 Z" 
+        fill="url(#seamlessBodyGrad)" stroke="#2b2b3a" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- 首元〜胸へ自然につながる羽毛レイヤー -->
+  <path d="M180 194 Q210 218 240 212 Q270 218 300 194 Q272 228 240 224 Q208 228 180 194 Z" fill="#322482" opacity="0.55"/>
+  <path d="M172 214 Q206 238 240 232 Q274 238 308 214 Q274 248 240 242 Q206 248 172 214 Z" fill="#271b69" opacity="0.5"/>
+  <path d="M202 206 L195 224 M220 212 L216 232 M240 214 L240 235 M260 212 L264 232 M278 206 L285 224" stroke="#6d58d6" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+
+  <!-- 胸の銀河 -->
+  <circle cx="240" cy="285" r="54" fill="url(#gx7)" filter="url(#soft)"/>
+  <g class="gspin">
+    <path d="M240 285 C246 276 260 278 262 290 C264 306 244 318 226 312 C204 304 198 276 212 256 C228 232 264 232 282 254" fill="none" stroke="#93c5fd" stroke-width="3.5" stroke-linecap="round" opacity=".75" filter="url(#soft)"/>
+    <path d="M240 285 C234 294 220 292 218 280 C216 264 236 252 254 258 C276 266 282 294 268 314 C252 338 216 338 198 316" fill="none" stroke="#c4b5fd" stroke-width="3.5" stroke-linecap="round" opacity=".75" filter="url(#soft)"/>
+    <path d="M240 285 C245 278 256 280 258 290 C260 303 243 313 228 308 C210 301 205 278 217 261" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity=".9"/>
+    <path d="M240 285 C235 292 224 290 222 280 C220 267 237 257 252 262 C270 269 275 292 263 309" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity=".9"/>
+    <circle cx="262" cy="265" r="1.5" fill="#fff"/><circle cx="215" cy="302" r="1.6" fill="#fff"/>
+    <circle cx="255" cy="312" r="1.3" fill="#a5f3fc"/><circle cx="222" cy="255" r="1.4" fill="#fff"/>
+  </g>
+  <circle cx="240" cy="285" r="11" fill="#fff" filter="url(#glowStrong)" class="glow"/>
+  <path d="M240 268 L242 283 L257 285 L242 287 L240 302 L238 287 L223 285 L238 283 Z" fill="#fff" opacity=".9"/>
+
+  <!-- 顔パーツ・耳のような飾り羽（羽角） -->
+  <g class="sway">
+    <!-- 左の羽角（大小の鋭い飾り羽の重なり） -->
+    <g>
+      <path d="M180 124 Q165 86 154 44 Q180 74 202 104 Z" fill="url(#earTuftGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M174 130 Q154 98 140 66 Q168 88 188 112 Z" fill="url(#earTuftGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round" opacity="0.85"/>
+      <path d="M192 114 Q184 82 178 52 Q196 76 212 100 Z" fill="url(#earTuftGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round" opacity="0.75"/>
+      <path d="M184 120 Q168 84 154 44" fill="none" stroke="#a5f3fc" stroke-width="1.6" stroke-linecap="round" filter="url(#glowStrong)"/>
+      <path d="M176 126 Q156 96 140 66" fill="none" stroke="#c4b5fd" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>
+    </g>
+
+    <!-- 右の羽角（大小の鋭い飾り羽の重なり） -->
+    <g>
+      <path d="M300 124 Q315 86 326 44 Q300 74 278 104 Z" fill="url(#earTuftGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M306 130 Q326 98 340 66 Q312 88 292 112 Z" fill="url(#earTuftGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round" opacity="0.85"/>
+      <path d="M288 114 Q296 82 302 52 Q284 76 268 100 Z" fill="url(#earTuftGrad)" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round" opacity="0.75"/>
+      <path d="M296 120 Q312 84 326 44" fill="none" stroke="#a5f3fc" stroke-width="1.6" stroke-linecap="round" filter="url(#glowStrong)"/>
+      <path d="M304 126 Q324 96 340 66" fill="none" stroke="#c4b5fd" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>
+    </g>
+
+    <!-- 顔盤 -->
+    <path d="M176 146 C174 114 208 110 240 132 C272 110 306 114 304 146 C300 184 272 212 240 214 C208 212 180 184 176 146 Z" fill="url(#faceGrad)"/>
+    <path d="M177 144 C176 115 208 110 240 132 C272 110 304 115 303 144" fill="none" stroke="#7c68e8" stroke-width="2" opacity=".75"/>
+
+    <!-- 額の小さな銀河渦 -->
+    <path d="M240 105 C244 101 249 104 247 109 C244 114 236 113 234 107 C232 100 241 95 248 98" fill="none" stroke="#c4b5fd" stroke-width="1.8" stroke-linecap="round" filter="url(glowStrong)"/>
+
+    <!-- 黄金に発光する鋭い魔眼（ハイライトなし） -->
+    <g filter="url(#eyeGlow)" class="glow">
+      <ellipse cx="206" cy="152" rx="26" ry="14" fill="#ffb020" opacity=".35" filter="url(#soft)"/>
+      <ellipse cx="274" cy="152" rx="26" ry="14" fill="#ffb020" opacity=".35" filter="url(#soft)"/>
+    </g>
+    <g filter="url(#eyeGlow)">
+      <path d="M182 138 Q208 140 233 151 Q214 170 190 160 Q181 151 182 138 Z" fill="url(#eyeGrad)" stroke="#2b2b3a" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M298 138 Q272 140 247 151 Q266 170 290 160 Q299 151 298 138 Z" fill="url(#eyeGrad)" stroke="#2b2b3a" stroke-width="2.2" stroke-linejoin="round"/>
+    </g>
+    <ellipse cx="210" cy="153" rx="3.6" ry="8.5" fill="#1a0a00"/>
+    <ellipse cx="270" cy="153" rx="3.6" ry="8.5" fill="#1a0a00"/>
+
+    <!-- 鋭くつり上がった眉羽 -->
+    <path d="M172 124 L236 146 L232 135 L180 116 Z" fill="#140e38" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M174 122 L235 144" stroke="#9d8fff" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M308 124 L244 146 L248 135 L300 116 Z" fill="#140e38" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M306 122 L245 144" stroke="#9d8fff" stroke-width="1.8" stroke-linecap="round"/>
+
+    <!-- 鋭利なクチバシ -->
+    <path d="M231 156 L249 156 L240 186 Z" fill="#3a4466" stroke="#2b2b3a" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M233 157 L240 157 L240 183 Z" fill="#2c3554"/>
+  </g>
+</g>
+
+</g>
+<!-- ゴツゴツした木の枝（手前） -->
+<path d="M-15 398 Q110 356 235 332 T495 276 L495 304 Q360 330 238 358 T-15 426 Z" fill="url(#branchGrad)" stroke="#2b2b3a" stroke-width="3" stroke-linejoin="round"/>
+<path d="M-10 399 Q112 357 235 333 T490 277" fill="none" stroke="#6875a8" stroke-width="2" opacity=".65"/>
+<path d="M115 362 L85 348 L92 344 L126 359 Z" fill="#1b1f33"/>
+<path d="M350 312 L385 322 L378 327 L340 316 Z" fill="#0d101c"/>
+
+<!-- 枝を強く握る巨大な足と鋭い鉤爪 -->
+<g filter="url(#rim)"><g class="breathe">
+  <path d="M192 332 C186 342 185 355 190 364" fill="none" stroke="#2b2b3a" stroke-width="12.5" stroke-linecap="round"/><path d="M192 332 C186 342 185 355 190 364" fill="none" stroke="#282e4a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M204 330 C200 342 200 356 205 366" fill="none" stroke="#2b2b3a" stroke-width="13" stroke-linecap="round"/><path d="M204 330 C200 342 200 356 205 366" fill="none" stroke="#323959" stroke-width="8.5" stroke-linecap="round"/>
+  <path d="M216 328 C214 340 214 354 219 363" fill="none" stroke="#2b2b3a" stroke-width="12.5" stroke-linecap="round"/><path d="M216 328 C214 340 214 354 219 363" fill="none" stroke="#282e4a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M189 361 Q186 373 181 378 Q191 374 193 362 Z" fill="#cbd5e1" stroke="#2b2b3a" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M204 363 Q202 376 197 382 Q207 377 208 364 Z" fill="#ffffff" stroke="#2b2b3a" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M218 360 Q217 372 212 377 Q221 373 222 361 Z" fill="#cbd5e1" stroke="#2b2b3a" stroke-width="1.8" stroke-linejoin="round"/>
+
+  <path d="M262 318 C258 328 258 342 263 351" fill="none" stroke="#2b2b3a" stroke-width="12.5" stroke-linecap="round"/><path d="M262 318 C258 328 258 342 263 351" fill="none" stroke="#282e4a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M274 316 C270 328 270 342 275 352" fill="none" stroke="#2b2b3a" stroke-width="13" stroke-linecap="round"/><path d="M274 316 C270 328 270 342 275 352" fill="none" stroke="#323959" stroke-width="8.5" stroke-linecap="round"/>
+  <path d="M286 314 C284 326 284 340 289 349" fill="none" stroke="#2b2b3a" stroke-width="12.5" stroke-linecap="round"/><path d="M286 314 C284 326 284 340 289 349" fill="none" stroke="#282e4a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M262 348 Q259 360 254 365 Q264 361 266 349 Z" fill="#cbd5e1" stroke="#2b2b3a" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M274 349 Q272 362 267 368 Q277 363 278 350 Z" fill="#ffffff" stroke="#2b2b3a" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M288 346 Q287 358 282 363 Q291 359 292 347 Z" fill="#cbd5e1" stroke="#2b2b3a" stroke-width="1.8" stroke-linejoin="round"/>
+</g>
+
+</g>
+<!-- 手前の針葉樹シルエット -->
+<path d="M-10 420 L-10 310 L18 355 L5 355 L28 395 L12 395 L35 420 Z" fill="#050712"/>
+<path d="M490 420 L490 295 L458 345 L472 345 L448 390 L465 390 L440 420 Z" fill="#050712"/>
+</svg>

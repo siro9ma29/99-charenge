@@ -1424,7 +1424,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.21</span>
+      <span class="version-badge">v3.22</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1440,7 +1440,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.21</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.22</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -1503,8 +1503,8 @@
           🥚 <b>上り</b>で おなじ式に3回つづけて正解すると たまごを ゲット!<br>
           🐣 つぎの日 いこうに <b>下り</b>で 正解すると うまれる!<br>
           ✨ さらに つぎの日 いこうに <b>ランダム</b>で 正解すると しんか!<br>
-          🌟 さらに つぎの日 いこうに <b>ランダム10問</b>で 正解すると かがやく!(1の段と ○×1 は 段の ランダムで)<br>
-          🌈 さらに つぎの日 いこうに <b>⚡3びょう チャレンジ</b>で 正解すると でんせつ!(1の段と ○×1 は 段の ランダムで 3びょう いないに)<br>
+          🌟 さらに つぎの日 いこうに <b>ランダム10問</b>で 正解すると かがやく!<br>
+          🌈 さらに つぎの日 いこうに <b>⚡3びょう チャレンジ</b>で 正解すると でんせつ!<br>
           上りで まちがえても にげないよ。
           ゲットした式をまちがえると、なかまが にげちゃうよ。<b>2回つづけて正解</b>でとりもどせる。<br>
           1つの段の 9ひきが そろうと、その段の ボスが あらわれる!
@@ -1685,8 +1685,8 @@
       allProblems.push({a:a, b:b, answer:a*b});
     }
   }
-  // ランダム10問モードでは1の段(1×N)と、◯×1(N×1)の問題も出題しない
-  const randomProblems = allProblems.filter(q => q.a !== 1 && q.b !== 1);
+  // v3.22 ランダム10問・3びょう チャレンジは 1の段・○×1 も ふくめた 81問から 出題する
+  const randomProblems = allProblems.slice();
 
   const ORDER_LABEL = {up:'上り', down:'下り', random:'ランダム'};
 
@@ -2165,14 +2165,13 @@
     : lv >= 3 ? '<span class="kaga-wrap">' + KM.creatureSVG(a, b, 2) + '</span>' : KM.creatureSVG(a, b, lv);
   // といかたの しゅるい:'up' 'down' 'random'(段の ランダム) 'r10'(ランダム10問) 's3'(3びょう チャレンジ) 'catch'
   function stageMode(mode){ return isSpeed(mode) ? 's3' : mode.type === 'random' || mode.type === 'lastboss' || mode.type === 'uraboss' ? 'r10' : mode.type === 'catch' ? 'catch' : mode.order; }
-  const isOneCard = (a, b) => a === 1 || b === 1;
   // つぎの だんかいに すすめる といかたか
-  // ランダム10問・3びょうに 出ない 1の段・○×1 は、段の ランダムで かがやく/でんせつ(3びょうが ひらいたあと、3びょう いないに 正解)
+  // v3.22 1の段・○×1 も ほかと おなじ(かがやき=ランダム10問、でんせつ=3びょう チャレンジ)
   function canGrow(a, b, lv, sm, fast){
     if(lv === 0) return sm === 'down';
     if(lv === 1) return sm === 'random' || sm === 'r10' || sm === 's3';
-    if(lv === 2) return sm === 'r10' || sm === 's3' || (sm === 'random' && isOneCard(a, b));
-    if(lv === 3) return sm === 's3' || (sm === 'random' && isOneCard(a, b) && !!fast && speedOpen());
+    if(lv === 2) return sm === 'r10' || sm === 's3';
+    if(lv === 3) return sm === 's3';
     return false;
   }
   const sealNo = (a,b) => (a-1)*9 + b;
@@ -2255,7 +2254,7 @@
   // きょうの日づけ(YYYY-MM-DD)。しんかは「まえに すすんだ日より あと」の日に 正解すると おきる
   function todayKey(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
   function gToKey(g){ if(!g) return ''; const m = String(g).split('/'); return m.length === 3 ? m[0] + '-' + m[1].padStart(2,'0') + '-' + m[2].padStart(2,'0') : ''; }
-  // fast:答えが出てから 3びょう いないに こたえたか(1の段・○×1 の でんせつに つかう)
+  // fast:答えが出てから 3びょう いないに こたえたか
   function recordAnswer(a, b, isCorrect, mode, fast){
     const sm = stageMode(mode || {type:'random'});
     const z = loadZukan();
@@ -2858,9 +2857,7 @@
     const wait = (c.d || '') >= todayKey();   // きょうは もう すすめない
     let t;
     if(c.st === 'got'){
-      const one = isOneCard(a, b);
-      const how = lv === 0 ? '下りで' : lv === 1 ? 'ランダムで' : lv === 2 ? (one ? 'ランダムで' : 'ランダム10問で')
-        : (one ? 'ランダムで 3びょう いないに' : '⚡3びょう チャレンジで');
+      const how = lv === 0 ? '下りで' : lv === 1 ? 'ランダムで' : lv === 2 ? 'ランダム10問で' : '⚡3びょう チャレンジで';
       const next = lv === 4 ? '🌈 でんせつの モンスター! さいこうの すがた!' :
         lv === 3 && !speedOpen() ? '🌟 かがやいている! ⚡3びょう チャレンジが ひらくと、もっと 先が あるよ' :
         (wait ? 'あした いこうに ' : 'つぎに ') + how + ' ' + a + '×' + b + ' に 正解すると ' + ['うまれるよ', 'しんかするよ', 'かがやくよ', 'でんせつに なるよ'][lv];

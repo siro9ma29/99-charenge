@@ -35,11 +35,6 @@
   </filter>
 
   <!-- 背景・オーロラ・月 -->
-  <radialGradient id="skyGrad" cx="50%" cy="35%" r="75%">
-    <stop offset="0%" stop-color="#1e224d"/>
-    <stop offset="45%" stop-color="#0f122e"/>
-    <stop offset="100%" stop-color="#050612"/>
-  </radialGradient>
   <radialGradient id="moon7" cx="35%" cy="35%" r="65%">
     <stop offset="0%" stop-color="#ffffff"/>
     <stop offset="70%" stop-color="#dce4ff"/>
@@ -107,42 +102,9 @@
   </filter>
 </defs>
 
-<!-- 背景：漆黒の夜空・オーロラ・満月・流れ星・遠景の山 -->
-<rect x="-10" y="-30" width="500" height="460" fill="url(#skyGrad)"/>
-
-<!-- オーロラ -->
-<g class="aur">
-  <path d="M-20 70 Q100 10 210 60 T430 35 T520 60" fill="none" stroke="#36f5a3" stroke-width="32" stroke-linecap="round" opacity=".25" filter="url(#soft2)"/>
-  <path d="M-20 95 Q100 35 210 85 T430 60 T520 85" fill="none" stroke="#38bdf8" stroke-width="28" stroke-linecap="round" opacity=".25" filter="url(#soft2)"/>
-  <path d="M-20 120 Q100 60 210 110 T430 85 T520 110" fill="none" stroke="#9333ea" stroke-width="30" stroke-linecap="round" opacity=".28" filter="url(#soft2)"/>
-</g>
-
-<!-- 満月 -->
-<circle cx="415" cy="22" r="42" fill="#a5b4fc" opacity=".35" filter="url(#soft2)" class="glow"/>
-<circle cx="415" cy="22" r="24" fill="url(#moon7)"/>
-<circle cx="408" cy="15" r="4.5" fill="#b8c4e8" opacity=".6"/>
-<circle cx="422" cy="28" r="5.5" fill="#b8c4e8" opacity=".5"/>
-<circle cx="424" cy="14" r="2.5" fill="#b8c4e8" opacity=".5"/>
-
-<!-- 流れ星 -->
-<g class="shoot">
-  <path d="M15 -10 L75 28" stroke="url(#moon7)" stroke-width="2.5" stroke-linecap="round" opacity=".85"/>
-  <circle cx="75" cy="28" r="2.8" fill="#fff" filter="url(#glowStrong)"/>
-</g>
-
-<!-- 背景の星々 -->
-<g class="tw">
-  <circle cx="80" cy="12" r="1.5" fill="#fff"/><circle cx="150" cy="-8" r="1.8" fill="#a5f3fc"/>
-  <circle cx="330" cy="-6" r="1.6" fill="#fff"/><circle cx="280" cy="25" r="1.3" fill="#fff"/>
-  <circle cx="35" cy="55" r="1.5" fill="#ddd6fe"/><circle cx="455" cy="75" r="1.4" fill="#fff"/>
-  <circle cx="195" cy="18" r="1.2" fill="#fff"/><circle cx="365" cy="58" r="1.7" fill="#a5f3fc"/>
-</g>
-
-<!-- 遠景の山並みシルエット -->
-<path d="M-10 340 L60 275 L125 320 L190 265 L260 325 L340 270 L415 310 L490 260 L490 420 L-10 420 Z" fill="#0d1126" opacity="0.85"/>
-<path d="M60 275 L82 295 L68 298 L75 308 L45 295 Z" fill="#283259" opacity="0.5"/>
-<path d="M340 270 L365 292 L350 296 L358 306 L325 292 Z" fill="#283259" opacity="0.5"/>
-
+<!-- はいけいの光（ほかの ぬしと そろえる。夜空・オーロラ・月・山・木は なくした 2026-11-19） -->
+<radialGradient id="bg" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="#d8d2ff"/><stop offset=".6" stop-color="#b9b0f5" stop-opacity=".5"/><stop offset="1" stop-color="#b9b0f5" stop-opacity="0"/></radialGradient>
+<ellipse cx="240" cy="230" rx="238" ry="205" fill="url(#bg)"/>
 <!-- フクロウ本体 -->
 <g filter="url(#rim)"><g class="breathe">
   <!-- 尾羽 -->
@@ -344,7 +306,4 @@
 </g>
 
 </g>
-<!-- 手前の針葉樹シルエット -->
-<path d="M-10 420 L-10 310 L18 355 L5 355 L28 395 L12 395 L35 420 Z" fill="#050712"/>
-<path d="M490 420 L490 295 L458 345 L472 345 L448 390 L465 390 L440 420 Z" fill="#050712"/>
 </svg>

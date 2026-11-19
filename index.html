@@ -894,6 +894,25 @@
   .hab-n small{font-size:.75em;opacity:.7}
   .hab-boss{position:absolute;right:2px;top:22px;width:30px;height:30px;filter:drop-shadow(0 0 4px #ffd43b)}
   .hab-boss svg{width:100%;height:100%}
+  /* v3.23 テストモード(先生用。バージョンの 文字を 5回 タッチ → パスワード) */
+  #verBadge{cursor:default;-webkit-user-select:none;user-select:none}
+  #verBadge.testing{color:#fff;background:#e03131;border-color:#e03131}
+  .tm-ov .tm-box{background:#fff;color:#333;border-radius:14px;padding:14px 16px;width:min(92vw,420px);text-align:left;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+  .ubc-ov.tm-ov h2{text-align:center;color:#c92a2a;text-shadow:none;font-size:1.3em}
+  .tm-ov p{margin:6px 0;font-size:.9em;line-height:1.5}
+  .tm-ov input{font:inherit;font-size:1.3em;width:100%;box-sizing:border-box;padding:8px;border:2px solid #adb5bd;border-radius:8px;text-align:center;letter-spacing:.3em}
+  .tm-ov button{font:inherit;font-size:.95em;font-weight:bold;border:none;border-radius:8px;padding:10px 8px;margin:3px 0;width:100%;cursor:pointer;background:#e7f5ff;color:#1864ab}
+  .tm-ov button.warn{background:#fff4e6;color:#d9480f}
+  .tm-ov button.back{background:#ebfbee;color:#2b8a3e}
+  .tm-ov button.close{background:#495057;color:#fff}
+  .tm-ov .tm-dan{display:grid;grid-template-columns:repeat(9,1fr);gap:3px}
+  .tm-ov .tm-dan button{padding:8px 0;margin:0}
+  .tm-ov .tm-msg{min-height:1.4em;color:#c92a2a;font-weight:bold;text-align:center}
+  .tm-ov hr{border:none;border-top:1px dashed #ced4da;margin:8px 0}
+  /* v3.23 しんか した ぬしは しんの すがた(<img>) */
+  .hab-boss.shin{width:36px;height:36px;top:18px;filter:drop-shadow(0 0 5px #ffe08a) drop-shadow(0 0 2px #fff)}
+  .seal-art .ub-img{width:96%;height:96%;position:relative}
+  .boss-slot.shin.got{background:radial-gradient(circle,#fff6c8,#b388ff);box-shadow:0 0 0 2px #ffd43b}
   .hab-mons{position:absolute;left:0;right:0;bottom:2px;display:flex;justify-content:center;align-items:flex-end}
   .hab-mons .wm{display:block;width:40%;margin:0 -5%}
   .hab-mons .wm:nth-child(2){width:46%;position:relative;z-index:1}
@@ -1424,7 +1443,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.22</span>
+      <span class="version-badge">v3.23</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1440,7 +1459,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge">v3.22</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.23</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -2190,12 +2209,13 @@
       '<div class="seal-name" style="--nf:' + nameSize(name) + '">' + name + '</div><div class="seal-eq">' + eq + '</div></div></div>';
   }
   function nameSize(n){ const l = n.length; return l <= 6 ? '.66em' : l <= 8 ? '.56em' : l <= 10 ? '.47em' : '.42em'; }
-  function bossSealHTML(a, w, sil){
-    const nm = sil ? '？？？' : KM.bossName(a);
+  // shin:しんかずみなら しんの すがたで(v3.23 図鑑)
+  function bossSealHTML(a, w, sil, shin){
+    const nm = sil ? '？？？' : shin ? shinName(a) : KM.bossName(a);
     return '<div class="seal r-legend' + (sil ? ' m-sil' : ' m-got') + '" style="--w:' + w + 'px;--dc:' + sunCol(KM.bossColor(a)) + '">' +
       '<div class="seal-in"><div class="seal-top"><span>' + a + 'の段</span><span class="rr">' + (sil ? '' : '★★★★★') + '</span></div>' +
-      '<div class="seal-art">' + (sil ? '<span>？</span>' : KM.bossSVG(a)) + '</div>' +
-      '<div class="seal-name" style="--nf:' + nameSize(nm) + '">' + nm + '</div><div class="seal-eq">レジェンド</div></div></div>';
+      '<div class="seal-art">' + (sil ? '<span>？</span>' : shin ? shinImg(a) : KM.bossSVG(a)) + '</div>' +
+      '<div class="seal-name" style="--nf:' + nameSize(nm) + '">' + nm + '</div><div class="seal-eq">' + (shin ? 'しんの すがた' : 'レジェンド') + '</div></div></div>';
   }
   // さわると かたむいて、光が うごく
   function attachTilt(root){
@@ -2918,14 +2938,16 @@
     }
 
     bossRow.innerHTML = '';
+    const sh = ubShin();   // v3.23 しんか した 段の ぬしは しんの すがたで
     for(let a=1; a<=9; a++){
       const slot = document.createElement('div');
-      const got = z.bosses.indexOf(a) !== -1;
-      slot.className = 'boss-slot' + (got ? ' got' : '');
-      if(got) slot.innerHTML = KM.bossSVG(a); else slot.textContent = a;
-      slot.title = got ? KM.bossName(a) : a + 'の段のボス';
-      slot.addEventListener('click', () => showDetail(bossSealHTML(a, 112, !got) + '<div class="dinfo"><b class="dn">' + (got ? KM.bossName(a) : '？？？') +
-        '</b><span class="dr r-legend">レジェンド</span><span class="dt">' + (got ? a + 'の段の ボス' : a + 'の段の 9まいを<br>ぜんぶ そろえると あらわれる') + '</span></div>'));
+      const got = z.bosses.indexOf(a) !== -1, shin = got && sh.indexOf(a) !== -1;
+      slot.className = 'boss-slot' + (got ? ' got' : '') + (shin ? ' shin' : '');
+      if(got) slot.innerHTML = shin ? shinImg(a) : KM.bossSVG(a); else slot.textContent = a;
+      slot.title = got ? (shin ? shinName(a) : KM.bossName(a)) : a + 'の段のボス';
+      slot.addEventListener('click', () => showDetail(bossSealHTML(a, 112, !got, shin) + '<div class="dinfo"><b class="dn">' + (got ? (shin ? shinName(a) : KM.bossName(a)) : '？？？') +
+        '</b><span class="dr r-legend">' + (shin ? 'しんの すがた' : 'レジェンド') + '</span><span class="dt">' +
+        (shin ? a + 'の段の ボス<br>' + shinBattleNote() : got ? a + 'の段の ボス' : a + 'の段の 9まいを<br>ぜんぶ そろえると あらわれる') + '</span></div>'));
       bossRow.appendChild(slot);
     }
     bossRow.appendChild(lbZukanSlot());
@@ -2951,7 +2973,7 @@
     return '<svg class="scene" viewBox="0 0 100 70" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="sg' + i + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + g[0] + '"/><stop offset="1" stop-color="' + g[1] + '"/></linearGradient></defs><rect width="100" height="70" fill="url(#sg' + i + ')"/>' + g[2] + '</svg>';
   }
   function renderCover(){
-    const z = loadZukan();
+    const z = loadZukan(), sh = ubShin();   // v3.23 しんか した 段の ぬしは しんの すがたで
     let total = 0, html = '';
     for(let a=1; a<=9; a++){
       const mine = [];
@@ -2966,7 +2988,7 @@
       html += '<button class="hab' + (mine.length === 9 ? ' full' : '') + (mine.length ? '' : ' empty') + '" data-dan="' + a + '" aria-label="' + a + 'の段 ' + HABITATS[a-1] + ' ' + mine.length + 'ひき">' +
         sceneSVG(a-1) + '<span class="hab-name">' + a + ' ' + HABITATS[a-1] + '</span>' +
         '<span class="hab-n">' + mine.length + '<small>/9</small></span>' +
-        (boss ? '<span class="hab-boss">' + KM.bossSVG(a) + '</span>' : '') +
+        (boss ? '<span class="hab-boss' + (sh.indexOf(a) !== -1 ? ' shin' : '') + '">' + (sh.indexOf(a) !== -1 ? shinImg(a) : KM.bossSVG(a)) + '</span>' : '') +
         '<span class="hab-mons">' + mons + '</span></button>';
     }
     document.getElementById('worldMap').innerHTML = html;
@@ -4038,6 +4060,10 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
   const ubShin = d => (d = d || ubLoad()).evo ? [1,2,3,4,5,6,7,8,9] : (Array.isArray(d.shin) ? d.shin.filter(a => a >= 1 && a <= 9) : []);
   function shinLeg(z, a){ let n = 0; for(let b=1; b<=9; b++){ const c = getCard(z, a, b); if((c.st === 'got' || c.st === 'nige') && lvOf(c) >= 4) n++; } return n; }
   function shinPending(){ const z = loadZukan(), done = ubShin(), r = []; for(let a=1; a<=9; a++) if(done.indexOf(a) === -1 && shinLeg(z, a) >= 9) r.push(a); return r; }
+  // v3.23 ② しんの すがたで たたかうのは うらボスとだけ(ワスレドンを ふういん するまでは うらボスの ことは ひみつ)
+  const shinBattleNote = () => ubSeen()
+    ? '⚔️ しんの すがたで たたかうのは、<b>うらボス</b>との たたかいだけ!'
+    : '⚔️ ワスレドンとは もとの すがたで たたかうよ。しんの すがたの 力は、とっておきの ときに…!';
   const shinDanText = list => list.length >= 9 ? '9つの 段 ぜんぶ' : list.join('・') + 'の段';
   let shinBusy = false;
 
@@ -4077,6 +4103,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
       else if(ubSeen()){ const d = ubLoad(); d.evo = 1; ubStore(d);
         t += '<br>9ひきの ぬしが そろった! そのとき、ふかい やみの そこで <b>うらボス</b>が めを さました…!<br>メニューから いどもう!'; }
       else t += '<br>9ひきの ぬしが そろった! <b>ワスレドン</b>を ふういんすると、なにかが おこる…';
+      if(cnt < 9 || !ubSeen()) t += '<br><small>' + shinBattleNote() + '</small>';
       tx.innerHTML = t; nx.textContent = 'とじる'; nx.onclick = end;
       if(cnt >= 9) flash();
     };
@@ -4622,6 +4649,81 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
       refreshMenu(); showScreen(startScreen);
     });
   });
+
+  // ===== v3.23 テストモード(先生の 動作確認用) =====
+  // バージョンの 文字(右上の v3.23)を 3びょう いないに 5回 タッチ → パスワード → テストメニュー。
+  // さいしょに データを かえる まえに、いまの きろく(kuku_ ではじまる キー ぜんぶ)を TM_BAK_KEY に 1回だけ ほぞん。
+  // 「もとの きろくに もどす」で その 時点に もどる。ほぞん が ある あいだは バッジが 赤く「テスト中」。
+  const TM_PASS = '9981';                 // パスワード(かえる ときは ここだけ)
+  const TM_BAK_KEY = 'kuku_testbak_v1';
+  const verBadge = document.getElementById('verBadge'), VER_TEXT = verBadge.textContent;
+  function tmHasBak(){ try{ return localStorage.getItem(TM_BAK_KEY) !== null; }catch(e){ return false; } }
+  function tmBadge(){ const t = tmHasBak(); verBadge.classList.toggle('testing', t); verBadge.textContent = t ? '🧪 テスト中' : VER_TEXT; }
+  function tmKeys(){ const r = []; try{ for(let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if(k && k.indexOf('kuku_') === 0 && k !== TM_BAK_KEY) r.push(k); } }catch(e){} return r; }
+  function tmBackup(){
+    if(tmHasBak()) return true;
+    try{ const o = {}; tmKeys().forEach(k => { o[k] = localStorage.getItem(k); }); localStorage.setItem(TM_BAK_KEY, JSON.stringify({at:new Date().toLocaleString(), data:o})); return true; }
+    catch(e){ return false; }
+  }
+  function tmRestore(){
+    try{ const b = JSON.parse(localStorage.getItem(TM_BAK_KEY) || 'null'); if(!b || !b.data) return false;
+      tmKeys().forEach(k => localStorage.removeItem(k));
+      Object.keys(b.data).forEach(k => localStorage.setItem(k, b.data[k]));
+      localStorage.removeItem(TM_BAK_KEY); return true; }
+    catch(e){ return false; }
+  }
+  // その段の 9ひきを でんせつに(ボスも そろえる)
+  function tmLegend(dans){
+    const z = loadZukan();
+    dans.forEach(a => { for(let b = 1; b <= 9; b++){ const c = getCard(z, a, b);
+        c.st = 'got'; c.lv = MAX_LV; c.s = Math.max(c.s || 0, NEED_GET); c.g = c.g || todayStr(); c.d = todayKey(); z.cards[cardKey(a, b)] = c; }
+      if(z.bosses.indexOf(a) === -1) z.bosses.push(a); });
+    saveZukan(z);
+  }
+  function tmSealLb(){ const d = lbLoad(), b = d.best = d.best || {}; d.open = 1; b.clear = Math.max(1, b.clear || 0); b.sumika = 9; lbStore(d); }
+  function tmResetShin(){ const d = ubLoad(); delete d.evo; d.shin = []; if(d.card) for(let a = 1; a <= 9; a++) delete d.card[String(a)]; ubStore(d); }
+
+  function tmOpen(){
+    if(document.querySelector('.tm-ov')) return;
+    const ov = ubcOverlay('tm-ov');
+    const close = () => { ov.remove(); tmBadge(); refreshMenu(); setTimeout(shinAuto, 350); };
+    ov.innerHTML = '<div class="tm-box"><h2>🔑 先生用</h2><p>パスワードを 入れてください</p>' +
+      '<input type="password" inputmode="numeric" autocomplete="off" id="tmPw"><div class="tm-msg"></div>' +
+      '<button type="button" id="tmOk">OK</button><button type="button" class="close" id="tmNo">とじる</button></div>';
+    const pw = ov.querySelector('#tmPw'), msg = ov.querySelector('.tm-msg');
+    const ok = () => { if(pw.value === TM_PASS) tmMenu(ov, close); else { msg.textContent = 'ちがいます'; pw.value = ''; pw.focus(); } };
+    ov.querySelector('#tmOk').addEventListener('click', ok);
+    pw.addEventListener('keydown', e => { if(e.key === 'Enter') ok(); });
+    ov.querySelector('#tmNo').addEventListener('click', () => ov.remove());
+    setTimeout(() => pw.focus(), 50);
+  }
+  function tmMenu(ov, close){
+    const bak = (() => { try{ return JSON.parse(localStorage.getItem(TM_BAK_KEY) || 'null'); }catch(e){ return null; } })();
+    let dan = ''; for(let a = 1; a <= 9; a++) dan += '<button type="button" data-a="' + a + '">' + a + '</button>';
+    ov.innerHTML = '<div class="tm-box"><h2>🧪 テストモード</h2>' +
+      '<p>' + (bak ? '💾 ' + bak.at + ' の きろくを ほぞん ずみ。<br>テストが おわったら「もとの きろくに もどす」を おしてください。'
+                   : 'データを かえる まえに、いまの きろくを じどうで ほぞんします。') + '</p>' +
+      '<p><b>段を えらんで でんせつに</b>(その段の 9ひき＋ぬし)</p><div class="tm-dan">' + dan + '</div>' +
+      '<button type="button" data-k="all">🌈 81ぴき ぜんぶ でんせつに</button>' +
+      '<button type="button" data-k="lb">⚔️ ワスレドンを ふういん ずみに</button>' +
+      '<button type="button" data-k="shin" class="warn">🔄 しんの すがたを まだ に もどす(しんか演出を もう一度 見る)</button>' +
+      '<div class="tm-msg"></div><hr>' +
+      '<button type="button" data-k="back" class="back"' + (bak ? '' : ' disabled') + '>↩️ もとの きろくに もどす(テスト おわり)</button>' +
+      '<button type="button" data-k="close" class="close">とじて メニューへ</button></div>';
+    const msg = ov.querySelector('.tm-msg');
+    const run = (f, t) => { if(!tmBackup()){ msg.textContent = 'ほぞん できなかったので 中止しました'; return; } f(); msg.textContent = '✅ ' + t;
+      ov.querySelector('[data-k="back"]').disabled = false; tmBadge(); };
+    ov.querySelectorAll('.tm-dan button').forEach(b => b.addEventListener('click', () => { const a = +b.dataset.a; run(() => tmLegend([a]), a + 'の段を でんせつに しました'); }));
+    ov.querySelector('[data-k="all"]').addEventListener('click', () => run(() => tmLegend([1,2,3,4,5,6,7,8,9]), '81ぴき ぜんぶ でんせつに しました'));
+    ov.querySelector('[data-k="lb"]').addEventListener('click', () => run(tmSealLb, 'ワスレドンを ふういん ずみに しました'));
+    ov.querySelector('[data-k="shin"]').addEventListener('click', () => run(tmResetShin, 'しんの すがたを まだ に もどしました'));
+    ov.querySelector('[data-k="back"]').addEventListener('click', () => { msg.textContent = tmRestore() ? '↩️ もとの きろくに もどしました' : 'もどせませんでした'; tmBadge(); setTimeout(() => { ov.remove(); refreshMenu(); }, 700); });
+    ov.querySelector('[data-k="close"]').addEventListener('click', close);
+  }
+  let tmTaps = [];
+  verBadge.addEventListener('click', () => { const now = Date.now(); tmTaps = tmTaps.filter(t => now - t < 3000); tmTaps.push(now);
+    if(tmTaps.length >= 5){ tmTaps = []; tmOpen(); } });
+  tmBadge();
 
   // 初期表示
   refreshMenu();

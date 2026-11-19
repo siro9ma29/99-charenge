@@ -1372,6 +1372,29 @@
   .ubc-bkin span{font-size:2.6em;line-height:1;filter:drop-shadow(0 0 .2em #ffd43b)}
   .ubc-bkin b{color:#f1d58a;font-size:1em;line-height:1.3}
   .ubc-slot .ubc-bk{opacity:.6}
+  /* v3.26 図鑑の モンスターカード(.mc)。わく＝すがた、カード＝すみかの 色 */
+  .mc{--rx:0deg;--ry:0deg;--px:50%;position:relative;flex:none;width:var(--w);aspect-ratio:5/7;font-size:calc(var(--w)/13);border-radius:.9em;padding:.26em;line-height:1.2;text-align:center;
+    background:linear-gradient(160deg,#f2e6d0,#c9b48e);box-shadow:0 .3em .7em rgba(0,0,0,.3);transform:perspective(600px) rotateX(var(--rx)) rotateY(var(--ry));transition:transform .15s;touch-action:none}
+  .mc.r-kira{background:linear-gradient(135deg,#f7f9fb,#aab6c2 30%,#fff 50%,#8e9aa6 70%,#eef2f5)}
+  .mc.r-holo{background:conic-gradient(from var(--hue),#ff6b9a,#ffd43b,#69db7c,#4dabf7,#b197fc,#ff6b9a);animation:hueSpin 6s linear infinite}
+  .mc.r-kaga{background:conic-gradient(from var(--hue),#fff6c8,#ffd43b,#fff,#ffb02e,#fff6c8,#ffe066,#fff6c8);box-shadow:0 0 .8em rgba(255,212,59,.9),0 .3em .7em rgba(0,0,0,.3);animation:hueSpin 4s linear infinite}
+  .mc.r-den{padding:.32em;background:conic-gradient(from var(--hue),#ffd43b,#ff6b9a,#b197fc,#4dabf7,#69db7c,#ffd43b);box-shadow:0 0 .9em rgba(255,140,198,.85),0 0 .4em rgba(255,212,59,.9),0 .3em .7em rgba(0,0,0,.3);animation:hueSpin 3s linear infinite}
+  .mc-in{position:relative;height:100%;border-radius:.7em;overflow:hidden;display:flex;flex-direction:column;color:#fff;background:linear-gradient(160deg,var(--c1),var(--c2) 78%)}
+  .mc-hd{display:flex;align-items:center;gap:.3em;margin:.35em .35em .25em;padding:.15em .3em;border-radius:.5em;font-weight:900;background:rgba(20,10,40,.45)}
+  .mc-hd i{flex:none;min-width:1.7em;height:1.7em;border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.8em;background:#f1d58a;color:var(--c2);box-shadow:0 0 0 .12em #fff8}
+  .mc-hd b{flex:1;font-size:.92em;line-height:1.15;text-align:left;text-shadow:0 .08em .2em #000;word-break:keep-all;overflow-wrap:anywhere}
+  .mc-fig{position:relative;flex:1;min-height:0;margin:0 .45em;border-radius:.6em;overflow:hidden;box-shadow:inset 0 0 0 .1em #fff8}
+  .mc-fig .scene{position:absolute;inset:0;width:100%;height:100%;opacity:.85}
+  .mc-art{position:absolute;inset:4% 10% 2%;display:flex;align-items:center;justify-content:center}
+  .mc-art>svg,.mc-art>span{width:100%;height:100%;filter:drop-shadow(0 .12em .2em rgba(0,0,0,.35))}
+  .mc-eq{margin:.3em .45em 0;padding:.05em 0;border-radius:.4em;background:#fffdf6;color:#2b2b3a;font-size:1.45em;font-weight:900;letter-spacing:.02em;box-shadow:0 .08em .2em rgba(0,0,0,.3)}
+  .mc-ft{margin:.3em .35em .35em;padding:.15em .3em;border-radius:.5em;background:rgba(20,10,40,.45);display:flex;flex-direction:column;gap:.05em}
+  .mc-ft span{font-size:.78em;font-weight:bold;text-shadow:0 .06em .15em #000}
+  .mc-ft b{font-size:.8em;color:#ffe08a;text-shadow:0 .06em .15em #000}
+  .mc-ft em{font-style:normal;letter-spacing:-.08em}
+  .mc-holo{position:absolute;inset:0;pointer-events:none;border-radius:inherit;mix-blend-mode:screen;opacity:0;
+    background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.55) 45%,rgba(180,220,255,.35) 52%,transparent 66%) 0 0/250% 100%;animation:ubcHolo 3.6s linear infinite}
+  .mc.r-kira .mc-holo{opacity:.35} .mc.r-holo .mc-holo,.mc.r-kaga .mc-holo{opacity:.5} .mc.r-den .mc-holo{opacity:.6}
   .ubc-zw{animation:ubcPop .4s cubic-bezier(.2,1.4,.4,1) both}
   @keyframes ubcIn{from{opacity:0}to{opacity:1}}
   @keyframes ubcPop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
@@ -1458,7 +1481,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.25</span>
+      <span class="version-badge">v3.26</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1474,7 +1497,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.25</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.26</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -2223,6 +2246,17 @@
       '<div class="seal-art">' + art + '</div>' +
       '<div class="seal-name" style="--nf:' + nameSize(name) + '">' + name + '</div><div class="seal-eq">' + eq + '</div></div></div>';
   }
+  // v3.26 図鑑で 大きく 見る ときの モンスターカード(うらボスの とくべつカードと おなじ 型。絵は SVG の まま)
+  // わくの 色＝すがた(レア度)、カードの 色＝その段の すみか(ぬしの 色)、うしろの 景色＝すみか
+  function monCardHTML(a, b, lv, w){
+    const S = STAGE[lv], u = UB_ULT[a - 1], name = monName(a, b, lv);
+    return '<div class="mc r-' + S.r + '" style="--w:' + w + 'px;--c1:' + u.c1 + ';--c2:' + u.c2 + '"><div class="mc-in">' +
+      '<div class="mc-hd"><i>' + sealNo(a, b) + '</i><b>' + name + '</b></div>' +
+      '<div class="mc-fig">' + sceneSVG(a - 1) + '<div class="mc-art">' + monSVG(a, b, lv) + '</div></div>' +
+      '<div class="mc-eq">' + a + '×' + b + '=' + (a * b) + '</div>' +
+      '<div class="mc-ft"><span>' + a + 'の段・' + HABITATS[a - 1] + '</span><b>' + S.name + ' <em>' + '★'.repeat(lv + 1) + '</em></b></div>' +
+      '</div><i class="mc-holo"></i></div>';
+  }
   function nameSize(n){ const l = n.length; return l <= 6 ? '.66em' : l <= 8 ? '.56em' : l <= 10 ? '.47em' : '.42em'; }
   // shin:しんかずみなら しんの すがたで(v3.23 図鑑)
   function bossSealHTML(a, w, sil, shin){
@@ -2234,7 +2268,7 @@
   }
   // さわると かたむいて、光が うごく
   function attachTilt(root){
-    root.querySelectorAll('.seal.m-got').forEach(el => {
+    root.querySelectorAll('.seal.m-got,.mc').forEach(el => {
       const move = e => {
         const r = el.getBoundingClientRect(), p = e.touches ? e.touches[0] : e;
         const x = (p.clientX - r.left) / r.width, y = (p.clientY - r.top) / r.height;
@@ -2896,8 +2930,8 @@
       const next = lv === 4 ? '🌈 でんせつの モンスター! さいこうの すがた!' :
         lv === 3 && !speedOpen() ? '🌟 かがやいている! ⚡3びょう チャレンジが ひらくと、もっと 先が あるよ' :
         (wait ? 'あした いこうに ' : 'つぎに ') + how + ' ' + a + '×' + b + ' に 正解すると ' + ['うまれるよ', 'しんかするよ', 'かがやくよ', 'でんせつに なるよ'][lv];
-      t = '<b class="dn">' + monName(a, b, lv) + '</b><span class="dr r-' + S.r + '">' + S.name + '</span>' +
-        '<span class="dt">' + q + (c.g ? '<br>' + c.g + 'に ゲット' : '') + '<br>' + next + '</span>';
+      // v3.26 名前・すがた・式は カードに あるので、ここは ゲットした日と つぎの 目標だけ
+      return monCardHTML(a, b, lv, 164) + '<div class="dinfo"><span class="dt">' + (c.g ? c.g + 'に ゲット<br>' : '') + next + '</span></div>';
     } else if(c.st === 'nige'){
       const left = Math.max(1, NEED_RECOVER - c.s);
       t = '<b class="dn">にげちゃった!</b><span class="dr r-' + S.r + '">' + S.name + '</span><span class="dt">あと' + left + '回つづけて正解で とりもどせるよ</span>';

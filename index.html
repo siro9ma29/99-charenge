@@ -1316,7 +1316,8 @@
     background:linear-gradient(160deg,var(--c1),var(--c2) 78%);box-shadow:0 0 0 .22em #f1d58a,0 0 0 .34em var(--c2),0 .4em 1em rgba(0,0,0,.5)}
   .ubc-hd{display:flex;align-items:center;gap:.3em;margin:.35em .35em .25em;padding:.18em .3em;border-radius:.5em;font-weight:900;background:rgba(20,10,40,.45)}
   .ubc-hd i{flex:none;width:1.6em;height:1.6em;border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.95em;background:#f1d58a;color:var(--c2);box-shadow:0 0 0 .12em #fff8}
-  .ubc-hd b{flex:1;font-size:1.02em;color:#fff;text-shadow:0 .08em .2em #000,0 0 .3em var(--c2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+  .ubc-hd b{flex:1;font-size:.98em;line-height:1.15;color:#fff;text-shadow:0 .08em .2em #000,0 0 .3em var(--c2);word-break:keep-all;overflow-wrap:anywhere;text-align:left}
+  .ubc-hd b small{display:block;font-size:.72em;color:#ffe08a}
   .ubc-fig{position:relative;flex:1;min-height:0;margin:0 .45em;border-radius:.6em;background:radial-gradient(circle at 50% 55%,#fff7,#fff1 55%,transparent 75%),rgba(255,255,255,.12);
     box-shadow:inset 0 0 0 .1em #fff6;display:flex;align-items:center;justify-content:center;overflow:hidden}
   .ubc-fig>img{width:94%;height:94%;object-fit:contain;filter:drop-shadow(0 .15em .25em rgba(0,0,0,.35));-webkit-user-drag:none;pointer-events:none}
@@ -3951,7 +3952,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
       ? '<div class="ubc-sei">' + [1,2,3,4,5,6,7,8,9].map(a => '<img src="' + UB_CARD[a] + '" alt="" draggable="false">').join('') + '</div>'
       : '<img src="' + UB_CARD[k] + '" alt="' + C.name + '" draggable="false">';
     return '<div class="ubc k-' + k + '" style="width:' + w + 'px;font-size:' + (w / 13).toFixed(1) + 'px;--c1:' + C.c1 + ';--c2:' + C.c2 + '">' +
-      '<div class="ubc-hd"><i>' + C.no + '</i><b>' + C.name + '</b></div>' +
+      '<div class="ubc-hd"><i>' + C.no + '</i><b>' + C.name.replace(/^しんの /, '<small>しんの</small>') + '</b></div>' +   // 「しんの」は 上の 小さい 行(名前が 切れない ように)
       '<div class="ubc-fig">' + fig + '</div>' +
       '<div class="ubc-ft"><span>' + C.sub + '</span><b>' + C.foot + '</b></div><i class="ubc-holo"></i></div>';
   }

@@ -1504,7 +1504,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.28</span>
+      <span class="version-badge">v3.29</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1520,7 +1520,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.28</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.29</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -4412,7 +4412,12 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     let t = 'n';
     if(US.ph === 2){ let r = Math.random(); for(const m of UBC.mix){ r -= m[1]; if(r <= 0){ t = m[0]; break; } } }
     if(t === 'eq'){
-      const p = UB_EQ_P[Math.floor(Math.random() * UB_EQ_P.length)];
+      // v3.29 おなじ 答えの 問題を 2かい 出さない(31こ を まぜて じゅんに 出す。つかいきったら まぜなおす)
+      if(!US.eqBag || !US.eqBag.length){
+        US.eqBag = shuffle(UB_EQ_P);
+        if(US.eqBag.length > 1 && US.eqBag[0] === US.eqLast) US.eqBag.push(US.eqBag.shift());
+      }
+      const p = US.eqBag.shift(); US.eqLast = p;
       return {t:'eq', p:p, ans:ubEqs(p), got:[]};
     }
     const x = ubPickAB(), k = cardKey(x.a, x.b);

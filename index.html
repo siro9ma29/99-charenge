@@ -962,7 +962,7 @@
   .r-den.dr,.r-den.rc{background:linear-gradient(90deg,#ff6b9a,#b197fc,#4dabf7,#69db7c);color:#fff;text-shadow:0 0 2px rgba(0,0,0,.4)}
   .zukan-cell.got.r-den{background:conic-gradient(from var(--hue),#ffd6e8,#fff3bf,#d3f9d8,#d0ebff,#e5dbff,#ffd6e8);box-shadow:inset 0 0 0 2px #ff8cc6,0 0 7px rgba(255,140,198,.9)}
   /* v3.27 かるく:図鑑の マスは にじ色を とめた わくに。マスの きらきらも とめる(81ぴき でんせつだと 300こ近い アニメが うごいて いた) */
-  .zukan-cell .den-wrap .den-sp,.zukan-cell .kaga-wrap::before,.zukan-cell .kaga-wrap::after{animation:none;opacity:.6}
+  .hab-mons .den-wrap .den-sp,.hab-mons .kaga-wrap::before,.hab-mons .kaga-wrap::after,.zukan-cell .den-wrap .den-sp,.zukan-cell .kaga-wrap::before,.zukan-cell .kaga-wrap::after{animation:none;opacity:.6}
   .r-kaga.dr,.r-kaga.rc{background:linear-gradient(90deg,#e0a81e,#ffd43b,#e0a81e);color:#5a3d00}
   .zukan-cell.got.r-kaga{background:radial-gradient(circle,#fff6c8,#ffe066);box-shadow:inset 0 0 0 2px #e0a81e,0 0 6px rgba(255,212,59,.8)}
   .r10-note{font-size:.85em !important;background:#fff6db;border:2px solid #ffd43b;border-radius:12px;padding:6px 10px;color:#7a5200;line-height:1.5 !important}
@@ -1504,7 +1504,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.27</span>
+      <span class="version-badge">v3.28</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1520,7 +1520,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.27</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.28</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -4007,15 +4007,19 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     choices:$lb('ubChoices'), crack:$lb('ubCrack'), ov:$lb('ubOv'), gauge:$lb('ubGauge')};
 
   // しんの すがた・メニューの 絵は <img>(CSS が まざらない)。Blob が つかえない ときは data URL
-  const ubUrl = (() => { const c = {}; return key => {
-    if(c[key]) return c[key];
-    const s = typeof key === 'number' ? UB_ART.shin[key - 1] : UB_ART[key];
-    try{ c[key] = URL.createObjectURL(new Blob([s], {type:'image/svg+xml'})); }
-    catch(e){ c[key] = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s); }
-    return c[key]; }; })();
+  // v3.28 かるく:<img> の 中の アニメも ずっと 描きなおしに なる。ふだんは 止めた 絵(still)、
+  //       大きく 見せる 場面(うらボス登場・こうげき・ひっさつ・結果・図鑑の 大きい 絵)だけ うごく 絵(move)
+  const ubUrl = (() => { const c = {}; return (key, move) => {
+    const id = key + (move ? '' : '_s');
+    if(c[id]) return c[id];
+    let s = typeof key === 'number' ? UB_ART.shin[key - 1] : UB_ART[key];
+    if(!move) s = s.replace(/<\/svg>\s*$/, '<style>*{animation:none!important}</style></svg>');
+    try{ c[id] = URL.createObjectURL(new Blob([s], {type:'image/svg+xml'})); }
+    catch(e){ c[id] = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s); }
+    return c[id]; }; })();
   const shinName = a => 'しんの ' + KM.bossName(a);
-  const shinImg = (a, cls) => '<img class="ub-img' + (cls ? ' ' + cls : '') + '" src="' + ubUrl(a) + '" alt="' + shinName(a) + '" draggable="false">';
-  const ubBossImg = (k, cls) => '<img class="ub-img' + (cls ? ' ' + cls : '') + '" src="' + ubUrl(k) + '" alt="' + (k === 'kd' ? 'ククドラ' : 'トキクイ') + '" draggable="false">';
+  const shinImg = (a, cls, move) => '<img class="ub-img' + (cls ? ' ' + cls : '') + '" src="' + ubUrl(a, move) + '" alt="' + shinName(a) + '" draggable="false">';
+  const ubBossImg = (k, cls, move) => '<img class="ub-img' + (cls ? ' ' + cls : '') + '" src="' + ubUrl(k, move) + '" alt="' + (k === 'kd' ? 'ククドラ' : 'トキクイ') + '" draggable="false">';
 
   function ubLoad(){ try{ const d = JSON.parse(localStorage.getItem(UB_KEY) || 'null'); if(d && typeof d === 'object') return d; }catch(e){} return {}; }
   function ubStore(d){ try{ localStorage.setItem(UB_KEY, JSON.stringify(d)); }catch(e){} }
@@ -4055,7 +4059,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
       slot.className = 'boss-slot ub-slot' + (got ? ' got' : '');
       slot.innerHTML = got ? ubBossImg(x[0]) : '？';
       slot.title = got ? x[1] : 'うらボス';
-      slot.addEventListener('click', () => showDetail('<div class="ub-dimg">' + (got ? ubBossImg(x[0]) : ubBossImg(x[0], 'sil')) + '</div><div class="dinfo"><b class="dn">' + (got ? x[1] : '？？？') +
+      slot.addEventListener('click', () => showDetail('<div class="ub-dimg">' + (got ? ubBossImg(x[0], '', true) : ubBossImg(x[0], 'sil')) + '</div><div class="dinfo"><b class="dn">' + (got ? x[1] : '？？？') +
         '</b><span class="dr r-legend">うらボス ' + x[2] + '</span><span class="dt">' + (got ? x[3] + '<br>' + lbDate(b.date) + 'に はじめて たおした' : 'うらボスを たおすと はいる') + '</span></div>'));
       return slot;
     });
@@ -4366,7 +4370,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
   function ubIntro(ph){
     const ov = UBE.ov, cont = ph === 2 && US.from === 2 && US.turn === 0;
     ov.className = 'lb-ov ub-intro ph' + ph;
-    ov.innerHTML = '<div class="ub-big">' + ubBossImg(ph === 1 ? 'kd' : 'tk') + '</div>' +
+    ov.innerHTML = '<div class="ub-big">' + ubBossImg(ph === 1 ? 'kd' : 'tk', '', true) + '</div>' +
       (ph === 1
         ? '<h2>うらボス ククドラが あらわれた!</h2><p>9つの 首を もつ りゅう。<br>きみの <b>にがてな 式</b>を ねらって くる!</p>' +
           '<p class="lb-rule">⚔️ 正解すると、その段の ぬし(しんの すがた)が こうげき!(こうげき力 ' + UBC.atk + ')<br>' +
@@ -4552,7 +4556,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     let html = '';
     who.forEach((a, i) => {
       const off = who.length === 1 ? 0 : (i - (who.length - 1) / 2) * 70;
-      html += '<div class="lb-mon ub-mon" style="--ox:' + off + 'px">' + shinImg(a) + '</div>';
+      html += '<div class="lb-mon ub-mon" style="--ox:' + off + 'px">' + shinImg(a, '', true) + '</div>';
       for(let j=0; j<4; j++){
         const sp = (j - 1.5) * 18;
         html += '<i class="lb-shot st-den" style="left:calc(50% + ' + (off + sp) + 'px);--dx:' + (-off * .8 + sp * .4) + 'px;animation-delay:' + (.2 + j * .06) + 's">' + LB_FX[a-1] + '</i>';
@@ -4581,7 +4585,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     const bg = document.createElement('div');
     bg.className = 'ub-ult-bg'; bg.style.setProperty('--c1', u.c1); bg.style.setProperty('--c2', u.c2);
     ubScreen.appendChild(bg); setTimeout(() => bg.remove(), 2300);
-    let html = '<div class="ub-ult-mon">' + shinImg(a) + '</div>';
+    let html = '<div class="ub-ult-mon">' + shinImg(a, '', true) + '</div>';
     who.slice(1).forEach((b, i) => { html += '<div class="lb-mon ub-mon" style="--ox:' + ((i % 2 ? 1 : -1) * (110 + (i >> 1) * 60)) + 'px">' + shinImg(b) + '</div>'; });
     for(let j=0; j<18; j++){
       const d = (.35 + j * .06).toFixed(2), x = (j * 37 + 7) % 96, y = (j * 53 + 11) % 80;
@@ -4715,7 +4719,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     resultTitle.className = 'result-title fail';
     const miss = q.t === 'eq' ? (q.bad ? q.bad[0] + '×' + q.bad[1] + '=' + (q.bad[0] * q.bad[1]) : '') : q.a + '×' + q.b + '=' + q.p;
     resultBody.innerHTML = '<p style="color:#a87a4a;font-weight:bold;margin:0 0 4px;">🐉 うらボス だい' + S.ph + 'けいたい ' + nm + '</p>' +
-      '<div class="ub-rboss">' + ubBossImg(S.ph === 1 ? 'kd' : 'tk') + '</div>' +
+      '<div class="ub-rboss">' + ubBossImg(S.ph === 1 ? 'kd' : 'tk', '', true) + '</div>' +
       '<div class="lb-hp ub-rhp"><b style="width:' + (S.hp / S.max * 100) + '%"></b><span>' + nm + ' HP ' + S.hp + ' / ' + S.max + '</span></div>' +
       (S.n ? '<p>' + S.n + '問 つづけて こうげき できた!</p>' : '') +
       (miss ? '<div class="lb-grow">💡 <b>' + miss + '</b> を れんしゅう しよう。<br>まちがえた 式は、ククドラが また ねらって くるよ</div>' : '') +

@@ -960,7 +960,9 @@
   .den-wrap .den-sp.s1{left:2%;top:12%} .den-wrap .den-sp.s2{right:4%;top:28%;animation-delay:.45s}
   .pack.r-den{--glow:#ff8cc6}
   .r-den.dr,.r-den.rc{background:linear-gradient(90deg,#ff6b9a,#b197fc,#4dabf7,#69db7c);color:#fff;text-shadow:0 0 2px rgba(0,0,0,.4)}
-  .zukan-cell.got.r-den{background:conic-gradient(from var(--hue),#ffd6e8,#fff3bf,#d3f9d8,#d0ebff,#e5dbff,#ffd6e8);box-shadow:inset 0 0 0 2px #ff8cc6,0 0 7px rgba(255,140,198,.9);animation:hueSpin 3s linear infinite}
+  .zukan-cell.got.r-den{background:conic-gradient(from var(--hue),#ffd6e8,#fff3bf,#d3f9d8,#d0ebff,#e5dbff,#ffd6e8);box-shadow:inset 0 0 0 2px #ff8cc6,0 0 7px rgba(255,140,198,.9)}
+  /* v3.27 かるく:図鑑の マスは にじ色を とめた わくに。マスの きらきらも とめる(81ぴき でんせつだと 300こ近い アニメが うごいて いた) */
+  .zukan-cell .den-wrap .den-sp,.zukan-cell .kaga-wrap::before,.zukan-cell .kaga-wrap::after{animation:none;opacity:.6}
   .r-kaga.dr,.r-kaga.rc{background:linear-gradient(90deg,#e0a81e,#ffd43b,#e0a81e);color:#5a3d00}
   .zukan-cell.got.r-kaga{background:radial-gradient(circle,#fff6c8,#ffe066);box-shadow:inset 0 0 0 2px #e0a81e,0 0 6px rgba(255,212,59,.8)}
   .r10-note{font-size:.85em !important;background:#fff6db;border:2px solid #ffd43b;border-radius:12px;padding:6px 10px;color:#7a5200;line-height:1.5 !important}
@@ -1253,13 +1255,31 @@
   /* v3.24 ククドラの 顔が HPゲージに かからないように 下げる(だい2けいたいは 下の ph2 で べつに きめる) */
   #ubScreen:not(.ph2) .ub-bs{top:8%}
   .ub-bs svg{display:block;width:100%;height:auto}
+  /* v3.27 かるく:ククドラの 絵の 中で うごかすのは 首の ゆらゆら だけ。こきゅうは 絵を 入れた 箱ごと(GPUで うごくので かるい) */
+  #ubScreen .kd-breathe,#ubScreen .kd-wgL,#ubScreen .kd-wgR,#ubScreen .kd-fl,#ubScreen .kd-fl2,#ubScreen .kd-ember{animation:none}
+  #ubScreen .kd-ember{opacity:.6}
+  .ub-br{transform-origin:50% 95%;will-change:transform;animation:ubBr 3.2s ease-in-out infinite}
+  #ubScreen.ph2 .ub-br{animation:none;will-change:auto}
+  @keyframes ubBr{0%,100%{transform:none}50%{transform:scale(1.008,1.016)}}
+  /* v3.27 あたった ときの 光は filter(重い)を やめて、白い 光を かさねる */
+  .ub-glow{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.95),rgba(255,255,255,.35) 38%,rgba(255,255,255,0) 66%)}
+  .ub-boss.hit .ub-glow{animation:ubGlow .45s ease}
+  .ub-boss.big-hit .ub-glow{animation:ubGlow .7s ease}
+  .ub-boss.enter .ub-glow{animation:ubGlowIn 1.3s ease}
+  .ub-boss.down .ub-glow{animation:ubGlowDown 1.8s ease forwards}
+  @keyframes ubGlow{0%,100%{opacity:0}15%{opacity:.9}}
+  @keyframes ubGlowIn{0%{opacity:1}100%{opacity:0}}
+  @keyframes ubGlowDown{0%{opacity:0}30%{opacity:1}100%{opacity:.6}}
+  @keyframes ubHit{0%,100%{transform:none}20%{transform:translateX(-8px) rotate(-4deg)}50%{transform:translateX(7px) rotate(3deg)}75%{transform:translateX(-3px)}}
+  @keyframes ubBigHit{0%,100%{transform:none}15%{transform:scale(.9) rotate(-8deg)}35%{transform:translateX(12px) rotate(6deg)}60%{transform:translateX(-8px)}}
+  @keyframes ubDown{0%{transform:none;opacity:1}100%{transform:scale(.2) translateY(-40px);opacity:0}}
   #ubScreen.ph2 .ub-boss{top:0;bottom:0;height:auto}
   #ubScreen.ph2 .ub-bs{width:150%;top:-3%}
   #ubScreen.ph2 .ub-boss::after{content:"";position:absolute;left:0;right:0;bottom:0;height:56%;background:linear-gradient(transparent,rgba(7,13,31,.82) 45%)}
-  .ub-boss.hit{animation:lbHit .45s ease}
-  .ub-boss.big-hit{animation:lbBigHit .7s ease}
+  .ub-boss.hit{animation:ubHit .45s ease}
+  .ub-boss.big-hit{animation:ubBigHit .7s ease}
   .ub-boss.atk{animation:ubAtk .6s ease}
-  .ub-boss.down{animation:lbDown 1.8s ease forwards}
+  .ub-boss.down{animation:ubDown 1.8s ease forwards}
   .ub-boss.enter{animation:ubEnter 1.3s cubic-bezier(.2,1.3,.4,1) both}
   #ubScreen .kd-nk.ub-hit{animation:ubNkHit .7s ease}
   #ubScreen .kd-nk.ub-bite{animation:ubNkBite .8s ease}
@@ -1284,6 +1304,7 @@
   .ub-found small{align-self:center;color:#7a5aa8}
   #ubScreen .qtimer,#ubScreen .choices{position:relative;z-index:2}
   #ubScreen .qtimer{margin:0 0 10px}
+  #ubTimerBar{transform-origin:left center;will-change:transform}   /* v3.27 はばでなく scaleX で のびちぢみ(かるく) */
   #ubScreen .qtimer.off,#ubScreen .choices.off{visibility:hidden}
   .choices.ub-pad{grid-template-columns:repeat(5,1fr);grid-auto-rows:1fr;gap:8px}
   .choices.ub-pad .choice-btn{padding:14px 0;font-size:1.45em}
@@ -1302,8 +1323,8 @@
   .ub-gauge.arm{background:linear-gradient(#d0bfff,#7048e8);box-shadow:0 4px 0 #3b2a8a,0 0 18px #b197fc;cursor:default;animation:ubBtnArm 1s ease-in-out infinite alternate}
   .ub-gauge.arm span{color:#fff;text-shadow:0 1px 2px #2a1f52;font-size:.8em;line-height:1.25}
   .ub-gauge.arm i.on{background:linear-gradient(#fff,#d0bfff);border-color:#fff}
-  @keyframes ubBtnPulse{to{transform:scale(1.07);box-shadow:0 4px 0 #c2410c,0 0 24px #ffd43b}}
-  @keyframes ubBtnArm{to{box-shadow:0 4px 0 #3b2a8a,0 0 28px #e5dbff}}
+  @keyframes ubBtnPulse{to{transform:scale(1.07)}}   /* v3.27 かげの アニメは やめた(かるく) */
+  @keyframes ubBtnArm{to{transform:scale(1.04)}}
   @media (prefers-reduced-motion: reduce){.ub-gauge.full,.ub-gauge.arm{animation:none}}
   .ub-ult-bg{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at 50% 40%,var(--c1),var(--c2) 70%);animation:ubUltBg 2.3s ease forwards}
   .ub-ult-mon{position:absolute;left:50%;bottom:-20px;width:190px;height:178px;transform:translateX(-50%);animation:ubUltMon 2.2s ease both}
@@ -1392,8 +1413,10 @@
   .mc-ft span{font-size:.78em;font-weight:bold;text-shadow:0 .06em .15em #000}
   .mc-ft b{font-size:.8em;color:#ffe08a;text-shadow:0 .06em .15em #000}
   .mc-ft em{font-style:normal;letter-spacing:-.08em}
-  .mc-holo{position:absolute;inset:0;pointer-events:none;border-radius:inherit;mix-blend-mode:screen;opacity:0;
-    background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.55) 45%,rgba(180,220,255,.35) 52%,transparent 66%) 0 0/250% 100%;animation:ubcHolo 3.6s linear infinite}
+  /* v3.27 光の おびは いつも ながさず、かたむけた ときだけ うごく。色を まぜる 効果(mix-blend-mode)も やめた(かるく) */
+  .mc-holo{position:absolute;inset:0;pointer-events:none;border-radius:inherit;opacity:0;
+    background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.5) 45%,rgba(200,230,255,.3) 52%,transparent 66%) 0 0/250% 100%;
+    background-position:calc(100% - var(--px)) 0;transition:background-position .15s}
   .mc.r-kira .mc-holo{opacity:.35} .mc.r-holo .mc-holo,.mc.r-kaga .mc-holo{opacity:.5} .mc.r-den .mc-holo{opacity:.6}
   .ubc-zw{animation:ubcPop .4s cubic-bezier(.2,1.4,.4,1) both}
   @keyframes ubcIn{from{opacity:0}to{opacity:1}}
@@ -1433,8 +1456,8 @@
   .ub-rboss{width:200px;height:170px;margin:0 auto}
   .ub-rhp{margin:4px auto 8px!important;max-width:300px}
   @keyframes ubAtk{0%,100%{transform:none}40%{transform:translateY(18px) scale(1.06)}}
-  @keyframes ubEnter{0%{transform:scale(1.5);opacity:0;filter:brightness(3)}60%{opacity:1}100%{transform:none;opacity:1;filter:none}}
-  @keyframes ubNkHit{0%,100%{transform:none;filter:none}20%{transform:rotate(-7deg) translateY(-6px);filter:brightness(2.6)}50%{transform:rotate(5deg)}75%{transform:rotate(-2deg)}}
+  @keyframes ubEnter{0%{transform:scale(1.5);opacity:0}60%{opacity:1}100%{transform:none;opacity:1}}
+  @keyframes ubNkHit{0%,100%{transform:none}20%{transform:rotate(-7deg) translateY(-6px)}50%{transform:rotate(5deg)}75%{transform:rotate(-2deg)}}
   @keyframes ubNkBite{0%,100%{transform:none}35%{transform:scale(1.22) translateY(26px)}55%{transform:scale(1.18) translateY(20px)}}
   @keyframes ubCrack{to{stroke-dashoffset:0}}
   @keyframes ubBreak{0%{opacity:1;transform:none}100%{opacity:0;transform:scale(1.35)}}
@@ -1481,7 +1504,7 @@
   <div class="header">
     <div class="title-row">
       <h1>🐱 九九チャレンジ</h1>
-      <span class="version-badge">v3.26</span>
+      <span class="version-badge">v3.27</span>
     </div>
     <div class="stopwatch" id="stopwatch">0.0秒</div>
   </div>
@@ -1497,7 +1520,7 @@
       <!-- 図鑑の表紙 -->
       <!-- モンスターの せかい（9つの すみか） -->
       <div class="world">
-        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.26</span></div>
+        <div class="world-title"><small>81ぴきの モンスターを あつめて そだてよう</small>九九チャレンジ<span class="version-badge" id="verBadge">v3.27</span></div>
         <div class="world-count" id="coverCount"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="world-hint">すみかを タッチすると 図鑑が ひらくよ</p>
@@ -2267,21 +2290,31 @@
       '<div class="seal-name" style="--nf:' + nameSize(nm) + '">' + nm + '</div><div class="seal-eq">' + (shin ? 'しんの すがた' : 'レジェンド') + '</div></div></div>';
   }
   // さわると かたむいて、光が うごく
+  // v3.27 かるく:位置は さわりはじめに 1回だけ はかる/1フレームに 1回だけ かきかえる/タッチは pointer だけで あつかう(2重に 動かない)
   function attachTilt(root){
     root.querySelectorAll('.seal.m-got,.mc').forEach(el => {
-      const move = e => {
-        const r = el.getBoundingClientRect(), p = e.touches ? e.touches[0] : e;
-        const x = (p.clientX - r.left) / r.width, y = (p.clientY - r.top) / r.height;
+      let r = null, raf = 0, x = .5, y = .5;
+      const draw = () => {
+        raf = 0;
         el.style.setProperty('--ry', ((x - .5) * 22) + 'deg');
         el.style.setProperty('--rx', ((.5 - y) * 22) + 'deg');
         el.style.setProperty('--px', (x * 100) + '%');
         el.style.setProperty('--py', (y * 100) + '%');
       };
-      const reset = () => { ['--rx','--ry'].forEach(k => el.style.setProperty(k, '0deg')); el.style.setProperty('--px', '50%'); };
+      const move = e => {
+        if(!r) r = el.getBoundingClientRect();
+        x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+        y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+        if(!raf) raf = requestAnimationFrame(draw);
+      };
+      const reset = () => {
+        r = null; if(raf){ cancelAnimationFrame(raf); raf = 0; }
+        ['--rx','--ry'].forEach(k => el.style.setProperty(k, '0deg')); el.style.setProperty('--px', '50%');
+      };
+      el.addEventListener('pointerdown', e => { r = el.getBoundingClientRect(); move(e); });
       el.addEventListener('pointermove', move);
       el.addEventListener('pointerleave', reset);
-      el.addEventListener('touchmove', move, {passive:true});
-      el.addEventListener('touchend', reset);
+      el.addEventListener('pointercancel', reset);
     });
   }
 
@@ -4239,7 +4272,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
   }
   function ubSetBoss(ph){
     UBE.boss.className = 'ub-boss';
-    UBE.boss.innerHTML = '<div class="ub-bs">' + (ph === 1 ? UB_ART.kd : UB_ART.tk) + '</div>';
+    UBE.boss.innerHTML = '<div class="ub-bs"><div class="ub-br">' + (ph === 1 ? UB_ART.kd : UB_ART.tk) + '</div></div><div class="ub-glow"></div>';   // v3.27 ub-br:箱ごと こきゅう / ub-glow:あたった 光
     ubScreen.classList.toggle('ph2', ph === 2);
     ubSand();
   }
@@ -4270,6 +4303,12 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     for(let a=1; a<=9; a++) h += '<span class="ub-tm' + (on && on.indexOf(a) !== -1 ? ' on' : '') + '">' + shinImg(a) + '<i>' + a + '</i></span>';
     return h;
   }
+  // v3.27 下の 9ひきは 1回だけ 作り、光らせる ときは class だけ かえる(毎回 絵を 作りなおすと 重い)
+  function ubTeamSet(on){
+    const t = UBE.team;
+    if(t.children.length !== 9) t.innerHTML = ubTeamHTML();
+    for(let a=1; a<=9; a++) t.children[a-1].classList.toggle('on', !!on && on.indexOf(a) !== -1);
+  }
   function ubHideQ(off){ UBE.choices.classList.toggle('off', off); UBE.timer.classList.toggle('off', off); }
 
   function ubOpenScreen(){
@@ -4277,7 +4316,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     ubPaused = false; ubWaiting = false; ubBusy = true;
     UBE.fx.innerHTML = ''; UBE.msg.innerHTML = ''; UBE.msg.classList.remove('tall'); UBE.crack.className = 'ub-crack hidden';
     UBE.who.innerHTML = ''; UBE.tag.textContent = ''; UBE.qtext.textContent = '？ × ？'; UBE.found.innerHTML = ''; UBE.choices.innerHTML = '';
-    UBE.team.innerHTML = ubTeamHTML();
+    ubTeamSet();
     ubHideQ(true);
     showScreen(ubScreen);
   }
@@ -4407,7 +4446,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
   function ubShowQ(){
     const q = ubCur;
     ubRender();
-    UBE.team.innerHTML = ubTeamHTML(q.t === 'eq' ? null : [q.a]);
+    ubTeamSet(q.t === 'eq' ? null : [q.a]);
     UBE.choices.innerHTML = '';
     UBE.choices.className = 'choices' + (q.t === 'eq' ? ' ub-pad' : '');
     if(q.t === 'eq'){
@@ -4464,10 +4503,10 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
   function ubStartTimer(){
     ubStopTimer();
     ubT0 = Date.now();
-    UBE.timer.classList.remove('warn'); UBE.bar.style.width = '100%';
+    UBE.timer.classList.remove('warn'); UBE.bar.style.transform = 'scaleX(1)';
     ubTimerId = setInterval(() => {
       const left = ubLimit - (Date.now() - ubT0);
-      UBE.bar.style.width = Math.max(0, left / ubLimit * 100) + '%';
+      UBE.bar.style.transform = 'scaleX(' + Math.max(0, left / ubLimit).toFixed(3) + ')';
       UBE.timer.classList.toggle('warn', left <= 1500);
       if(left <= 0){ ubStopTimer(); ubJudge(false, true, null); }
     }, 50);
@@ -4520,7 +4559,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
       }
     });
     UBE.fx.innerHTML = html;
-    UBE.team.innerHTML = ubTeamHTML(who);
+    ubTeamSet(who);
     UBE.msg.innerHTML = '<div class="lb-label">' + (q.t === 'eq' ? '🧩 ぜんぶ 見つけた! ' + who.length + 'ひきで こうげき!' : shinName(q.a)) + '</div>' +
       '<div class="lb-waza st-den">' + (who.length === 1 ? UB_WAZA[who[0]-1] : 'ぬしたちの がったい わざ') + '!</div>' +
       '<div class="lb-dmg st-den">' + dmg + ' ダメージ!</div>';
@@ -4554,7 +4593,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
       html += '<i class="ub-up ' + u.mv + '" style="' + pos + ';animation-delay:' + d + 's">' + u.fx[j % u.fx.length] + '</i>';
     }
     UBE.fx.innerHTML = html;
-    UBE.team.innerHTML = ubTeamHTML(who);
+    ubTeamSet(who);
     ubGaugeRender();
     UBE.msg.innerHTML = '<div class="lb-label big">✨ ひっさつわざ!</div>' +
       '<div class="ub-ult-name" style="--c1:' + u.c1 + '">' + u.name + '!</div>' +
@@ -4633,7 +4672,7 @@ const UB_CARD = {"1":"data:image/webp;base64,UklGRuyeAABXRUJQVlA4WAoAAAAQAAAAtwE
     let shots = '';
     for(let i=0; i<18; i++) shots += '<i class="lb-shot st-den" style="left:' + (8 + (i % 9) * 10.5) + '%;--dx:' + ((4 - i % 9) * 18) + 'px;animation-delay:' + (.3 + i * .05) + 's">' + LB_FX[i % 9] + '</i>';
     UBE.fx.innerHTML = '<div class="lb-final ub-final">' + [1,2,3,4,5,6,7,8,9].map(a => '<i style="animation-delay:' + (a * .04) + 's">' + shinImg(a) + '</i>').join('') + '</div>' + shots;
-    UBE.team.innerHTML = ubTeamHTML([1,2,3,4,5,6,7,8,9]);
+    ubTeamSet([1,2,3,4,5,6,7,8,9]);
     UBE.msg.innerHTML = '<div class="lb-label big">しんの すがたの ぬし 9ひきの 力で とどめ!</div>';
     setTimeout(() => { if(!US) return; ubBossFx('down'); ubFlash('white'); ubShake(); }, 900);
     ubSkipAt = Date.now() + 1200;
